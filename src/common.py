@@ -10,8 +10,8 @@ import sys
 import time
 
 # febrl
-# sys.path.append(os.path.join(sys.path[0],'..','..','tools','febrl','febrl-0.4.2'))
-# import stringcmp
+sys.path.append(os.path.expanduser("~/repos/github/stacs-srg/linkage-py/tools/febrl/febrl-0.4.2"))
+import stringcmp
 
 
 
@@ -157,12 +157,14 @@ def loadCSV(filepath, delimiter=",", verbose=0):
     Returns
         fieldNames : [String]                   -- headings
         values     : [Dict String String]       -- values, each entry is a dictionary with fieldNames as the keys
+        valuesArray: [String]
     """
     with open(filepath, newline='\n', encoding="latin-1") as f:
         reader = csv.reader(f, delimiter=delimiter)
         fieldNames = [ x.strip() for x in next(reader) ]
         lenFieldNames = len(fieldNames)
         rawValues = list()
+        rawValuesArray = list()
         for row in reader:
             lenValues = len(row)
             if lenFieldNames != lenValues:
@@ -179,13 +181,14 @@ def loadCSV(filepath, delimiter=",", verbose=0):
             # do not insert into the flatTable if all entries are None
             if not allNone:
                 rawValues.append(row2)
+                rawValuesArray.append(row)
         if verbose >= 1:
             print("Loaded data from %s, %d fields, %s entries." % (filepath, len(fieldNames), len(rawValues)))
         if verbose >= 2:
             print("Following are the fields.")
             for fieldName in fieldNames:
                 print(" - %s" % fieldName)
-        return (fieldNames, rawValues)
+        return (fieldNames, rawValues, rawValuesArray)
 
 
 
