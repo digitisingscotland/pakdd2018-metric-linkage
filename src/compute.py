@@ -2,6 +2,7 @@
 
 import common
 import statistics
+import argparse
 
 
 def sim_editdistance_mean(l1, l2):
@@ -20,6 +21,33 @@ def sim_editdistance_mean_except_missing(l1, l2):
     return mean
 
 
+################################################################################
+# Parsing command line arguments
+################################################################################
+
+parser = argparse.ArgumentParser(description='An experiment on learning optimal similarity methods.')
+parser.add_argument( '--dataset'
+                   , help='Which data set to use. Possible values: CORA.' )
+parser.add_argument( '-q'
+                   , type=int
+                   , default=2
+                   , help='Shingle width. Default 2.' )
+parser.add_argument( '--nb-bands'
+                   , type=int
+                   , default="5"
+                   , help='Number of bands for LSH. Default 5.' )
+parser.add_argument( '--band-size'
+                   , type=int
+                   , default="3"
+                   , help='Band size for LSH. Default 3.' )
+cmdArgs = parser.parse_args()
+print(cmdArgs)
+
+
+################################################################################
+# load data
+################################################################################
+
 (_, _, cora_lines_raw) = common.loadCSV("data/cora.csv")
 
 # drop the first column, it is useless
@@ -35,12 +63,16 @@ for line in cora_lines_raw:
     cora_truth.append(line[1])
 
 
+################################################################################
+# LSH
+################################################################################
+
 import LSH
 
 cora_documentStore = {}
-q = 2
-nbBands = 5
-bandSize = 4
+q = cmdArgs.q
+nbBands = cmdArgs.nbBands
+bandSize = cmdArgs.bandSize
 
 for (i, line) in enumerate(cora_lines):
     LSH.addToStore(q, nbBands, bandSize, cora_documentStore, line)
@@ -116,3 +148,4 @@ print()
 #             #     print()
 
 common.tick("Done!")
+
