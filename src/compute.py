@@ -84,6 +84,7 @@ for (i, line) in enumerate(cora_lines):
 mins = []
 maxs = []
 means = []
+block_sizes = []
 
 for (i, line) in enumerate(cora_lines):
     print("==> %s" % str(line))
@@ -106,6 +107,7 @@ for (i, line) in enumerate(cora_lines):
     mins.append(minD)
     maxs.append(maxD)
     means.append(meanD)
+    block_sizes.append(len(block))
     common.tick("%4d %4d %8.2f %8.2f %8.2f" % (i, len(block), minD, maxD, meanD))
     print()
     # input()
@@ -113,14 +115,17 @@ for (i, line) in enumerate(cora_lines):
 print("Min  min  value: %8.2f" % min(mins))
 print("Min  max  value: %8.2f" % min(maxs))
 print("Min  mean value: %8.2f" % min(means))
+print("Min  block size: %8.2f" % min(block_sizes))
 print()
 print("Max  min  value: %8.2f" % max(mins))
 print("Max  max  value: %8.2f" % max(maxs))
 print("Max  mean value: %8.2f" % max(means))
+print("Max  block size: %8.2f" % max(block_sizes))
 print()
 print("Mean min  value: %8.2f" % statistics.mean(mins))
 print("Mean max  value: %8.2f" % statistics.mean(maxs))
 print("Mean mean value: %8.2f" % statistics.mean(means))
+print("Mean block size: %8.2f" % statistics.mean(block_sizes))
 print()
 
 
