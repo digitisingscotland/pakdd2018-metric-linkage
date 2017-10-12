@@ -65,7 +65,7 @@ def addToStore(q, nbBands, bandSize, documentStore, document):
             sig = smallHash(bandID, str(band))
             if not sig in documentStore.keys():
                 documentStore[sig] = set()
-            documentStore[sig].add(document)
+            documentStore[sig].add(tuple(document))
 
 def lookup(q, nbBands, bandSize, documentStore, document):
     signature = computeSignature(q, nbBands, bandSize, document)
