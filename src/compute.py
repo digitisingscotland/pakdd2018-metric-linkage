@@ -27,6 +27,8 @@ def sim_editdistance_mean_except_missing(l1, l2):
 
 parser = argparse.ArgumentParser(description='An experiment on learning optimal similarity methods.')
 parser.add_argument( '--dataset'
+                   , type=str
+                   , default="CORA"
                    , help='Which data set to use. Possible values: CORA.' )
 parser.add_argument( '-q'
                    , type=int
