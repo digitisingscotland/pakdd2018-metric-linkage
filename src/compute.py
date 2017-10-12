@@ -71,8 +71,8 @@ import LSH
 
 cora_documentStore = {}
 q = cmdArgs.q
-nbBands = cmdArgs.nbBands
-bandSize = cmdArgs.bandSize
+nbBands = cmdArgs.nb_bands
+bandSize = cmdArgs.band_size
 
 for (i, line) in enumerate(cora_lines):
     LSH.addToStore(q, nbBands, bandSize, cora_documentStore, line)
