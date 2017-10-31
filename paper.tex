@@ -115,7 +115,14 @@
 
 \begin{document}
 
-\title{Exploring approaches ro probablistic record linkage using similarity searching}
+% Peter 31 Oct: Current title does not really reflect the topic I
+% think:
+%\title{Exploring approaches to probablistic record linkage using
+%        similarity searching}
+% Peter 31 Oct: What about
+\title{Efficient and Effective Metric Space Indexing for Complete
+       Record Linkage
+       Al: Exploring approaches to probabilistic record linkage using similarity searching (metric space indexing?) }
 %  \thanks{The authors would like to thank the ...|
 
 \author{Submitted for double-blind review}
@@ -134,12 +141,42 @@
 
 \maketitle
 
+% MAX 200 words
 \begin{abstract}
-% usually about 200 words max- best to check
+Probabilistic record linkage is the process of identifying records that refer to
+the same real-world entities across two or more databases in situations where entity identifiers are unavailable.
+It requires  similarities between records to be approximated using common attributes (such as names, addresses, phone numbers) and for pairs of records to be classified as matches or non-matches.
+Record linkage is usually done as a two step process;  in the
+first step a blocking or indexing is employed to efficiently identify
+candidate record pairs which are then compared in more detail and
+classified in the second step.
+
+As we show in this paper, even state-of-the-art blocking and
+indexing techniques such as locality sensitive hashing, have two
+major drawbacks. First, they often remove some true matching record
+pairs that have high similarities due to their heuristic nature,
+leading to a loss of recall. Second, they include many record pairs
+with low similarity leading to high computational requirements.
+Combined, this means a reduction of both effectiveness and efficiency.
+% * <al@st-andrews.ac.uk> 2017-10-31T08:46:25.069Z:
+%
+% > efficiency
+%
+% ^.
+
+We propose an metric indexing approach to \emph{complete} record
+linkage, which ensures all record pairs that have a similarity above
+a certain similarity threshold are being \textbf{compared}, while no pairs
+with a similarity below the threshold are \textbf{compared}. Our approach
+leads to a one-step record linkage process which combines indexing
+with comparison and classification resulting in improved
+effectiveness and efficiency as we experimentally evaluate on several
+real-world databases.
 
 \end{abstract}
 
-\keywords Probablistic record Linkage; similarity search; metric spaces; etc.
+\keywords Entity resolution; data matching; similarity search;
+         blocking.
 
 % ====================================================================
 
@@ -164,8 +201,9 @@ Plan in a bulleted list:
 \begin{itemize}
 \item Similarity search (M-Tree, others?)
 \item LSH-blocking
-\item Traditional blocking (e.g. Region, Surname)
-\item Sorted Neighbourhood blocking
+\item Traditional blocking (e.g. Region, Surname) - \textbf{why this? - this was done in the paper: A Comparison of Blocking Methods for Record Linkage}
+\item MIFile
+\item Sorted Neighbourhood blocking - \textbf{why this?}
 \end{itemize}
 \item Pairs-completeness and pairs-quality (w.r.t high similarity instead of true-link status). I will expand on this a bit more later.
 \item Comparison (for blocking based methods)
@@ -209,46 +247,6 @@ other related works as relevant
 
 % --------------------------------------------------------------------
 
-\section{Datasets}
-\label{sec-data}
-
-We conducted our experimental study using four real data sets from three
-domains. The first is the CORA data set  (\url{https://linqs-data.soe.ucsc.edu/public/lbc/cora.tgz}) \textbf{ which consists of 2708 scientific publications classified into one of seven classes. The citation network consists of 5429 links.}
-
-%Fields and true links here
-
-The second are a pair of sets of records drawn from the North Carolina Voter Registration (NCVR) data
-sets (\url{ftp://alt.ncsbe.gov/data/}) collected in June 2014 and October 2016
- \textbf{( who collected? where is the dataset published?)}.
-These data sets contain over five million records of voters encoded into 11 fields including
-their first names, surnames, and addresses. Ground truth is provided via an \textit{voter\_id} field which is invariant across the data sets.
-In our experiments we use two subsets of this data comprising 224074 and 224062 records drawn from the original five million plus records. \textbf{chosen how?}
-
-We also experiment over two datasets prepared by researchers pursuing previous projects \cite{reid2002} and \cite{reid2006}, which act as pseudo subsets of the Digitising Scotland data set. One data set contains records of vital events registered on the Isle of Skye, a rural district, while the other contains records from Kilmarnock, an industrial town. Both cover the period 1861-1901. These are different types of communities, with different family structures and name distributions \cite{reid2002}. Both datasets are encoded with the same schemata and include names, sex, addresses and the names of each person's father and mother. Ground truth is provided using demographer encoded identifiers which provide (incomplete) linkage between the records.  The Isle of Skye dataset comprises around 17,600 birth records, 12,300 death records, and 2,700 marriage records.
-The demographers  identified:
-\begin{itemize}
-\item 4,300 family groups of siblings, with a mean family size of 3.9 siblings and a maximum family size of 16,
-\item 2,900 links from a birth record to the child's death record,
-\item 60 links from a marriage record to the groom's death record, and
-\item 100 links from a marriage record to the bride's death record.
-\end{itemize}
-The Kilmarnock data set contains around 38,400 birth records, 23,700 death records, and 8,700 marriage records. Here, the demographers identified:
-\begin{itemize}
-\item 13,100 family groups of siblings, with a mean family size of 2.8 siblings and a  maximum family size of 16,
-\item 8,300 links from a birth record to the child's death record,
-\item 30 links from a marriage record to the groom's death record, and
-\item 50 links from a marriage record to the bride's death record.
-\end{itemize}
-
-
-
-
-
-
-
-% --------------------------------------------------------------------
-
-
 \section{Approach}
 \label{sec-approach}
 
@@ -287,6 +285,92 @@ linkage quality?
 
 \section{Experiments and Results}
 \label{sec-data}
+
+We now describe the data sets we use in our evaluation and the
+experimental setup we employed to evaluate our proposed metric
+indexing approach.
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+% Peter 31 Oct: table style follows LNCS style guide
+
+\begin{table}[t]
+\caption{Characteristics of data sets used in experiments.
+  \emph{Peter, 31 Oct: what else should we show here?}}
+ \label{table-datasets}
+  \centering
+  \begin{scriptsize}
+  %\addtolength{\tabcolsep}{-0.5pt}
+  \begin{tabular}{ccccc}
+  \hline\noalign{\smallskip}
+  Data set~ & ~Number of~ & ~Number of true~
+   & Attributes used? & ~?? \\
+  name(s)  & records   & matching pairs &
+    for indexing & ?? \\
+  \noalign{\smallskip}
+  \hline
+  \noalign{\smallskip}
+  NCVR  & ~224,073 / 224,061~ & ~148,036~ & ? & ? \\
+  CORA  & 1,295             & title, authors, venue, year ? & ?
+    & ? \\
+  Isle of Skye & ? & ?
+    & ? & ? \\
+  Kilmarnock  & ? & ? & ? & ? \\
+  \hline
+  \end{tabular}
+  \end{scriptsize}
+\end{table}
+
+% Peter, 31 Oct: To save space, don't use sub-sections but simply
+% \textbf{}, such as:
+% \smallskip
+%\textbf{Data sets}:~
+
+\subsection{Data Sets}
+\label{sec-data}
+
+We used four real data sets from three domains in our experiments. The
+first is the CORA data set~\footnote{Available from:
+\texttt{http://secondstring.sourceforge.net}}, which contains 1,295
+(?) records that refer to XX machine learning publications.
+% Peter, 31 Oct: not sure about the following - which Cora version do
+% you use? ****
+ (\url{https://linqs-data.soe.ucsc.edu/public/lbc/cora.tgz}) \textbf{ which consists of 2708 scientific publications classified into one of seven classes. The citation network consists of 5429 links.}
+
+The second are a pair of data sets based on the North Carolina Voter
+Registration (NCVR) data sets\footnote{Available from: \texttt{http://dl.ncsbe.gov/}}, which we collected in June 2014 and
+October 2016. Each of these two data sets contain over five million
+records of voters and include attributes with their first names,
+surnames, and addresses. Ground truth is provided via a \emph{NCID}
+identifier which uniquely identifies a voter. In our experiments we
+use two randomly selected sub-set of $224,073$ and $224,061$ records,
+respectively, where $148,036$ of those refer to voters that occurred
+in both original NCVR data sets but had name and/or address changes
+over time (thus leading to around $66\%$ matching records).
+
+\emph{Peter, 31 Oct: We need to be careful not to reveal our identities
+as the submission is double-blind - so no mention of DS.}
+
+% Peter, 31 Oct: can the following be shortened to 1 paragraph?
+
+We also experiment over two datasets prepared by researchers pursuing previous projects \cite{reid2002} and \cite{reid2006}, which act as pseudo subsets of the Digitising Scotland data set. One data set contains records of vital events registered on the Isle of Skye, a rural district, while the other contains records from Kilmarnock, an industrial town. Both cover the period 1861-1901. These are different types of communities, with different family structures and name distributions \cite{reid2002}. Both datasets are encoded with the same schemata and include names, sex, addresses and the names of each person's father and mother. Ground truth is provided using demographer encoded identifiers which provide (incomplete) linkage between the records.  The Isle of Skye dataset comprises around 17,600 birth records, 12,300 death records, and 2,700 marriage records.
+The demographers  identified:
+\begin{itemize}
+\item 4,300 family groups of siblings, with a mean family size of 3.9 siblings and a maximum family size of 16,
+\item 2,900 links from a birth record to the child's death record,
+\item 60 links from a marriage record to the groom's death record, and
+\item 100 links from a marriage record to the bride's death record.
+\end{itemize}
+\emph{Peter 31 Oct: what are you actually using in your experiments?
+All certificates or only birth?}
+
+The Kilmarnock data set contains around 38,400 birth records, 23,700 death records, and 8,700 marriage records. Here, the demographers identified:
+\begin{itemize}
+\item 13,100 family groups of siblings, with a mean family size of 2.8 siblings and a  maximum family size of 16,
+\item 8,300 links from a birth record to the child's death record,
+\item 30 links from a marriage record to the groom's death record, and
+\item 50 links from a marriage record to the bride's death record.
+\end{itemize}
 
 
 % --------------------------------------------------------------------
