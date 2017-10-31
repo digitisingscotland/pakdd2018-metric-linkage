@@ -115,48 +115,76 @@
 
 \begin{document}
 
-\title{Efficient and accurate record linkage using similarity spaces}
-%  \thanks{The authors would like to thank the Isaac Newton Institute
-%  for Mathematical Sciences, Cambridge, for support and hospitality
-%  during the programme \emph{Data Linkage and Anonymisation} where
-%  this work was conducted (EPSRC grant EP/K032208/1). Peter Christen
-%  was also supported by a grant from the Simons Foundation. The work
-%  was also partially funded by the Australian Research Council
-%  (DP130101801).}}
+% Peter 31 Oct: Current title does not really reflect the topic I
+% think:
+%\title{Exploring approaches to probablistic record linkage using
+%        similarity searching}
+% Peter 31 Oct: What about
+\title{Efficient and Effective Metric Space Indexing for Complete
+       Record Linkage
+       Al: Exploring approaches to probabilistic record linkage using similarity searching (metric space indexing?) }
+%  \thanks{The authors would like to thank the ...|
 
 \author{Submitted for double-blind review}
-%\author{Peter Christen\inst{1} \and Rainer Schnell\inst{2}
-%        \and Dinusha Vatsalan\inst{1} \and Thilina
-%        Ranbaduge\inst{1}}
+%\author{Özgür Akgün\inst{1} and Alan Dearle\inst{1} and Graham Kirby\inst{1} Peter Christen\inst{2}
+
+%\institute{School of Computer Science,
+%           University of St Andrews, \\
+%           St Andrews, Scotland.~
+%           Contact: \email{ozgur.akgun@st-andrews.ac.uk}
+
 %\institute{Research School of Computer Science,
 %           The Australian National University, \\
 %           Canberra, Australia.~
 %           Contact: \email{peter.christen@anu.edu.au}
-%           \and
-%           Methodology Research Group, %Institute for Sociology,
-%           University Duisburg-Essen, Duisburg, Germany.} %~
-%%           \email{rainer.schnell@uni-due.de}}
+
 
 \maketitle
 
+% MAX 200 words
 \begin{abstract}
-% usually about 200 words max- best to check
+Probabilistic record linkage is the process of identifying records that refer to
+the same real-world entities across two or more databases in situations where entity identifiers are unavailable.
+It requires  similarities between records to be approximated using common attributes (such as names, addresses, phone numbers) and for pairs of records to be classified as matches or non-matches.
+Record linkage is usually done as a two step process;  in the
+first step a blocking or indexing is employed to efficiently identify
+candidate record pairs which are then compared in more detail and
+classified in the second step.
+
+As we show in this paper, even state-of-the-art blocking and
+indexing techniques such as locality sensitive hashing, have two
+major drawbacks. First, they often remove some true matching record
+pairs that have high similarities due to their heuristic nature,
+leading to a loss of recall. Second, they include many record pairs
+with low similarity leading to high computational requirements.
+Combined, this means a reduction of both effectiveness and efficiency.
+% * <al@st-andrews.ac.uk> 2017-10-31T08:46:25.069Z:
+%
+% > efficiency
+%
+% ^.
+
+We propose an metric indexing approach to \emph{complete} record
+linkage, which ensures all record pairs that have a similarity above
+a certain similarity threshold are being \textbf{compared}, while no pairs
+with a similarity below the threshold are \textbf{compared}. Our approach
+leads to a one-step record linkage process which combines indexing
+with comparison and classification resulting in improved
+effectiveness and efficiency as we experimentally evaluate on several
+real-world databases.
 
 \end{abstract}
 
-\keywords Entity resolution; deduplication; metric spaces; etc.
+\keywords Entity resolution; data matching; similarity search;
+         blocking.
 
 % ====================================================================
 
 \section{The Plan}
 
-We tried to develop a plan with PeterC. Here is the photo of the white-board.
-
-\includegraphics[width=\textwidth]{2017-08-01_12_08_43.jpg}
-
 \vspace{5mm}
 
-But, even better, here it is in a bulleted list.
+Plan in a bulleted list:
 
 \begin{itemize}
 \item Design: Traditionally it has two stages. A blocking method needs to be developed separately from a similarity method. With similarity search based record linkage, there is only one method, and that is the similarity method.
@@ -173,8 +201,9 @@ But, even better, here it is in a bulleted list.
 \begin{itemize}
 \item Similarity search (M-Tree, others?)
 \item LSH-blocking
-\item Traditional blocking (e.g. Region, Surname)
-\item Sorted Neighbourhood blocking
+\item Traditional blocking (e.g. Region, Surname) - \textbf{why this? - this was done in the paper: A Comparison of Blocking Methods for Record Linkage}
+\item MIFile
+\item Sorted Neighbourhood blocking - \textbf{why this?}
 \end{itemize}
 \item Pairs-completeness and pairs-quality (w.r.t high similarity instead of true-link status). I will expand on this a bit more later.
 \item Comparison (for blocking based methods)
@@ -202,6 +231,9 @@ similarity search.
 How our work is different from these other metric space works, and
 description of our contributions
 
+The motivation for this work is the Digitising Scotland project (Dibben 2012), which is in the process of transcribing and linking all the vital events recorded in Scotland between 1856 and 1977. This data set will, when complete, include around 14 million birth records, 11 million death records and 4 million marriage records. As part of the work, certain data fields (locations, occupations and causes of death) are also being classified to the relevant standard coding schemes.
+
+
 % --------------------------------------------------------------------
 
 \section{Related Work}
@@ -215,17 +247,10 @@ other related works as relevant
 
 % --------------------------------------------------------------------
 
-\begin{figure}[t]
-  \centering
-%  \includegraphics[width=1.0\textwidth]{xyz.eps}
-  \caption{Descriptive caption
-           %as outlined in Sect.~\ref{sec-overview} and detailed in
-           %Sect.~\ref{sec-bf-attack}.
-           \label{fig:xyz}}
-\end{figure}
+\section{Approach}
+\label{sec-approach}
 
-\section{approach section?}
-\label{sec-overview}
+In this paper we explore the efficacy of the use of different similarity search algorithms in probabilistic record linkage. We explore two inexact algorithms: LSH and MIFile \cite{amato2014mi} one exact method: mTrees \cite{paolociaccia2m}. We also use a simple brute force exact technique as a baseline for comparison although this approach can only be applied to the smallest of our datasets.
 
 coverage: proportion of all rec pairs with a certain similarity
 (independent of their match status) that are being generated by
@@ -246,85 +271,7 @@ define blocking: only aimed at improving computational aspects by reducing the n
 
 % --------------------------------------------------------------------
 
-\begin{figure}[t]
-  \begin{center}
-  \begin{scriptsize}
-%    \begin{footnotesize}
-  \begin{tabular}{ll} \hline
-\multicolumn{2}{l}{\textbf{Algorithm 1: \emph{Candidate q-gram set
-  generation}} -- Steps (1a) and (1b) } \\ \hline
-\multicolumn{2}{l}{Input:} \\
-\multicolumn{2}{l}{- $\mathbf{V}$: Set of attribute values and their
-  frequencies from a public database} \\
-\multicolumn{2}{l}{- $\mathbf{B}$: Set of BFs and their
-  frequencies from the sensitive database} \\
-\multicolumn{2}{l}{- $l$:~\, Length of Bloom filters} \\
-\multicolumn{2}{l}{- $q$:~ Length of sub-strings to extract from
-  attribute values} \\  
-\multicolumn{2}{l}{- $m$: Minimum frequency for BFs and attribute
-  values} \\
-\noalign{\smallskip}
-\multicolumn{2}{l}{Output:} \\
-\multicolumn{2}{l}{- $\mathbf{C}$: List of possible q-grams for each
-  BF position} \\
-\noalign{\smallskip}
-  1:  & $\mathbf{c}^+[p] = \{\}$, $\mathbf{c}^-[p] = \{\}$,
-        $1 \le p \le l$ ~~~ // Initialize list of candidate q-gram
-        sets \\
-  2:  & $\mathbf{V}_F = \{v \in \mathbf{V}: v.f \ge m \}$
-        ~~~~~~~~~~~~~~ // Attribute values with frequency of at
-        least $m$ \\
-  3:  & $\mathbf{B}_F = \{\mathbf{b} \in \mathbf{B}:
-        \mathbf{b}.f \ge m \}$
-        ~~~~~~~~~~~~~~\,// BFs with frequency of at least $m$ \\
-  4:  & $revSort(\mathbf{B}_F)$, $revSort(\mathbf{V}_F)$ ~~~~~~~~~~ 
-        // Sort according to frequencies, highest first \\
-  5:  & $\mathbf{A} = [(\mathbf{b}_i, v_i) : 
-        \mathbf{b}_i \in \mathbf{B}_F, v_i \in \mathbf{V}_F:
-        \mathbf{b}_i.f > \mathbf{b}_j.f \land v_i.f > v_j.f:
-        1 \le i < j \le min(|\mathbf{V}_F |, |\mathbf{B}_F|)]$ \\
-  ~  &   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ // Align $\mathbf{V}_F$
-        and $\mathbf{B}_F$ as long as their frequencies are
-        unique \\  
-  6:  & \textbf{for} $(\mathbf{b}_i, v_i) \in \mathbf{A}$
-        \textbf{do}: ~~~~~~~~~~~~~~~~~~~~ //  Step (1a): Get
-        candidate sets of q-grams \\
-  7:  & ~~~ $\mathbf{q}_i = genQGramSet(v_i, q)$ ~~~~~~~~\,//
-        Convert attribute value into its q-gram set \\
-  8:  & ~~~  \textbf{for} $1 \le p \le l$ \textbf{do}: 
-        ~~~~~~~~~~~~~~~~~~~\, // Loop over all BF positions \\
-  9:  & ~~~ ~~~ \textbf{if} $\mathbf{b}_i[p] == 1$ \textbf{then}:
-        ~~~~~~~~~~~~\, // Bit at position p is 1 \\
-  10: & ~~~ ~~~ ~~~ $\mathbf{c}^+[p] = \mathbf{c}^+[p] \cup
-        \mathbf{q}_i$ ~~~~~~~~~~~\,// Add to set of possible
-        q-grams \\
-  11: & ~~~ ~~~ \textbf{else}: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
-        Bit at position $p$ is $0$ \\
-  12: & ~~~ ~~~ ~~~ $\mathbf{c}^-[p] = \mathbf{c}^-[p] \cup
-        \mathbf{q}_i$  ~~~~~~~~~~~// Add to set of \emph{not}
-        possible q-grams \\
-  13: & $\mathbf{C} = [\,]$ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\,
-        // Step (1b): Initialize empty list of q-gram sets \\
-  14: & \textbf{for} $1 \le p \le l$ \textbf{do}: 
-        ~~~~~~~~~~~~~~~~~~~~~~~~\,// Loop over all BF positions to
-        combine q-gram sets \\
-  15: & ~~~ $\mathbf{C}.append(\mathbf{c}^+[p] \setminus
-        \mathbf{c}^-[p])$ ~~~~~~~~~~~\,// Remove not possible from
-        possible q-grams \\
-%  15: & ~~~ $\mathbf{c}[p] = \mathbf{c}^+[p] \setminus
-%        \mathbf{c}^-[p]$ ~~~~~~~~~~~~~~~~~ // Remove not possible
-%        from possible q-grams \\
-%  16: & ~~~ $\mathbf{C}.append(\mathbf{c}[p])$
-%        ~~~~~~~~~~~~~~~~~~~~~~ // Add to list of candidates for all
-%        BF positions\\
-16: & \textbf{return} $\mathbf{C}$ \\
-  \hline
-  \end{tabular}
-%  \end{footnotesize}
- \end{scriptsize}
-  \end{center}
-  \label{algo:step1}
-\end{figure}
+
 
 %  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -339,131 +286,92 @@ linkage quality?
 \section{Experiments and Results}
 \label{sec-data}
 
-plot coverage as defined above for different data sets and the different blocking techniques
+We now describe the data sets we use in our evaluation and the
+experimental setup we employed to evaluate our proposed metric
+indexing approach.
 
-x-axis: similarity threshold from 0 to 1, y-axis is coverage as a
-percentage (percentage of how many record pairs with a certain similarity value are generated by a blocking technique compared to all record pairs with that similarity - how to do this? we can't do full pair-wise comparison? can we get all pairs from m-tree for a certain distance, then run them through blocking?
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-For M-tree etc coverage will always be 1.0, while for other blocking techniques the coverage will be < 1.0 especially as similarities
-become lower.
+% Peter 31 Oct: table style follows LNCS style guide
 
-Plots should include average coverages for a certain similarity threshold over various parameter settings - e.g. for LHS or sorted neighbourhood, as well as min/max similarities (or std-dev bands in a transparent colour), as in the below example:
-
-%http://www.randalolson.com/2014/06/28/how-to-make-beautiful-data-visualizations-in-python-with-matplotlib/
-
-
-%% old text below  ***************************************
-
-We conducted our experimental study using real data sets from two
-domains.
-%
-The first are a pair of North Carolina Voter Registration (NCVR) data
-sets (\url{ftp://alt.ncsbe.gov/data/})
-%~\footnote{Available from \url{ftp://alt.ncsbe.gov/data/}}
-collected in June 2014 (the database to be attacked) and October 2016
-(the public database).
-%, that have increasingly large differences in their time collection
-%to see how this influences re-identification accuracy.
-These data sets contain over five million records of voters including
-their first names, surnames, and addresses. We present results of our
-attack individually on the first name
-%, last name, and address attributes, 
-attribute, as well as on the concatenation of the first name and
-surname attributes.
-
-\begin{figure}[!t]
-  \centering
-%  \includegraphics[width=0.31\textwidth]
-%  {reident-bf_len-ncvoter_20140619_1}
-  ~~
-%  \includegraphics[width=0.31\textwidth]
-%  {reident-hash_type-ncvoter_20140619_1}
-  ~~
-%  \includegraphics[width=0.31\textwidth]
-%  {reident-q-ncvoter_20140619_1}
-  \\ ~ \\
-%\includegraphics[width=0.31\textwidth]
-%  {reident-bf_len-ncvoter_20140619_1-3}
-  ~~
-%  \includegraphics[width=0.31\textwidth]
-%  {reident-hash_type-ncvoter_20140619_1-3}
-  ~~
-%  \includegraphics[width=0.31\textwidth]
-%  {reident-q-ncvoter_20140619_1-3}
-\caption{Results for the NCVR data sets with first name (top)
-    and combination of first and surname (bottom) for different BF
-    lengths (left), different hashing methods (middle), and different
-    values of $q$ (right). No BF hardening was applied.
-   \label{fig:ncvr}}
-\end{figure}
-
-
-The parameter settings we use in our experiments are $q = [2,3,4]$
-(length of sub-strings used in BF encoding), BF length
-$l = [250, 500, 1000,$ $2000]$, and either the double or random
-hashing method~\cite{Sch16} as described in
-Sect.~\ref{sec-overview}. We calculate the number of hash functions
-$k$ based on $l$ and $q$ such that the false positive rate is
-minimized~\cite{Vat14c}. We also apply the BF hardening techniques
-balancing and XOR-folding~\cite{Sch16}.
-% as described in Sect.~\ref{sec-overview}.
-We use different numbers for the most frequent attribute values
-(ranked by their frequencies) to be re-identified: $|\mathbf{G}| =
-[10,20,50,100]$.
-%most frequent values from the public data set to be guessed.
-
-
-\textbf{Discussion:}~
-In Fig.~\ref{fig:ncvr} we show the results for the NCVR data sets.
-% for one individual attribute (first name) in the top row, and
-%three individual attributes (first name, last name, and address in
-%the first three rows, respectively), and
-%combined attributes of first and surnames in the bottom row.
-% BFs are hardened using the balanced method.
-%
-As can be seen, when the BF length $l$ increases (left column) the
-percentage of correct re-identifications mostly increases, as with
-larger $l$ the number of q-grams mapped to a certain bit position
-decreases. All values can be correctly re-identified for individual
-attributes
-%nearly $90\%$ of values can be correctly re-identified
-%%as 1-to-1 or 1-to-many matches
-when the number of frequent values is 10.
-%or 20. 
-Around half of all
-values can still be re-identified even when values from two
-attributes
-
-
-\begin{table}[!t]
- %\addtolength{\tabcolsep}{-3pt}
-  \caption{Comparison of re-identification results with existing BF
-     attack methods.}
-     \label{table:exist_approaches}
+\begin{table}[t]
+\caption{Characteristics of data sets used in experiments.
+  \emph{Peter, 31 Oct: what else should we show here?}}
+ \label{table-datasets}
   \centering
   \begin{scriptsize}
-    \begin{tabular}{llccc}
-    \hline\noalign{\smallskip}
-   Publication & Data set & Num BFs~ & ~1-1 corr~ & Run time
-     \\ \noalign{\smallskip}\hline\noalign{\smallskip}
-  Kuzu et al. (2011)~\cite{Kuz11} & NCVR first names & 3,500 & 400 &
-    1,000 sec \\
-  Kuzu et al. (2013)~\cite{Kuz13} & Patient names & 20 & 4 & 
-    few sec \\
-  ~~~~ " & ~~~~ " & 42 & 0 & $>$ week \\
-  Niedermeyer et al. (2014)~\cite{Nie14}~ & German surnames & 7,580 &
-    934 & $>$ days  \\
-  Kroll and Steinmetzer (2015)~\cite{Kro15}~ & German names and
-    locations & 100K & 44K & $>$ days \\
-  Our approach & NCVR first names & 10--100 & 7--10 & 0.73--0.75 sec
-    \\
-  ~~~~ " & NCVR first and surnames & 10--100 & 3--6 & 1.5--1.9
-  sec  \\
-%  ~~~~ " & UKCD surname and address~ & 10 & 10 & 0.05 sec \\
-  \noalign{\smallskip} \hline
+  %\addtolength{\tabcolsep}{-0.5pt}
+  \begin{tabular}{ccccc}
+  \hline\noalign{\smallskip}
+  Data set~ & ~Number of~ & ~Number of true~
+   & Attributes used? & ~?? \\
+  name(s)  & records   & matching pairs &
+    for indexing & ?? \\
+  \noalign{\smallskip}
+  \hline
+  \noalign{\smallskip}
+  NCVR  & ~224,073 / 224,061~ & ~148,036~ & ? & ? \\
+  CORA  & 1,295             & title, authors, venue, year ? & ?
+    & ? \\
+  Isle of Skye & ? & ?
+    & ? & ? \\
+  Kilmarnock  & ? & ? & ? & ? \\
+  \hline
   \end{tabular}
   \end{scriptsize}
 \end{table}
+
+% Peter, 31 Oct: To save space, don't use sub-sections but simply
+% \textbf{}, such as:
+% \smallskip
+%\textbf{Data sets}:~
+
+\subsection{Data Sets}
+\label{sec-data}
+
+We used four real data sets from three domains in our experiments. The
+first is the CORA data set~\footnote{Available from:
+\texttt{http://secondstring.sourceforge.net}}, which contains 1,295
+(?) records that refer to XX machine learning publications.
+% Peter, 31 Oct: not sure about the following - which Cora version do
+% you use? ****
+ (\url{https://linqs-data.soe.ucsc.edu/public/lbc/cora.tgz}) \textbf{ which consists of 2708 scientific publications classified into one of seven classes. The citation network consists of 5429 links.}
+
+The second are a pair of data sets based on the North Carolina Voter
+Registration (NCVR) data sets\footnote{Available from: \texttt{http://dl.ncsbe.gov/}}, which we collected in June 2014 and
+October 2016. Each of these two data sets contain over five million
+records of voters and include attributes with their first names,
+surnames, and addresses. Ground truth is provided via a \emph{NCID}
+identifier which uniquely identifies a voter. In our experiments we
+use two randomly selected sub-set of $224,073$ and $224,061$ records,
+respectively, where $148,036$ of those refer to voters that occurred
+in both original NCVR data sets but had name and/or address changes
+over time (thus leading to around $66\%$ matching records).
+
+\emph{Peter, 31 Oct: We need to be careful not to reveal our identities
+as the submission is double-blind - so no mention of DS.}
+
+% Peter, 31 Oct: can the following be shortened to 1 paragraph?
+
+We also experiment over two datasets prepared by researchers pursuing previous projects \cite{reid2002} and \cite{reid2006}, which act as pseudo subsets of the Digitising Scotland data set. One data set contains records of vital events registered on the Isle of Skye, a rural district, while the other contains records from Kilmarnock, an industrial town. Both cover the period 1861-1901. These are different types of communities, with different family structures and name distributions \cite{reid2002}. Both datasets are encoded with the same schemata and include names, sex, addresses and the names of each person's father and mother. Ground truth is provided using demographer encoded identifiers which provide (incomplete) linkage between the records.  The Isle of Skye dataset comprises around 17,600 birth records, 12,300 death records, and 2,700 marriage records.
+The demographers  identified:
+\begin{itemize}
+\item 4,300 family groups of siblings, with a mean family size of 3.9 siblings and a maximum family size of 16,
+\item 2,900 links from a birth record to the child's death record,
+\item 60 links from a marriage record to the groom's death record, and
+\item 100 links from a marriage record to the bride's death record.
+\end{itemize}
+\emph{Peter 31 Oct: what are you actually using in your experiments?
+All certificates or only birth?}
+
+The Kilmarnock data set contains around 38,400 birth records, 23,700 death records, and 8,700 marriage records. Here, the demographers identified:
+\begin{itemize}
+\item 13,100 family groups of siblings, with a mean family size of 2.8 siblings and a  maximum family size of 16,
+\item 8,300 links from a birth record to the child's death record,
+\item 30 links from a marriage record to the groom's death record, and
+\item 50 links from a marriage record to the bride's death record.
+\end{itemize}
+
 
 % --------------------------------------------------------------------
 
@@ -472,9 +380,10 @@ attributes
 
 % --------------------------------------------------------------------
 
-%\bibliographystyle{abbrv}
-\bibliographystyle{splncs03}
-\bibliography{paper} 
+\bibliographystyle{abbrv}
+\bibliography{paper.bib} 
+
+
 
 \end{document}
 
