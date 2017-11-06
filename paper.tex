@@ -146,8 +146,8 @@
 Probabilistic record linkage is the process of identifying records that refer to
 the same real-world entities across two or more databases in situations where entity identifiers are unavailable.
 It requires  similarities between records to be approximated using common attributes (such as names, addresses, phone numbers) and for pairs of records to be classified as matches or non-matches.
-Record linkage is usually done as a two step process;  in the
-first step a blocking or indexing is employed to efficiently identify
+Record linkage is usually performed in a two step process;  in the
+first step a blocking or indexing is employed to efficiently group similar
 candidate record pairs which are then compared in more detail and
 classified in the second step.
 
@@ -172,6 +172,7 @@ leads to a one-step record linkage process which combines indexing
 with comparison and classification resulting in improved
 effectiveness and efficiency as we experimentally evaluate on several
 real-world databases.
+Parameter space: good linkage bad linkage don't know which without ground truth. M Trees always high no config -> high confidence.
 
 \end{abstract}
 
