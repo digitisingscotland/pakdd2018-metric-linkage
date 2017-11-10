@@ -1,7 +1,4 @@
 \documentclass{llncs}
-% * <peter.christen@anu.edu.au> 2016-08-19T15:07:29.567Z:
-%
-% ^.
 %\usepackage{llncsdoc}
 \usepackage{epsfig}
 \usepackage{graphicx}
@@ -146,8 +143,8 @@
 Probabilistic record linkage is the process of identifying records that refer to
 the same real-world entities across two or more databases in situations where entity identifiers are unavailable.
 It requires  similarities between records to be approximated using common attributes (such as names, addresses, phone numbers) and for pairs of records to be classified as matches or non-matches.
-Record linkage is usually done as a two step process;  in the
-first step a blocking or indexing is employed to efficiently identify
+Record linkage is usually performed in a two step process;  in the
+first step a blocking or indexing is employed to efficiently group similar
 candidate record pairs which are then compared in more detail and
 classified in the second step.
 
@@ -172,6 +169,7 @@ leads to a one-step record linkage process which combines indexing
 with comparison and classification resulting in improved
 effectiveness and efficiency as we experimentally evaluate on several
 real-world databases.
+Parameter space: good linkage bad linkage don't know which without ground truth. M Trees always high no config -> high confidence.
 
 \end{abstract}
 
@@ -215,10 +213,13 @@ Plan in a bulleted list:
 
 Note: The rest of this paper should be regarded as a placeholder for now.
 
+% --------------------------------------------------------------------
+
 \section{Introduction}
 \label{sec-intro}
 
 something about record linkage and its importance, application examples
+
 
 drawback of existing approaches: blocking and comparisons/classification
 done separately, sometimes if bad linkage quality means to go back to redo
@@ -241,6 +242,17 @@ The motivation for this work is the Digitising Scotland project (Dibben 2012), w
 
 summarise related work in blocking/indexing
 
+\textbf{Traditional first - Peter?}
+
+Steorts et al. \cite{Steorts2014} examined various approaches to blocking records raging from traditional blocking to variations on Locality Sensitive Hashing (LSH). They assert that traditional blocking based on human selected fields has two major drawbacks. The first is that the blocks that are formed are so large that it remains computationally impractical to compare all the records in the block. Secondly, since similarity is based on a subset of the available fields, records in the same block may differ greatly in the fields that are not considered. \textbf{{this is true of our technique - explore somewhere}}. The paper examines two LSH variations - transitive LSH {ref needed} (TLSH) and K-Means LSH (KLSH). {\textbf{describe these where?}} 
+Using simulated data based on people, their data of birth and postal address to evaluate the efficacy of these approaches, they demonstrate that KLSH performs as well or better than commonly used approaches to blocking such as those described \textbf{above}. However, they point out that, like all LSH methods, in order to get good results, it must be tuned to the particular dataset being linked. This in turn requires good ground truth about the dataset which may be unavailable, impossible or very expensive to obtain. \textbf{We examine and address these problems in this paper.}
+
+In \cite{Yu2016} Yu et al. have written an extensive survey on string similarity and join in which the problem is defined as "Given two sets of objects, similarity join aims to find all similar pairs from the two collections". Part of the survey is concerned the  algorithms used to compare two records which are characterised as being character-based, token-based or hybrid. The first, which includes approaches such as Levenshtein {ref needed} use character differences in the strings being compared, the second, which includes techniques such as Jaccard similarity {ref needed}, treats the records as sets of tokens and utilises set similarity, the third hybridises the two approaches. Yu's divides join algorithms (which unify records - also known as linkage) into three categories: a number of techniques based on filtering, verification based and threshold-based. Filtering involves generating signatures for each record and creating inverted lists containing records with common signatures and pruning records with no common signatures. Verification algorithms involve calculating the exact distances of a prefix of the data, and using another technique to estimate the edit distance between records. If the estimated distance is larger than the desired similarity threshold, the candidate may be discarded. The last category (threshold based) includes M-tree, Trie-Join, Pass-Join and Partenum. These approaches all require indexing structures to be constructed that are then used to support comparison.  
+
+{\textbf{do we need to describe these?}}
+
+ \cite{Li2006} describes a method of performing linkage using R-trees {ref needed} that fall into the threshold based category of Yu et al. Their approach demonstrates that high precision and recall may be achieved by measuring Jaccard similarity over selected fields from the records being compared. In their evaluation , their approach achieved a recall of 99 percent in experiments in which conjunctions of similarities over fields were used. In a later paper \cite{Ciaccia97indexingmetric}  Ciaccia et al. demonstrate that using M-trees are almost always more efficient than R-trees.
+
 summarise related work in metric spaces as used in record linkage
 
 other related works as relevant
@@ -250,7 +262,18 @@ other related works as relevant
 \section{Approach}
 \label{sec-approach}
 
-In this paper we explore the efficacy of the use of different similarity search algorithms in probabilistic record linkage. We explore two inexact algorithms: LSH and MIFile \cite{amato2014mi} one exact method: mTrees \cite{paolociaccia2m}. We also use a simple brute force exact technique as a baseline for comparison although this approach can only be applied to the smallest of our datasets.
+In this paper we explore the efficacy of the use of different similarity search algorithms in probabilistic record linkage. We explore two inexact algorithms: LSH-minhash and MIFile \cite{amato2014mi} one exact method: mTrees \cite{paolociaccia2m}. We also use a simple brute force (nested-loop) exact technique as a baseline for comparison although this approach can only be applied to the smallest of our datasets. All of our experiments have a number of configuration parameters with which we can configure the search space and algorithm behaviours. All have a \textit{distance threshold} below which two records are deemed to represent a link.
+
+In the brute force approach two nested loops are used to compare every record with every other non identical record. The complexity of this approach is n2. If a link can be found with whatever distance metric is used, this approach will find it. Each of our datasets contains ground truth with which we can establish the records that are true links and those that are not. 
+
+The LSH-minhash approach is a fast but inexact method of performing similarity search. It has a number of tuning parameters: \textit{shingle\_size}, the \textit{number\_of\_bands} and the \textit{band\_size}. These are explained in the following algorithm description which follows a standard LSH approach. Firstly all the fields of the record are turned into strings and concatenated. Next the strings are \textit{shingled} into a set of n-grams according to the \textit{shingle\_size} parameter. Next a set of randomly, deterministically generated hash functions are applied to each of the sets of n-grams and the smallest (the minhash) of each application is added to a signature. The number of hashes used and thus the size of the signature is determined by the product of the {number\_of\_bands} and the {band\_size}.  Lastly the signature is divided into {number\_of\_bands} segments and the elements from the band are hashed again to create an key. The original record is added to a hashmap associated with this by this key. It can be shown that the similarities between signatures generated in the second step have very close Jaccard similarity to the original string and that if an arbitrary record is run through this process the records found in the map are close to the record being searched with good precision and recall. We will further explore these properties in this paper.
+
+The MIFile \cite{amato2014mi} approach is another inexact technique for performing similarity search. Using  MI_file,  each record is represented by the ordering of distances from a collection of reference objects. It is based on the idea that if two records are close to each other  will have similar neighbours and will thus be represented by similar of distances from the chosen reference objects. An inverted file is created mapping from... 
+
+
+In order to compare two objects in the dataset, we compare the two corresponding orderings of the reference objects
+
+{\textbf{need to say something about the operations supported somewhere}}
 
 coverage: proportion of all rec pairs with a certain similarity
 (independent of their match status) that are being generated by
@@ -289,6 +312,7 @@ linkage quality?
 We now describe the data sets we use in our evaluation and the
 experimental setup we employed to evaluate our proposed metric
 indexing approach.
+
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -333,9 +357,6 @@ We used four real data sets from three domains in our experiments. The
 first is the CORA data set~\footnote{Available from:
 \texttt{http://secondstring.sourceforge.net}}, which contains 1,295
 (?) records that refer to XX machine learning publications.
-% Peter, 31 Oct: not sure about the following - which Cora version do
-% you use? ****
- (\url{https://linqs-data.soe.ucsc.edu/public/lbc/cora.tgz}) \textbf{ which consists of 2708 scientific publications classified into one of seven classes. The citation network consists of 5429 links.}
 
 The second are a pair of data sets based on the North Carolina Voter
 Registration (NCVR) data sets\footnote{Available from: \texttt{http://dl.ncsbe.gov/}}, which we collected in June 2014 and
@@ -350,6 +371,7 @@ over time (thus leading to around $66\%$ matching records).
 
 \emph{Peter, 31 Oct: We need to be careful not to reveal our identities
 as the submission is double-blind - so no mention of DS.}
+\textbf{I think we need to say something about this to provide context; there is none currently.}
 
 % Peter, 31 Oct: can the following be shortened to 1 paragraph?
 
@@ -361,8 +383,7 @@ The demographers  identified:
 \item 60 links from a marriage record to the groom's death record, and
 \item 100 links from a marriage record to the bride's death record.
 \end{itemize}
-\emph{Peter 31 Oct: what are you actually using in your experiments?
-All certificates or only birth?}
+In the experiments described in this paper we examine links between birth and death records since these provided the highest levels of ground truth.
 
 The Kilmarnock data set contains around 38,400 birth records, 23,700 death records, and 8,700 marriage records. Here, the demographers identified:
 \begin{itemize}
@@ -370,7 +391,9 @@ The Kilmarnock data set contains around 38,400 birth records, 23,700 death recor
 \item 8,300 links from a birth record to the child's death record,
 \item 30 links from a marriage record to the groom's death record, and
 \item 50 links from a marriage record to the bride's death record.
+\item 
 \end{itemize}
+Again only links between birth and death have been used in the experiments in this paper.
 
 
 % --------------------------------------------------------------------
