@@ -114,7 +114,7 @@
 
 % Peter 31 Oct: Current title does not really reflect the topic I
 % think:
-%\title{Exploring approaches to probablistic record linkage using
+%\title{Exploring approaches to probabilistic record linkage using
 %        similarity searching}
 % Peter 31 Oct: What about
 \title{Efficient and Effective Metric Space Indexing for Complete
@@ -218,12 +218,130 @@ Note: The rest of this paper should be regarded as a placeholder for now.
 \section{Introduction}
 \label{sec-intro}
 
-something about record linkage and its importance, application examples
+% Peter, 20171111:
 
+Record linkage, also known as entity resolution, data matching and
+duplicate detection~\cite{Chr12}, is the process of identifying and
+matching records that refer to the same real-world entities within and
+across databases. The entities to be linked are often people (such as 
+patients in hospital databases or customers in business databases),
+but record linkage can also be applied to link consumer products or
+bibliographic records~\cite{Chr12}. Commonly, record linkage is
+challenged by the lack of unique entity identifiers (keys) in the
+databases to be linked, which prevents the use of a database join.
+Instead, the linkage of records requires the comparisons of the
+attributes (or fields) available in common in the databases to be
+linked. For databases that contain information about individuals,
+the common attributes used often include the names, address,
+dates of birth, and so on, of individuals.
 
-drawback of existing approaches: blocking and comparisons/classification
-done separately, sometimes if bad linkage quality means to go back to redo
-blocking.
+To overcome data quality issues such as typographical errors and
+variations (which are common in name and address values~\cite{Chr12}),
+approximate string comparison functions (such as edit distance, the
+Jaro-Winkler comparator, or Jaccard similarity~\cite{Chr12}) are used
+to compare pairs of records, leading to a vector of similarities (one
+similarity per attribute/field compared) for each pair. These
+similarity vectors are then used to classify the compared record
+pairs into matches (where it is assumed the records in a pair
+correspond to the same real-world entity) and non-matches (where the
+records are assumed to correspond to two different entities). Various
+classification methods have been employed in record linkage, ranging
+from simple threshold based to sophisticated clustering approaches
+and supervised classifiers~\cite{}.
+
+Besides the two challenges of a lack of unique entity identifiers and
+data quality (which will affect linkage quality), record linkage is
+challenged by the increasing sizes of the databases to be
+linked~\cite{Don15} in today's Big Data era. To prevent the full
+pair-wise comparison of all possible record pairs (which is quadratic
+in the sizes of the databases to be linked), blocking, indexing and
+filtering techniques are commonly used~\cite{Chr12}. The basic idea
+of techniques is to split the databases into smaller blocks in a
+computationally efficient way such that records that likely correspond
+to the same entity are inserted into the same block. Only records that
+are in the same block are then compared with each other in more
+details. While blocking techniques facilitate the efficient linkage
+of very large databases~\cite{Don15}, they generally have the drawback
+of achieving scalability at the cost of (a possibly small) loss in
+linkage quality, as potentially true matching record pairs are
+removed in the blocking or indexing step. Blocking or indexing often
+leads to a reduction in recall of the final linkage
+result~\cite{Chr12}. A variety of blocking and indexing techniques,
+as discussed in more details in the following section, have been
+proposed, ranging from simple phonetic based blocking~\cite{Chr12} and
+sorting of the databases~\cite{Dra12} to locality sensitive hashing
+based techniques~\cite{Kim10} and even unsupervised~\cite{Kej13,Ram15}
+or supervised~\cite{Bil06,Mic06} learning of optimal blocking schemes.
+
+~ \\
+\emph{Peter 20171111: Could we have 2 diagrams: traditional RL process
+(block - compare - classify) versus our proposed 1 step approach
+(metric indexing) to illustrate our idea?}
+~ \\
+
+The overall process of a record linkage application, where blocking
+or indexing is preformed prior to the comparison and classification
+steps as illustrated in Fig.~\ref{fig-rl-process}, adds a further
+practical complexity. Often blocking, comparison and classification
+are conducted using algorithms selected (and their parameters set)
+based on technical and domain expertise of the record linkage user,
+followed by a manual assessment of the linkage outcomes. If the
+quality of the resulting links is not good enough for a certain
+application, the linkage process needs to be repeated with different
+parameter settings and possibly also alternative algorithms
+selected. This can result in a time-consuming and labor intensive
+process. A major challenge is often the heuristic nature of blocking,
+where the choice of a certain blocking technique and its parameters
+will determine the final outcome of a linkage. If a certain blocking
+approach results in a loss of recall in the final linkage results,
+the blocking needs to be redone, an often time consuming process.
+
+In this paper we explore how existing blocking and indexing technique
+can lead to loss in recall, even for record pairs that are highly
+similar and likely correspond to true matches. As a result, using
+such techniques can lead to \emph{incomplete} record linkage
+results. To overcome this problem, we advocate the use of
+\emph{metric space indexing} (MSI) approaches, where it is possible to
+guarantee that all record pairs, up-to a certain similarity threshold,
+are included in the record linkage results. Furthermore, MSI allows
+us to combine the indexing and comparison steps (as traditionally
+conducted independently) into one single step, making the overall
+record linkage process both more efficient and more effective.
+
+% peter 20171111: do we also need to mention we do not waste
+% comparisons of record pairs with low similarities?
+
+~ \\
+\emph{Peter 20171111: here we need the figure showing that traditional
+blocking techniques result in incomplete record linkage, while metric
+indexing does not.}
+~ \\
+
+While MSI has been used extensively in areas such as database indexing
+and general nearest neighbor search, its use in record linkage so far
+has been limited. 
+% Peter 20171111: a dangerous statement. if wrong we're stuffed.. 
+% but I am not really aware of MSI approaches in RL..
+Many different MSI approaches have been developed, such as various
+metric tree structures~\cite{}. 
+% Peter 20171111: needs same text from you guys on MSI..
+In this paper, we will use the MSI techniques of M-tree and M-file (?)
+and show how their use can facilitate an improvement of both
+efficiency and effectiveness of the record linkage process.
+
+\smallskip
+\textbf{Contributions:} We make the following specific contributions
+in the paper: (1) We investigate how existing indexing and blocking
+techniques can result in \emph{incomplete} record linkage results,
+as well as in an in-efficient record linkage process. (2) We explore
+MSI for record linkage and propose a MSI based approach that achieves
+\emph{complete}, efficient and effective record linkage. (3) We
+evaluate our approach on several real-world data sets from diverse
+domains and show its advantages over existing indexing and
+blocking techniques for record linkage.
+
+% old stuff below
+
 
 something about similarity spaces / metric spaces, M-trees and its
 more recent advanced/improved versions, and how they have been used in
@@ -232,8 +350,11 @@ similarity search.
 How our work is different from these other metric space works, and
 description of our contributions
 
+\iffalse  % *******************************************************
+% we can't write this as it reveals us in the double-blind review
+% we could ad to final paper
 The motivation for this work is the Digitising Scotland project (Dibben 2012), which is in the process of transcribing and linking all the vital events recorded in Scotland between 1856 and 1977. This data set will, when complete, include around 14 million birth records, 11 million death records and 4 million marriage records. As part of the work, certain data fields (locations, occupations and causes of death) are also being classified to the relevant standard coding schemes.
-
+\fi  % *********************************************************
 
 % --------------------------------------------------------------------
 
@@ -268,7 +389,7 @@ In the brute force approach two nested loops are used to compare every record wi
 
 The LSH-minhash approach is a fast but inexact method of performing similarity search. It has a number of tuning parameters: \textit{shingle\_size}, the \textit{number\_of\_bands} and the \textit{band\_size}. These are explained in the following algorithm description which follows a standard LSH approach. Firstly all the fields of the record are turned into strings and concatenated. Next the strings are \textit{shingled} into a set of n-grams according to the \textit{shingle\_size} parameter. Next a set of randomly, deterministically generated hash functions are applied to each of the sets of n-grams and the smallest (the minhash) of each application is added to a signature. The number of hashes used and thus the size of the signature is determined by the product of the {number\_of\_bands} and the {band\_size}.  Lastly the signature is divided into {number\_of\_bands} segments and the elements from the band are hashed again to create an key. The original record is added to a hashmap associated with this by this key. It can be shown that the similarities between signatures generated in the second step have very close Jaccard similarity to the original string and that if an arbitrary record is run through this process the records found in the map are close to the record being searched with good precision and recall. We will further explore these properties in this paper.
 
-The MIFile \cite{amato2014mi} approach is another inexact technique for performing similarity search. Using  MI_file,  each record is represented by the ordering of distances from a collection of reference objects. It is based on the idea that if two records are close to each other  will have similar neighbours and will thus be represented by similar of distances from the chosen reference objects. An inverted file is created mapping from... 
+The MIFile \cite{amato2014mi} approach is another inexact technique for performing similarity search. Using  MI\_file,  each record is represented by the ordering of distances from a collection of reference objects. It is based on the idea that if two records are close to each other  will have similar neighbours and will thus be represented by similar of distances from the chosen reference objects. An inverted file is created mapping from... 
 
 
 In order to compare two objects in the dataset, we compare the two corresponding orderings of the reference objects
