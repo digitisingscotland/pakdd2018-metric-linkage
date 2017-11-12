@@ -218,22 +218,21 @@ Note: The rest of this paper should be regarded as a placeholder for now.
 \section{Introduction}
 \label{sec-intro}
 
-% Peter, 20171111:
+% Peter, 20171112:
 
 Record linkage, also known as entity resolution, data matching and
 duplicate detection~\cite{Chr12}, is the process of identifying and
-matching records that refer to the same real-world entities within and
+matching records that refer to the same real-world entities within or
 across databases. The entities to be linked are often people (such as 
-patients in hospital databases or customers in business databases),
-but record linkage can also be applied to link consumer products or
-bibliographic records~\cite{Chr12}. Commonly, record linkage is
-challenged by the lack of unique entity identifiers (keys) in the
-databases to be linked, which prevents the use of a database join.
-Instead, the linkage of records requires the comparisons of the
-attributes (or fields) available in common in the databases to be
-linked. For databases that contain information about individuals,
-the common attributes used often include the names, address,
-dates of birth, and so on, of individuals.
+patients in hospital or customers in business databases), but record
+linkage can also be applied to link consumer products or bibliographic
+records~\cite{Chr12}. Record linkage is commonly challenged by the
+lack of unique entity identifiers (keys) in the databases to be linked,
+which prevents the use of a database join. Instead, the linkage of
+records requires the comparison of the attributes (or fields) that are
+available in common in the databases to be linked. For databases that
+contain information about individuals, these attributes include the
+names, address, dates of birth, and so on, of individuals.
 
 To overcome data quality issues such as typographical errors and
 variations (which are common in name and address values~\cite{Chr12}),
@@ -242,74 +241,91 @@ Jaro-Winkler comparator, or Jaccard similarity~\cite{Chr12}) are used
 to compare pairs of records, leading to a vector of similarities (one
 similarity per attribute/field compared) for each pair. These
 similarity vectors are then used to classify the compared record
-pairs into matches (where it is assumed the records in a pair
+pairs into matches (where it is assumed both records in a pair
 correspond to the same real-world entity) and non-matches (where the
 records are assumed to correspond to two different entities). Various
-classification methods have been employed in record linkage, ranging
-from simple threshold based to sophisticated clustering approaches
-and supervised classifiers~\cite{}.
+classification methods have been employed in record
+linkage~\cite{Chr12,Don15}, ranging from simple threshold based to
+sophisticated clustering and supervised classification techniques, as
+well as active learning approaches~\cite{Wan15}.
 
 Besides the two challenges of a lack of unique entity identifiers and
 data quality (which will affect linkage quality), record linkage is
-challenged by the increasing sizes of the databases to be
-linked~\cite{Don15} in today's Big Data era. To prevent the full
-pair-wise comparison of all possible record pairs (which is quadratic
-in the sizes of the databases to be linked), blocking, indexing and
-filtering techniques are commonly used~\cite{Chr12}. The basic idea
-of techniques is to split the databases into smaller blocks in a
+also challenged by the increasing sizes of the databases to be
+linked~\cite{Don15}. To prevent the full pair-wise comparison of all
+possible record pairs (which is quadratic in the sizes of the
+databases to be linked), blocking techniques (commonly known as
+\emph{indexing}~\cite{Chr12b}) are used. The basic idea of these
+techniques is to split the databases into smaller blocks in a
 computationally efficient way such that records that likely correspond
 to the same entity are inserted into the same block. Only records that
 are in the same block are then compared with each other in more
-details. While blocking techniques facilitate the efficient linkage
-of very large databases~\cite{Don15}, they generally have the drawback
-of achieving scalability at the cost of (a possibly small) loss in
-linkage quality, as potentially true matching record pairs are
-removed in the blocking or indexing step. Blocking or indexing often
-leads to a reduction in recall of the final linkage
-result~\cite{Chr12}. A variety of blocking and indexing techniques,
-as discussed in more details in the following section, have been
-proposed, ranging from simple phonetic based blocking~\cite{Chr12} and
-sorting of the databases~\cite{Dra12} to locality sensitive hashing
-based techniques~\cite{Kim10} and even unsupervised~\cite{Kej13,Ram15}
-or supervised~\cite{Bil06,Mic06} learning of optimal blocking schemes.
+details.
 
-~ \\
-\emph{Peter 20171111: Could we have 2 diagrams: traditional RL process
-(block - compare - classify) versus our proposed 1 step approach
-(metric indexing) to illustrate our idea?}
-~ \\
+While indexing techniques facilitate the efficient linkage of very
+large data-bases~\cite{Don15}, they generally achieve scalability at
+the cost of loss in linkage quality, because potentially true matching
+record pairs are removed in the indexing step, leading to a reduction
+in recall of the final linkage result~\cite{Chr12}. A variety of
+indexing techniques, as discussed in more details in the following
+section, have been proposed, ranging from simple phonetic based
+blocking~\cite{Chr12} and sorting of the databases~\cite{Dra12} to
+locality sensitive hashing based techniques~\cite{Kim10,Steorts2014}.
+Unsupervised~\cite{Kej13,Ram15} and supervised~\cite{Bil06,Mic06} 
+learning techniques of optimal blocking schemes have also been
+proposed.
 
-The overall process of a record linkage application, where blocking
-or indexing is preformed prior to the comparison and classification
-steps as illustrated in Fig.~\ref{fig-rl-process}, adds a further
-practical complexity. Often blocking, comparison and classification
-are conducted using algorithms selected (and their parameters set)
-based on technical and domain expertise of the record linkage user,
-followed by a manual assessment of the linkage outcomes. If the
-quality of the resulting links is not good enough for a certain
-application, the linkage process needs to be repeated with different
-parameter settings and possibly also alternative algorithms
-selected. This can result in a time-consuming and labor intensive
-process. A major challenge is often the heuristic nature of blocking,
-where the choice of a certain blocking technique and its parameters
-will determine the final outcome of a linkage. If a certain blocking
-approach results in a loss of recall in the final linkage results,
-the blocking needs to be redone, an often time consuming process.
+\begin{figure}[!t]
+  \centering
+  %\scalebox{1.0}[1.0]
+  \includegraphics[width=1.0\textwidth]{figures/linkage-process}
+  \caption{Overview of the steps of the traditional record linkage
+           process (left-hand size) and our proposed metric space
+           indexing approach (right-hand size), as described in
+           Sect.~\ref{sec-intro}, where records from two databases,
+           $\mathbf{D}_A$ and $\mathbf{D}_B$, are being linked.}
+           \label{fig-rl-process}
+\end{figure}
 
-In this paper we explore how existing blocking and indexing technique
-can lead to loss in recall, even for record pairs that are highly
-similar and likely correspond to true matches. As a result, using
-such techniques can lead to \emph{incomplete} record linkage
-results. To overcome this problem, we advocate the use of
-\emph{metric space indexing} (MSI) approaches, where it is possible to
-guarantee that all record pairs, up-to a certain similarity threshold,
-are included in the record linkage results. Furthermore, MSI allows
-us to combine the indexing and comparison steps (as traditionally
-conducted independently) into one single step, making the overall
-record linkage process both more efficient and more effective.
+The overall process of a record linkage application, where indexing is
+preformed prior to the comparison and classification steps, as
+illustrated in Fig.~\ref{fig-rl-process}, adds a further practical
+complexity. Indexing, comparison and classification are often conducted
+using algorithms selected (and their parameters set) based on technical
+and domain expertise of the record linkage user, followed by a manual
+assessment of the linkage outcomes~\cite{Chr12}. If the quality of the
+resulting links is not good enough for a certain application, the
+linkage process needs to be repeated with different parameter settings
+and possibly also alternative algorithms selected. This can result in
+a time-consuming and labor intensive iterative process. A major
+challenge is often the heuristic nature of indexing, where the choice
+of a certain indexing technique and its parameters (including which
+attributes to use in indexing) will determine the final outcome of a
+linkage.
+% Repeat:
+% If a certain blocking approach results in a loss of recall in the
+%final linkage results, the blocking needs to be redone, an often time
+%consuming process.
 
-% peter 20171111: do we also need to mention we do not waste
-% comparisons of record pairs with low similarities?
+In this paper we explore how existing indexing techniques can lead to
+loss in recall, even for record pairs that are highly similar and
+likely correspond to true matches. As a result, using such techniques
+can lead to \emph{incomplete} record linkage results. To overcome this
+problem, we advocate the use of \emph{metric space indexing} (MSI)
+approaches, where it is possible to guarantee that all record pairs,
+up-to a certain distance threshold, are included in the record linkage
+results. MSI also prevents the expensive detailed comparison of record
+pairs that have low similarities but that need to be compared because
+they have been inserted into the same block with traditional indexing
+techniques. Furthermore, MSI allows us to combine the indexing,
+comparison and classification steps (as traditionally conducted
+independently) into one single step, as shown in
+Fig.~\ref{fig-rl-process}, making the overall record linkage process
+both more efficient and more effective.
+
+% Peter 20171112: do we also need to mention we do not waste
+% comparisons of record pairs with low similarities (i.e. those with
+% a distance > max_dist)?
 
 ~ \\
 \emph{Peter 20171111: here we need the figure showing that traditional
@@ -320,35 +336,40 @@ indexing does not.}
 While MSI has been used extensively in areas such as database indexing
 and general nearest neighbor search, its use in record linkage so far
 has been limited. 
-% Peter 20171111: a dangerous statement. if wrong we're stuffed.. 
+% Peter 20171112: a pretty dangerous statement. if wrong we're stuffed.. 
 % but I am not really aware of MSI approaches in RL..
 Many different MSI approaches have been developed, such as various
 metric tree structures~\cite{}. 
-% Peter 20171111: needs same text from you guys on MSI..
+% Peter 20171112: needs same text from you guys on MSI..
 In this paper, we will use the MSI techniques of M-tree and M-file (?)
 and show how their use can facilitate an improvement of both
 efficiency and effectiveness of the record linkage process.
 
+~ \\
+\emph{
+to add: something about similarity spaces / metric spaces, M-trees and its
+more recent advanced/improved versions, and how they have been used in
+similarity search.}
+
+\emph{to add: How our work is different from these other metric space works, and
+description of our contributions.
+}
+~ \\
+
 \smallskip
-\textbf{Contributions:} We make the following specific contributions
-in the paper: (1) We investigate how existing indexing and blocking
-techniques can result in \emph{incomplete} record linkage results,
-as well as in an in-efficient record linkage process. (2) We explore
-MSI for record linkage and propose a MSI based approach that achieves
+\textbf{Contributions:} We make three specific contributions in this
+paper: (1) We investigate how existing indexing techniques can result
+in \emph{incomplete} record linkage results, as well as in an
+in-efficient record linkage process. (2) We explore MSI for record
+linkage and propose a MSI based linkage approach that achieves
 \emph{complete}, efficient and effective record linkage. (3) We
 evaluate our approach on several real-world data sets from diverse
-domains and show its advantages over existing indexing and
-blocking techniques for record linkage.
+domains and show its advantages over existing indexing techniques for
+record linkage.
 
 % old stuff below
 
 
-something about similarity spaces / metric spaces, M-trees and its
-more recent advanced/improved versions, and how they have been used in
-similarity search.
-
-How our work is different from these other metric space works, and
-description of our contributions
 
 \iffalse  % *******************************************************
 % we can't write this as it reveals us in the double-blind review
@@ -361,7 +382,59 @@ The motivation for this work is the Digitising Scotland project (Dibben 2012), w
 \section{Related Work}
 \label{sec-related}
 
-summarise related work in blocking/indexing
+We now briefly review relevant related work in the areas of indexing
+for record linkage (for a recent survey see Christen~\cite{Chr12b}),
+and metric space indexing. 
+
+\smallskip
+\textbf{Indexing for Record Linkage:}
+Techniques to link records across databases have been developed over
+the past five decades~\cite{Fel69}, and scaling the linkage of large
+databases has been an ongoing challenge as databases are continue to
+grow in size and complexity. Traditional blocking techniques use a
+single or a combination of attributes (known as a \emph{blocking key})
+to insert records that have the same value(s) in such a blocking key
+into the same block. Only records in the same block are then combined
+with each other. To overcome variations and misspellings, the values
+used in blocking keys are commonly phonetically encoded using functions
+such as Soundex, NYSSI, or Double-Metaphone~\cite{Chr12}. These
+techniques convert a string (assumed to be a name) into a code
+according to how the name sounds, assigning the same code to similar
+sounding names (such as `Gail' and `Gayle' or `Dickson' and `Dixon').
+
+A different approach to indexing is the sorted neighborhood 
+method~\cite{Mon96}, where the databases to be linked are sorted
+according to a \emph{sorting key} (usually a concatenation of the
+values from several attributes). A sliding window is then moved over
+the databases and only records within the same window are being
+compared. A fixed window size, $w$, leads to a number of record
+pair comparison of $O(n \times w)$, where $n = |\mathbf{D}_A| +
+|\mathbf{D}_b|$, is the number of records in the two databases
+$\mathbf{D}_A$ and $\mathbf{D}_B$ to be linked. Techniques that
+adaptively shrink or expand the window size based on the
+characteristics of the sorting key values have shown to improve both
+linkage efficiency and quality~\cite{Dra12}. The drawback of sorting
+based
+
+\emph{peter 20171112 until here, to do: LSH Harra, Kim10, Stoerts, drawbacks of exiting techniques}
+blocking framework papadakis TKDE 2013
+
+% describe LSH: harra (Kim10)
+% Stoerts
+
+% learning blocking keys
+
+Drawbacks of existing techniques: errors in blocking/sorting keys,
+manually selected, is learned need manual training data, or are
+expensive (if unsupervised)
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+\smallskip
+\textbf{Metric Space Indexing:}
+
+
+% Al's writing below
 
 \textbf{Traditional first - Peter?}
 
