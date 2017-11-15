@@ -486,18 +486,109 @@ other related works as relevant
 \section{Approach}
 \label{sec-approach}
 
-In this paper we explore the efficacy of the use of different similarity search algorithms in probabilistic record linkage. We explore two inexact algorithms: LSH-minhash and MIFile \cite{amato2014mi} one exact method: mTrees \cite{paolociaccia2m}. We also use a simple brute force (nested-loop) exact technique as a baseline for comparison although this approach can only be applied to the smallest of our datasets. All of our experiments have a number of configuration parameters with which we can configure the search space and algorithm behaviours. All have a \textit{distance threshold} below which two records are deemed to represent a link.
+% peter: We need one paragraph describing the overall 'approach' /
+% methodology, as well as the aim, then a short description of
+% each method/technique used
 
-In the brute force approach two nested loops are used to compare every record with every other non identical record. The complexity of this approach is n2. If a link can be found with whatever distance metric is used, this approach will find it. Each of our datasets contains ground truth with which we can establish the records that are true links and those that are not. 
+In this paper we explore the efficacy of the use of different
+similarity search algorithms in probabilistic record linkage.
+% Peter: remove probabilistic - hat we do is general to RL, the
+% probabilistic aspect is not really relevant
+We explore two inexact algorithms: LSH-minhash and MIFile \cite{amato2014mi} and one exact method: mTrees \cite{paolociaccia2m}. 
+We also use a simple brute force (nested-loop) exact technique as a 
+baseline for comparison although this approach can only be applied to 
+the smallest of our datasets. All of our experiments have a number of 
+configuration parameters with which we can configure the search space and algorithm behaviours, as we describe in Sect.~\ref{sec-exp}. All
+have a \emph{distance threshold}, $d$, below which two records are
+deemed to represent a link.
+% Peter: are classified to be link (i.e.\ refer to the same entity)
 
-The LSH-minhash approach is a fast but inexact method of performing similarity search. It has a number of tuning parameters: \textit{shingle\_size}, the \textit{number\_of\_bands} and the \textit{band\_size}. These are explained in the following algorithm description which follows a standard LSH approach. Firstly all the fields of the record are turned into strings and concatenated. Next the strings are \textit{shingled} into a set of n-grams according to the \textit{shingle\_size} parameter. Next a set of randomly, deterministically generated hash functions are applied to each of the sets of n-grams and the smallest (the minhash) of each application is added to a signature. The number of hashes used and thus the size of the signature is determined by the product of the {number\_of\_bands} and the {band\_size}.  Lastly the signature is divided into {number\_of\_bands} segments and the elements from the band are hashed again to create a number of keys. The original record is added to a hashmap associated with each of the keys. It can be shown that the similarities between signatures generated in the second step have very close Jaccard similarity to the original string and that if an arbitrary record is run through this process the records found in the map are close to the record being searched with good precision and recall. We will further explore these properties in this paper. To perform a {\textit{nearest-neighbour}} lookup, the query value is hashed using the procedure described above and the union of set of of values found for all hashes in the hashmap are returned. If desired, these may then be filtered by performing distance calculations on the results.
+In the brute force approach two nested loops are used to compare every 
+record with every other non identical record. The complexity of this 
+approach is n2. If a link can be found with whatever distance metric is 
+% Peter: $O(n^2)$, where $n$ is the number of records in the dataset to
+% be linked.
+used, this approach will find it.
+% Peter: find -> identify  -- better actually clarify: This approach
+% will identify all links of records that have a distance up-to the
+% given distance threshold, $d$.
+Each of our datasets contains ground truth with which we can establish
+the records that are true links and those that are not. 
 
-The MIFile \cite{amato2014mi} approach is inexact technique for performing similarity search based on metric spaces. Using  MI\_file,  each record is represented by the ordering of distances from a collection of reference objects. It is based on the idea that two records close to each other will have similar neighbours and will thus be represented by similar of distances from the chosen reference objects. 
-In order to create the indexes, for each value to be added to the data-structure, first the k nearest reference objects (governed by a fixed parameter) are found, each is given a score (drawn from 1,2,3... based on the reference object's position from the value). Next for each score, a  mapping is created in an inverted index mapping from the value to the score of each reference object and a representation of the data associated with the reference object and the value inserted.  In order to perform a \textit{nearest-neighbour} lookup, first the k nearest reference objects (bounded by a second fixed parameter). Next the objects closest to these reference objects are extracted from the inverted map by choosing the neighbours with the highest score. Much of the search space may be eliminated by  keeping track of the scores that  can contribute to the nearest neighbours.
+% peter: below fast -> I would remove fast, as it might be slow for
+% certain parameter settings
+The LSH-minhash approach is a fast but inexact method of performing similarity search. It has three tuning parameters:
+\emph{shingle size}, $l_{ss}$, the \emph{band size}, $l_{bs}$, and the
+\emph{number of bands}, $l_{nb}$. These are explained in the following algorithm description which follows a standard LSH approach~\cite{??}.
+Firstly all the fields of the record are turned into strings and 
+concatenated. Next the strings are \emph{shingled} into a set of
+n-grams (sub-strings of length $n$) according to the $l_{ss}$
+parameter (i.e.\ $n = l_{ss}$). Next a set of randomly, 
+deterministically generated hash functions are applied to each of the
+sets of n-grams and the smallest (the minhash) of each application is
+added to a signature. The number of hashes used and thus the size of
+the signature is set to $l_{nb} \times l_{bs}$.
+Lastly the signature is divided into $l_{nb}$ segments and the elements from the band are hashed again to create a number of keys.
+The original record is added to a hashmap associated with each of the keys. It can be shown that the similarities between signatures generated in the second step have very close Jaccard similarity to the original string~\cite{lsh ref} and that if an arbitrary record is run through
+% Peter: run through.. -> reword: is converted into such a LSH
+% signature then..  records with the same key(s) are...
+% Peter: close to.. -> is a bit vague
+this process the records found in the map are close to the record being searched with good precision and recall. We will further explore these properties in this paper.
+% peter: we will evaluate the performance of LSH based blocking with
+% regard to the three parameters $l_{ss}$, $l_{bs}$ and $l_{nb}$ in
+% Sect.~\ref{sec-exp}.
+% peter: below - we want to do record linkage (slightly different
+% from nn search) - better to describe RL below not NN search! 
+To perform a {\textit{nearest-neighbour}} lookup, the query value is hashed using the procedure described above and the union of set of of values found for all hashes in the hashmap are returned. If desired, these may then be filtered by performing distance calculations on the results.
 
-M-trees support exact search operations over a set of values over a metric space (distances must support  triangle inequality - distance(i,j) + distance(j,k ) >= distance(i,k)). In addition to supporting exact search the operations supported by M-trees are richer than the other data structures described above and include \textit{range search} (all values within distance d and some query q), \textit{nearest-neighbour} (the closest value to q), and \textit{nearestN} (the N closest n objects to q). An M-tree is a balanced tree structure comprised of fixed sized nodes that can each store up to \textit{M} children. In addition to the children, each node contains a reference to an object being indexed, a pointer and the distance to its parent, and a radius (described below). The radius of an internal node called a \textit{routing-node} represents the  furthest distance to any of its children. Thus all the children may be visualised as being contained within a ball of radius \textit{r} from the parent. M-trees are grown from the roots upward and require dynamic tree rebalancing when set of children become full (of size \textit{M}).
+The MIFile \cite{amato2014mi} approach is an inexact technique for performing similarity search based on metric spaces. Using  MI\_file,  each record is represented by the ordering of distances from a collection of reference objects.
+% Peter: are these reference object also records? 
+It is based on the idea that two records close to each other will have similar neighbours and will thus be represented by similar of distances
+% Peter: unclear what you mean with: similar of distances
+from the chosen reference objects. 
+In order to create the indexes, for each value to be added to the
+% peter: value -> record ?
+data-structure, first the k nearest reference objects (governed by a fixed parameter) are found, each is given a score (drawn from 1,2,3... based on the reference object's position from the value).
+% peter: this is unclear .. I think I understand k-NN: for each
+% record you find the k nearest reference objects and you enumerate
+% them
+Next for each score, a  mapping is created in an inverted index mapping
+% peter: unclear..? a mapping in an inverted index mapping?
+from the value to the score of each reference object and a representation of the data associated with the reference object and the value inserted.
+% peter: unclear: what is "the data" associated with the reference
+% object.
+In order to perform a \textit{nearest-neighbour} lookup, first the k nearest reference objects (bounded by a second fixed parameter).
+% peter: this sentence reads incomplete..?
+Next the objects closest to these reference objects are extracted from the inverted map by choosing the neighbours with the highest score.
+% Peter: sorry, this is unclear as well. "the objects closest" ->
+% records closest? And why highest scores..? Is the closest record
+% to a reference object given the highest score (not the lowest
+% score - i.e. not 1-closest, 2-closest etc)
+Much of the search space may be eliminated by  keeping track of the scores that  can contribute to the nearest neighbours.
+% peter: so I guess you use the triangular inequality and the reference
+% objects to prune the search space.
 
+M-trees support exact search operations over a set of values over a metric space (distances must support triangle inequality -
+distance(i,j) + distance(j,k ) >= distance(i,k)).
+% peter: (distances must support triangle inequality, i.e.\ for three
+% objects $i$, $j$ and $k$, $dist(i,j) + dist(j,k) \ge dist(i,k)$).
+%
+In addition to supporting exact search the operations supported by M-trees are richer than the other data structures described above and include \textit{range search} (all values within distance d and some query q),
+% peter: where all objects $i$ within a distance $d$ for a query object
+% $q$ are identified, i.e.\ $dist(i,q) \le d$)
+\textit{nearest-neighbour} (the closest value to q), and \textit{nearestN} (the N closest n objects to q).
+% peter: we can add proper mathematical ways of defining those if
+% needed
+An M-tree is a balanced tree structure comprised of fixed sized nodes that can each store up to \textit{M} children.
+% not sure if we should use M here - the M in M-tree is not because
+% each node can have m children! In Sect 5 I used $t_b$ as name for
+% the branching factor.
+In addition to the children, each node contains a reference to an object being indexed, a pointer and the distance to its parent, and a radius (described below). The radius of an internal node called a \textit{routing-node} represents the  furthest distance to any of its children. Thus all the children may be visualised as being contained within a ball of radius \textit{r} from the parent. M-trees are grown from the roots upward and require dynamic tree rebalancing when set of children become full (of size \textit{M}).
+% Peter: and how is an M-tree used in record linkage?
 % TODO coverage: proportion of all rec pairs with a certain similarity (independent of their match status) that are being generated by a blocking  technique - what does above refer to? al
+
+% peter: could we have some pseudo-code descriptions of how these
+% techniques are used for RL blocking?
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -509,53 +600,44 @@ M-trees support exact search operations over a set of values over a metric space
 
 % --------------------------------------------------------------------
 
-
-
 %  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-\subsection{Analysis and Limitations}
-\label{sec-analysis}
+%\subsection{Analysis and Limitations}
+%\label{sec-analysis}
 
-maybe a complexity analysis? maybe an analysis of expected 
-linkage quality?
+%maybe a complexity analysis? maybe an analysis of expected 
+%linkage quality?
 
 % --------------------------------------------------------------------
 
 \section{Experiments and Results}
-\label{sec-expt}
+\label{sec-exp}
 
-We now describe the data sets we use in our evaluation and the
-experimental setup we employed to evaluate our proposed metric
-indexing approach.
-
+We now describe the data sets we use in our evaluation, the setup we
+employed to evaluate our proposed metric indexing approach and
+compare it with traditional blocking techniques, and we then present
+and discuss our results.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 % Peter 31 Oct: table style follows LNCS style guide
 
 \begin{table}[t]
-\caption{Characteristics of data sets used in experiments.
-  \emph{Peter, 31 Oct: what else should we show here?}}
+\caption{Characteristics of data sets used in the experiments.}
  \label{table-datasets}
   \centering
   \begin{scriptsize}
   %\addtolength{\tabcolsep}{-0.5pt}
-  \begin{tabular}{ccccc}
+  \begin{tabular}{cccc}
   \hline\noalign{\smallskip}
-  Data set~ & ~Number of~ & ~Number of true~
-   & Attributes used? & ~?? \\
-  name(s)  & records   & matching pairs &
-    for indexing & ?? \\
-  \noalign{\smallskip}
-  \hline
-  \noalign{\smallskip}
-  NCVR  & ~224,073 / 224,061~ & ~148,036~ & ? & ? \\
-  CORA  & 1,295             & title, authors, venue, year ? & ?
-    & ? \\
-  Isle of Skye & ? & ?
-    & ? & ? \\
-  Kilmarnock  & ? & ? & ? & ? \\
-  \hline
+  Data set~ & ~Number of~ & ~Number of true~ & Attributes used \\
+  name(s)  & records  & matching pairs & for blocking \\
+  \noalign{\smallskip} \hline \noalign{\smallskip}
+  CORA  & 1,295 & 17,184 & Title, authors, venue, year ? \\
+  NCVR  & ~224,073 / 224,061~ & ~148,036~ & ? \\
+  Isle of Skye & 32,567 & 2,900 & ? \\
+  Kilmarnock  & 70852 & 2,900 ? why same number & ? \\
+  \noalign{\smallskip} \hline
   \end{tabular}
   \end{scriptsize}
 \end{table}
@@ -565,43 +647,101 @@ indexing approach.
 % \smallskip
 %\textbf{Data sets}:~
 
-\subsection{Data Sets and Experimental Setup}
-\label{sec-data}
-
-We used four real data sets from three domains in our experiments. The
-first is the CORA data set~\footnote{Available from:
+\smallskip
+\textbf{Data Sets:}
+%\subsection{Data Sets and Experimental Setup}
+%\label{sec-data}
+%
+We used four real data sets from three domains in our experiments as
+summarized in Table~\ref{table-datasets}. The first is
+\emph{CORA}~\footnote{Available from:
 \texttt{http://secondstring.sourceforge.net}}, which contains 1,295
-(?) records that refer to XX machine learning publications.
+records that refer to 112 machine learning publications.
 
-The second are a pair of data sets based on the North Carolina Voter
-Registration (NCVR) data sets\footnote{Available from: \texttt{http://dl.ncsbe.gov/}}, which we collected in June 2014 and
-October 2016. Each of these two data sets contain over five million
-records of voters and include attributes with their first names,
-surnames, and addresses. Ground truth is provided via a \emph{NCID}
-identifier which uniquely identifies a voter. In our experiments we
-use two randomly selected sub-set of $224,073$ and $224,061$ records,
-respectively, where $148,036$ of those refer to voters that occurred
-in both original NCVR data sets but had name and/or address changes
-over time (thus leading to around $66\%$ matching records).
+The second are two snapshots of the North Carolina Voter Registration
+database (\emph{NCVR})~\footnote{Available from: \texttt{http://dl.ncsbe.gov/}}, which we collected in April and June
+2014. Each of these contains records of voters and includes their
+first names, surnames, and addresses. Ground truth is provided via a
+\emph{NCID} identifier which uniquely identifies a voter. In our
+experiments we use two randomly selected sub-set of $224,073$ and
+$224,061$ records, respectively, where $148,036$ of those refer to
+voters that occurred in both original NCVR snapshots but had name
+and/or address changes over time (thus leading to around $66\%$
+matching records).
+
+The last two data sets are historical Scottish records of vital
+events (birth, marriages and deaths) registered on the
+\emph{Isle of Skye}, a rural district, while the other contains
+records from \emph{Kilmarnock}, an industrial town. These data sets
+were provided to us by the demographer and historians who extensively
+curated and linked both data sets~\cite{reid2002,reid2006}. Both data
+sets include the  names, gender, addresses of individuals and their
+parents. Ground truth was generated by the demographers based on their
+extensive domain knowledge.
 
 % Peter, 31 Oct: can the following be shortened to 1 paragraph - tick - al.
 
+\iffalse
 We also experiment over two datasets prepared by researchers pursuing previous projects \cite{reid2002} and \cite{reid2006}, which act as pseudo subsets for the demographic linkage on which our work is primarily focused . One data set contains records of vital events registered on the Isle of Skye, a rural district, while the other contains records from Kilmarnock, an industrial town. Both cover the period 1861-1901. These are different types of communities, with different family structures and name distributions \cite{reid2002}. Both datasets are encoded with the same schemata and include names, sex, addresses and the names of each person's father and mother. Ground truth is provided using demographer encoded identifiers which provide (incomplete) linkage between the records.  The Isle of Skye dataset comprises around 17,600 birth records, 12,300 death records, and 2,700 marriage records. Relating to the experiments described below, this dataset contains 2,900 links from a birth record to the child's death record. The Kilmarnock data set contains around 38,400 birth records, 23,700 death records, and 8,700 marriage records with a similar schema to the Skye data. In this dataset demographers identified  2,900 links from a birth record to the child's death record.
 
-~ \\
-describe experimental set up.. parameter values, etc.
-
-implementation details, machine characteristics
-
-measure results using.. PC and PQ? that else? time? etc.
+% Peter: Why same number of links for Skye and Killi? *****************
+\fi
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-\subsection{Results and Discussion}
-\label{sec-results}
+\begin{table}[t]
+\caption{Parameter settings used for the different data sets used in
+   the experiments,with $d$ the distance threshold used, $t_b$ the
+   M-tree branching factor, $l_{ss}$, $l_{sb}$ and $l_{nb}$ the LSH
+   shingle size, and the size and number of bands, respectively, and
+   $f_{ki}$ and $f_{ks}$ the MIfile... \emph{please add...}.}
+ \label{table-parameters}
+  \centering
+  \begin{scriptsize}
+  %\addtolength{\tabcolsep}{-0.5pt}
+  \begin{tabular}{cccccccc}
+  \hline\noalign{\smallskip}
+  Data set~ & $d$ & $t_b$ & $l_{ss}$ & $l_{bs}$ & $l_{nb}$ & 
+    $f_{ki}$ & $f_{ks}$ \\
+  name(s) & & & & & & & \\
+  \noalign{\smallskip} \hline \noalign{\smallskip}
+  CORA & ~$[0,5,10,\ldots,95,100]$~ & ~$[5,10,25,50]$~ & ~$2$~ &
+    ~$[2,5,10]$~ & ~$[2,5,10]$~ & ~$[30,35,40]$~ & ~$[30,35,40]$ \\
+  NCVR  &  \\
+  Isle of Skye &  \\
+  Kilmarnock  &  \\
+  \noalign{\smallskip} \hline
+  \end{tabular}
+  \end{scriptsize}
+\end{table}
+
+% the narrow values for ki and ks need some justification!
+
+
+\smallskip
+\textbf{Experimental Setup:}
+%
+We implemented all techniques described in Sect.~\ref{sec-approach}
+using Java (version x.y) and ran an extensive et of experiments on
+a compute server with XX GBytes of main memory and XX TBytes of disk
+space, and running (operating system and version).
+
+The parameter settings used in our experiments are summarized in
+Table~\ref{table-parameters}. ... \emph{describe and justify selected
+values..}
+
+discuss measures used. PC, PQ, num comparisons, time? etc.
+
+
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+\smallskip
+\textbf{Results and Discussion}
+
+%\subsection{Results and Discussion}
+%\label{sec-results}
 
 table or plots?
-
 
 % --------------------------------------------------------------------
 
@@ -610,10 +750,9 @@ table or plots?
 
 % --------------------------------------------------------------------
 
-\bibliographystyle{abbrv}
+\bibliographystyle{splncs03}
+%\bibliographystyle{abbrv}
 \bibliography{paper.bib} 
-
-
 
 \end{document}
 
