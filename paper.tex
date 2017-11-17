@@ -519,7 +519,7 @@ the records that are true links and those that are not.
 % certain parameter settings
 The LSH-minhash approach is a fast but inexact method of performing similarity search. It has three tuning parameters:
 \emph{shingle size}, $l_{ss}$, the \emph{band size}, $l_{bs}$, and the
-\emph{number of bands}, $l_{nb}$. These are explained in the following algorithm description which follows a standard LSH approach~\cite{??}.
+\emph{number of bands}, $l_{nb}$. These are explained in the following algorithm description which follows a standard LSH approach [CITATION].
 Firstly all the fields of the record are turned into strings and 
 concatenated. Next the strings are \emph{shingled} into a set of
 n-grams (sub-strings of length $n$) according to the $l_{ss}$
@@ -529,7 +529,7 @@ sets of n-grams and the smallest (the minhash) of each application is
 added to a signature. The number of hashes used and thus the size of
 the signature is set to $l_{nb} \times l_{bs}$.
 Lastly the signature is divided into $l_{nb}$ segments and the elements from the band are hashed again to create a number of keys.
-The original record is added to a hashmap associated with each of the keys. It can be shown that the similarities between signatures generated in the second step have very close Jaccard similarity to the original string~\cite{lsh ref} and that if an arbitrary record is run through
+The original record is added to a hashmap associated with each of the keys. It can be shown that the similarities between signatures generated in the second step have very close Jaccard similarity to the original string [LSH CITATION] and that if an arbitrary record is run through
 % Peter: run through.. -> reword: is converted into such a LSH
 % signature then..  records with the same key(s) are...
 % Peter: close to.. -> is a bit vague
