@@ -380,9 +380,38 @@ returning the record with smallest distance to $q$; and
 Here we choose one metric space indexing structure, the M-tree
 \cite{paolociaccia2m}, and investigate its efficacy for record linkage.
 
-The M-tree is a balanced tree structure comprised of fixed sized nodes each have a fixed number of children. In addition to the children, each node contains a reference to an object being indexed, a pointer and the distance to its parent, and a radius (described below). The radius of an internal node called a \textit{routing-node} represents the  furthest distance to any of its children. Thus all the children may be visualised as being contained within a ball of radius \textit{r} from the parent. M-trees are grown from the roots upward and require dynamic tree rebalancing when set of children become full (of size \textit{M}).
+% Do we need to spell out that the inter-node distances are the
+% distances between the corresponding indexed records?
 
-Yu et al. \cite{Yu2016} have written an extensive survey on the use of string similarity and join for record linkage and define the problem as "Given two sets of objects, similarity join aims to find all similar pairs from the two collections". Part of the survey is concerned the algorithms used to compare two records which are characterised as being character-based, token-based or hybrid. The first, which includes approaches such as Levenshtein~\cite{Levenshtein66}, use character differences in the strings being compared, the second, which includes techniques such as Jaccard similarity, which treat the records as sets of tokens and utilises set similarity, the third hybridises the two approaches. Yu's divides join algorithms (which unify records - also known as linkage) into three categories: a number of techniques based on filtering, verification based and threshold-based. Filtering involves generating signatures for each record and creating inverted lists containing records with common signatures and pruning records with no common signatures. Verification algorithms involve calculating the exact distances of a prefix of the data, and using another technique to estimate the edit distance between records. If the estimated distance is larger than the desired similarity threshold, the candidate may be discarded. The last category (threshold based) includes M-trees, Trie-Join, Pass-Join and Partenum.  
+The M-tree is a dynamically balanced tree structure. Every node contains
+a reference to a record being indexed, a pointer to its parent, the
+distance to its parent, and the node's radius. The radius of a node is
+the distance from it to its furthest child. For a parent node with
+radius \textit{r}, all its children may be visualised as being contained
+within a ball of radius \textit{r} from it.
+
+\cite{Yu2016} surveys the use of string similarity in record linkage.
+Algorithms used to compare two records are characterised as being
+character-based or token-based. The first category, including approaches
+such as Levenshtein~\cite{Levenshtein66}, uses character differences in
+the strings being compared. The second, including techniques such as
+Jaccard similarity, treats records as sets of tokens, and utilises set
+similarity. There are also hybrids of the two approaches.
+% Do we need the rest of this paragraph?
+\cite{Yu2016} categorises linkage algorithms as being based on filtering,
+verification, or thresholds.
+% This is missing some context as to what is going on.
+Filtering algorithms generate signatures for each record, construct
+inverted lists containing records with common signatures, and prune
+records with no common signatures.
+% Distance of prefix to what? What is the data in this context?
+Verification algorithms calculate the exact distances of a prefix of the
+data, and use another technique to estimate the edit distance between
+records. If the estimated distance is larger than the desired similarity
+threshold, the candidate may be discarded.
+% This seems a bit throw-away.
+Threshold-based algorithms include M-trees, Trie-Join, Pass-Join and
+Partenum.
 
 \cite{Li2006} describes a method of performing linkage using R-trees~\cite{Hjaltason1998} that fall into the threshold based category of Yu et al. Their approach demonstrated that high precision and recall may be achieved by measuring Jaccard similarity over selected fields from set of records being compared. In their evaluation, their approach achieved a recall of 99 percent in experiments in which conjunctions of similarities over fields were used. In a later paper \cite{Ciaccia97indexingmetric}  Ciaccia et al. demonstrate that using M-trees are almost always more efficient than R-trees and hence their use in the experiments described in this paper.
 
