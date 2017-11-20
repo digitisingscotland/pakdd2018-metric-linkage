@@ -356,7 +356,7 @@ efficient nearest-neighbor search in high-dimensional
 spaces~\cite{Ind98}, has been employed in record linkage as an indexing
 technique where attribute values are hashed multiple times, and
 blocks are created from those records that share some hash values.
-\emph{HARRA} [CITATION?] is a record linkage approach based on Min-hash
+\emph{HARRA}~\cite{Kim10} is a record linkage approach based on Min-hash
 [CITATION?] and LSH
 which blocks, compares, and then merges linked records in an iterative
 fashion, where merged records are re-hashed to improve overall linkage
@@ -410,10 +410,20 @@ data, and use another technique to estimate the edit distance between
 records. If the estimated distance is larger than the desired similarity
 threshold, the candidate may be discarded.
 % This seems a bit throw-away.
+% Also, these aren't themselves linkage algorithms are they?
 Threshold-based algorithms include M-trees, Trie-Join, Pass-Join and
 Partenum.
 
-\cite{Li2006} describes a method of performing linkage using R-trees~\cite{Hjaltason1998} that fall into the threshold based category of Yu et al. Their approach demonstrated that high precision and recall may be achieved by measuring Jaccard similarity over selected fields from set of records being compared. In their evaluation, their approach achieved a recall of 99 percent in experiments in which conjunctions of similarities over fields were used. In a later paper \cite{Ciaccia97indexingmetric}  Ciaccia et al. demonstrate that using M-trees are almost always more efficient than R-trees and hence their use in the experiments described in this paper.
+\cite{Li2006} describes a threshold-based method of performing linkage
+using R-trees~\cite{Hjaltason1998}. It demonstrates that high quality
+may be achieved using Jaccard similarity over selected record fields.
+% Is next sentence necessary?
+The approach achieved a recall of 99 percent in experiments in which
+conjunctions of similarities over fields were used.
+% Is this execution-time efficiency?
+A later paper \cite{Ciaccia97indexingmetric} shows that M-trees are
+almost always more efficient than R-trees, hence their use in the
+experiments described in this paper.
 
 % end of related work should be around end of page 3!
 
