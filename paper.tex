@@ -153,7 +153,7 @@ Record linkage is the process of identifying records that refer to the
 same real-world entities, in situations where entity identifiers are
 unavailable. Records are linked on the basis of similarity between
 common attributes, with every pair of records being classified as a
-match or non-match depending on the degree of similarity between them.
+link or non-link depending on the degree of similarity between them.
 Record linkage is usually performed in a three-step process, where first
 groups of similar candidate records are identified using indexing. Only
 pairs within the same group are then compared in more detail, and
@@ -203,12 +203,12 @@ approximate string comparison functions (such as edit distance, the
 Jaro-Winkler comparator, or Jaccard similarity~\cite{Chr12}) are used to
 compare pairs of records, leading to a vector of similarities (one
 similarity per attribute/field compared) for each pair. These similarity
-vectors are then used to classify the compared record pairs into matches
+vectors are then used to classify the compared record pairs into links
 (where it is assumed both records in a pair correspond to the same
-real-world entity) and non-matches (where the records are assumed to
+real-world entity) and non-links (where the records are assumed to
 correspond to two different entities). Various classification methods
 have been employed in record linkage~\cite{Chr12,Don15}, ranging from
-simple threshold based to sophisticated clustering, supervised
+simple threshold-based to sophisticated clustering, supervised
 classification techniques, and active learning approaches~\cite{Wan15}.
 
 Besides the issues of a lack of unique entity identifiers, and data
@@ -286,7 +286,6 @@ the traditional approach.
 % comparisons of record pairs with low similarities (i.e. those with
 % a distance > max_dist)?
 
-
 %to add: something about similarity spaces / metric spaces, M-trees and its more recent advanced/improved versions, and how they have been used in similarity search.}
 %to add: How our work is different from these other metric space works, and description of our contributions.
 
@@ -319,20 +318,19 @@ We now briefly review relevant work in the areas of indexing
 for record linkage (for recent surveys see~\cite{Chr12b,Pap16}),
 and metric space indexing~\cite{Zezula2010}.
 
-\smallskip
-\textbf{Indexing for Record Linkage:}
 Techniques to link records across datasets have been investigated for
-over five decades~\cite{Fel69,New59} with the scalability of linking
-being an ongoing challenge as datasets continue to grow in size and
+over five decades~\cite{Fel69,New59}, with the scalability of linking
+being an ongoing challenge as datasets grow in size and
 complexity. Traditional blocking~\cite{Chr12b} uses a set of attributes
 (known as a \emph{blocking key}) to insert records that share the same
 value(s) in their blocking key into the same block. Only records within
 the same block are  compared to each other. To overcome variations and
 misspellings, the values used in blocking keys can be phonetically
 encoded using functions such as Soundex, NYSIIS, or
-Double-Metaphone~\cite{Chr12}. These techniques convert a string  into a
+Double-Metaphone~\cite{Chr12}. These convert a string into a
 code according to its pronunciation, assigning the same code to similar
-sounding names (such as `Gail' and `Gayle').
+sounding names (such as `Gail' and `Gayle'). Multiple blocking keys may
+be used to deal with the problem of missing attribute values.
 
 A different approach to indexing is the sorted neighborhood
 method~\cite{Mon96}, where the datasets to be linked are sorted
