@@ -345,18 +345,19 @@ approaches.
 These blocking techniques are heuristics, commonly requiring domain
 knowledge, such as the choice of appropriate blocking or sorting keys.
 Poor choices of blocking attributes result in records being inserted
-into a wrong block and thus true matches being missed. As a result,
-existing blocking techniques can lead to \emph{incomplete} linkage.
-Conversely, many of the record pairs compared in a block turn out to be
-pairs with low similarities, corresponding to non-matches, resulting in
+into inappropriate blocks, and thus true matches being missed. As a
+result, such techniques can lead to \emph{incomplete} linkage.
+Conversely, many of the record pairs compared in a block may turn
+out to have low similarity, corresponding to non-matches, resulting in
 \emph{inefficient} linkage.
 
 Locality sensitive hashing (LSH), originally proposed to allow
 efficient nearest-neighbor search in high-dimensional
-spaces~\cite{Ind98}, has been employed in record linkage as a blocking
+spaces~\cite{Ind98}, has been employed in record linkage as an indexing
 technique where attribute values are hashed multiple times, and
 blocks are created from those records that share some hash values.
-\emph{HARRA} is a record linkage approach based on Min-hash and LSH
+\emph{HARRA} [CITATION?] is a record linkage approach based on Min-hash
+[CITATION?] and LSH
 which blocks, compares, and then merges linked records in an iterative
 fashion, where merged records are re-hashed to improve overall linkage
 quality. Steorts et al.~\cite{Steorts2014} recently evaluated two LSH
