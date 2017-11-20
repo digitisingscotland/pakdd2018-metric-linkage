@@ -366,9 +366,21 @@ results LSH methods must be tuned to the particular datasets being
 linked. This requires good quality ground truth data which may be
 unavailable or very expensive to obtain.
 
-Metric space indexing (MSI) techniques require indexing structures to be constructed over a set of records that are then used to support comparison with another set. MSI data structures often support a rich set of similarity search operations over a set of values over a metric space (distances must support the triangle inequality). The operations supported include \textit{range search} where all objects $i$ within a distance $d$ for a query object $q$ are identified, i.e.\ $dist(i,q) \le d$) \textit{nearest-neighbour} (the closest value to q), and \textit{nearestN} (the N closest n objects to q). An overview of the many Metric space search techniques that are available may be found in \cite{Zezula2010}. In this paper we choose one metric space data structure the M-Tree \cite{paolociaccia2m} and investigate its efficacy for record linkage.
+Metric space indexing (MSI) techniques provide indexing structures to
+support the comparison of records in one set with those in another,
+typically also offering similarity search operations. To create an MSI
+data structure, it is necessary to define a distance measure between
+records, with certain properties including the \emph{triangle
+inequality}. Similarity search operations include
+\textit{range-search(q,d)}, where all records within a distance $d$ of a
+query record $q$ are identified; \textit{nearest-neighbour(q)},
+returning the record with smallest distance to $q$; and
+\textit{nearest-n(q,n)}, returning the $n$ closest records to $q$.
+\cite{Zezula2010} gives an overview of MSI techniques.
+Here we choose one metric space indexing structure, the M-tree
+\cite{paolociaccia2m}, and investigate its efficacy for record linkage.
 
-An M-tree is a balanced tree structure comprised of fixed sized nodes each have a fixed number of children. In addition to the children, each node contains a reference to an object being indexed, a pointer and the distance to its parent, and a radius (described below). The radius of an internal node called a \textit{routing-node} represents the  furthest distance to any of its children. Thus all the children may be visualised as being contained within a ball of radius \textit{r} from the parent. M-trees are grown from the roots upward and require dynamic tree rebalancing when set of children become full (of size \textit{M}).
+The M-tree is a balanced tree structure comprised of fixed sized nodes each have a fixed number of children. In addition to the children, each node contains a reference to an object being indexed, a pointer and the distance to its parent, and a radius (described below). The radius of an internal node called a \textit{routing-node} represents the  furthest distance to any of its children. Thus all the children may be visualised as being contained within a ball of radius \textit{r} from the parent. M-trees are grown from the roots upward and require dynamic tree rebalancing when set of children become full (of size \textit{M}).
 
 Yu et al. \cite{Yu2016} have written an extensive survey on the use of string similarity and join for record linkage and define the problem as "Given two sets of objects, similarity join aims to find all similar pairs from the two collections". Part of the survey is concerned the algorithms used to compare two records which are characterised as being character-based, token-based or hybrid. The first, which includes approaches such as Levenshtein~\cite{Levenshtein66}, use character differences in the strings being compared, the second, which includes techniques such as Jaccard similarity, which treat the records as sets of tokens and utilises set similarity, the third hybridises the two approaches. Yu's divides join algorithms (which unify records - also known as linkage) into three categories: a number of techniques based on filtering, verification based and threshold-based. Filtering involves generating signatures for each record and creating inverted lists containing records with common signatures and pruning records with no common signatures. Verification algorithms involve calculating the exact distances of a prefix of the data, and using another technique to estimate the edit distance between records. If the estimated distance is larger than the desired similarity threshold, the candidate may be discarded. The last category (threshold based) includes M-trees, Trie-Join, Pass-Join and Partenum.  
 
