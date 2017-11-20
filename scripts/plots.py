@@ -83,7 +83,6 @@ def plotLQ(title, predicate):
     plt.grid()
 
     data = [ line for line in stats if predicate(line) ]
-    print(len(data))
 
     plt.plot( [ line["Distance Threshold"]  for line in data ]
             , [ line["Precision"]           for line in data ]
@@ -109,7 +108,8 @@ def plotLQ(title, predicate):
     plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
     plt.savefig("plotLQ -- %s.png" % title, bbox_inches="tight")
-
+    plt.close()
+    print("plotLC -- %s.png" % title)
 
 
 dataset = "Cora"
@@ -119,7 +119,6 @@ linker = "Brute Force"
 title = " - ".join([dataset, linker])
 predicate = lambda line: line["Data Set (Source)"] == dataset and line["Linker"] == linker
 plotLQ(title, predicate)
-print(title)
 
 
 linker = "TradBlocking"
@@ -129,14 +128,12 @@ for blockingMethod in blockingMethods:
     title = " - ".join([dataset, linker, blockingMethod])
     predicate = lambda line: line["Data Set (Source)"] == dataset and line["Linker"] == linker and line["Blocking Method"] == blockingMethod
     plotLQ(title, predicate)
-    print(title)
 
 
 linker = "MTree"
 title = " - ".join([dataset, linker])
 predicate = lambda line: line["Data Set (Source)"] == dataset and line["Linker"] == linker
 plotLQ(title, predicate)
-print(title)
 
 
 linker = "LSH"
@@ -150,7 +147,6 @@ for shingleSize in shingleSizes:
             title = " - ".join([dataset, linker, shingleSize, nbBands, bandSize])
             predicate = lambda line: line["Data Set (Source)"] == dataset and line["Linker"] == linker and line["Shingle size"] == shingleSize and line["Number of bands"] == nbBands and line["Band size"] == bandSize
             plotLQ(title, predicate)
-            print(title)
 
 
 
@@ -161,7 +157,7 @@ for shingleSize in shingleSizes:
 # Plotting Blocking Completeness
 ################################################################################
 
-def plotBQC(title, predicate):
+def plotPQC(title, predicate):
     plt.clf()
 
     w,h = plt.figaspect(0.5)
@@ -175,20 +171,13 @@ def plotBQC(title, predicate):
     plt.suptitle(title, y = 1.02, fontsize=28)
 
     plt.xlabel("Threshold")
-    plt.ylabel("Blocking Quality & Completeness")
+    plt.ylabel("Blocking Quality \& Completeness")
 
     plt.xlim(0, 100)
     plt.ylim(-0.05, 1.05)
     plt.grid()
 
     data = [ line for line in stats if predicate(line) ]
-
-    # plt.plot( [ line["Distance Threshold"]  for line in data ]
-    #         , [ line["Average links quality"]           for line in data ]
-    #         , color="blue"
-    #         , marker="o"
-    #         , label="Average links quality"
-    #         )
 
     plt.plot( [ line["Distance Threshold"]          for line in data ]
             , [ line["Average pairs quality"]       for line in data ]
@@ -206,7 +195,9 @@ def plotBQC(title, predicate):
 
     plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
-    plt.savefig("plotBC -- %s.png" % title, bbox_inches="tight")
+    plt.savefig("plotPQC -- %s.png" % title, bbox_inches="tight")
+    plt.close()
+    print("plotPQC -- %s.png" % title)
 
 
 
@@ -216,8 +207,7 @@ dataset = "Cora"
 linker = "Brute Force"
 title = " - ".join([dataset, linker])
 predicate = lambda line: line["Data Set (Source)"] == dataset and line["Linker"] == linker
-plotBQC(title, predicate)
-print(title)
+plotPQC(title, predicate)
 
 
 linker = "TradBlocking"
@@ -226,15 +216,13 @@ blockingMethods = set([ line["Blocking Method"] for line in stats if predicate(l
 for blockingMethod in blockingMethods:
     title = " - ".join([dataset, linker, blockingMethod])
     predicate = lambda line: line["Data Set (Source)"] == dataset and line["Linker"] == linker and line["Blocking Method"] == blockingMethod
-    plotBQC(title, predicate)
-    print(title)
+    plotPQC(title, predicate)
 
 
 linker = "MTree"
 title = " - ".join([dataset, linker])
 predicate = lambda line: line["Data Set (Source)"] == dataset and line["Linker"] == linker
-plotBQC(title, predicate)
-print(title)
+plotPQC(title, predicate)
 
 
 linker = "LSH"
@@ -247,6 +235,5 @@ for shingleSize in shingleSizes:
         for bandSize in bandSizes:
             title = " - ".join([dataset, linker, shingleSize, nbBands, bandSize])
             predicate = lambda line: line["Data Set (Source)"] == dataset and line["Linker"] == linker and line["Shingle size"] == shingleSize and line["Number of bands"] == nbBands and line["Band size"] == bandSize
-            plotBQC(title, predicate)
-            print(title)
+            plotPQC(title, predicate)
 
