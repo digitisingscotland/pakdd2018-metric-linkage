@@ -146,6 +146,7 @@ Contact: \email{peter.christen@anu.edu.au}}
 
 \maketitle
 
+
 \begin{abstract}
 %Probabilistic
 Record linkage is the process of identifying records that refer to the
@@ -185,11 +186,11 @@ delivering high effectiveness and efficiency.
 Record linkage, also known as entity resolution, data matching and
 duplicate detection~\cite{Chr12}, is the process of identifying and
 matching records that refer to the same real-world entities within or
-across databases. The entities to be linked are often people (such as
-patients in hospital or customers in business databases), but record
+across datasets. The entities to be linked are often people (such as
+patients in hospital or customers in business datasets), but record
 linkage can also be applied to link consumer products or bibliographic
 records~\cite{Chr12}. Record linkage is commonly challenged by the lack
-of unique entity identifiers (keys) in the databases to be linked, which
+of unique entity identifiers (keys) in the datasets to be linked, which
 prevents the use of a database join. Instead, the linkage of records
 requires the comparison of the common attributes (or fields) that are available
 in the datasets to be linked. For datasets that contain
@@ -240,7 +241,7 @@ learning of optimal blocking schemes have also been proposed.
   \caption{Overview of the steps of the traditional record linkage
            process (left-hand side) and our proposed metric space
            indexing based approach (right-hand side), as described in
-           Sect.~\ref{sec-intro}, where records from two databases,
+           Sect.~\ref{sec-intro}, where records from two datasets,
            $\mathbf{D}_A$ and $\mathbf{D}_B$, are being linked.}
            \label{fig-rl-process}
 \end{figure}
@@ -378,23 +379,11 @@ Yu et al. \cite{Yu2016} have written an extensive survey on the use of string si
 
 % --------------------------------------------------------------------
 
-% do we need a section on preliminaries, notation, etc?
-% ideally techniques are described formally, possibly via pseudo-code
-% algorithmic descriptions
-
 \section{Approach}
 \label{sec-approach}
 
-% peter: We need one paragraph describing the overall 'approach' /
-% methodology, as well as the aim, then a short description of
-% each method/technique used
-
-% would be good to have a figure if possible illustrating these
-% approaches
-
-% Graham - should it be complete/incomplete rather than exact/inexact below?
-We explore the efficacy of several similarity search algorithms in
-record linkage: one popular inexact algorithm, LSH-minhash, and one exact
+We explore the efficacy of several similarity search algorithms for
+record linkage: traditional blocking, one popular incomplete algorithm, LSH-minhash, and one complete
 method, M-tree~\cite{paolociaccia2m}. We also use a simple brute force
 (nested-loop) exact technique as a baseline for comparison, although
 this approach can only feasibly be applied to the smallest of our
@@ -411,8 +400,9 @@ record with every other record. The complexity of this
 approach is quadratic in the number of records to
 be linked. This approach is guaranteed to identify all links, i.e. record pairs within the given distance threshold, $d$.
 
-% Needed? Apart from anything else, haven't introduced the datasets yet.
-% Each of our datasets contains ground truth with which we can establish the records that are true links and those that are not. Clearly this approach can only be applied to relatively small datasets and we restrict its usage to the Cora dataset as a baseline for the other experiments.
+\smallskip
+\textbf{Traditional  blocking:}
+In the traditional blocking technique records are blocked using hand selected keys as described in \cite{Chr12b}. The keys are chosen with the intention of giving the best possible results for the dataset. Multiple blocking keys are commonly used to address the problem of missing and erroneous values preventing matches from being found.
 
 \smallskip
 \textbf{LSH-MinHash:}
@@ -433,36 +423,18 @@ Lastly the signature is divided into $l_{nb}$ segments and the elements from the
 The original record is added to a hashmap associated with each of the keys. 
 We we will evaluate the performance of LSH based blocking with regard to the three parameters $l_{ss}$, $l_{bs}$ and $l_{nb}$ in
 Sect.~\ref{sec-exp}.
-To perform linkage the following procedure is followed: for each query value is hashed using the procedure described above and the union of set of of values found for all hashes in the hashmap are returned. These are then be filtered by performing distance calculations on the results to eliminate false positives.
+
+To perform linkage the following procedure is followed: for each query, the value is hashed using the procedure described above and the union of the set of values found for all hashes in the hashmap are returned. These are then be filtered by performing distance calculations on the results to eliminate false positives.
 
 \smallskip 
 \textbf{M-Tree:} The M-tree experiments have no parameters. In a similar manner to the \emph{LSH-MinHash} approach, M-trees are constructed by supplying the implementation with a set of records and a \emph{distance function}. The distance functions used are the same as those used for \emph{Nested-loop} and \emph{LSH-MinHash} experiments. To perform linkage the data-structure is searched using a \emph{range-search} query which yield all records within distance $d$ of the query object and all the returned records are directly recorded as links.
-
-
-% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-% subsection
-
-%  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-%\subsection
-
-% --------------------------------------------------------------------
-
-%  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-%\subsection{Analysis and Limitations}
-%\label{sec-analysis}
-
-%maybe a complexity analysis? maybe an analysis of expected 
-%linkage quality?
 
 % --------------------------------------------------------------------
 
 \section{Experiments and Results}
 \label{sec-exp}
 
-We now describe the data sets we use in our evaluation, the setup we
+We now describe the data sets we use in our evaluation, the setup
 employed to evaluate our proposed metric indexing approach and
 compare it with traditional blocking techniques, and we then present
 and discuss our results.
@@ -522,13 +494,15 @@ sets include the  names, gender, addresses of individuals and their
 parents. Ground truth was generated by the demographers based on their
 extensive domain knowledge.
 
+%The experiments for each technique have been run within a generic Java framework which permits the actual linkage method used to be supplied. This ensures that the algorithms are consistently executed and that true comparisons of the their behaviour can be reported. It supplies each algorithm with the source records to be matched using an \emph{addSourceRecord} method which takes a record as a parameter. For each of the records to be matched a  \emph{getCandidateMatches} method is called which is expected to return a list of the linked records from the sources. Each of our datasets contains ground truth with which we can establish the records that are true links and those that are not (discussed below). From this ground truth the framework can report the number of links make, linkage quality etc. 
+
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 \begin{table}[t]
 \caption{Parameter settings used for the different data sets used in
    the experiments,with $d$ the distance threshold used, $t_b$ the
    M-tree branching factor, $l_{ss}$, $l_{sb}$ and $l_{nb}$ the LSH
-   shingle size, and the size and number of bands, respectively.
+   shingle size, and the size and number of bands, respectively.}
  \label{table-parameters}
   \centering
   \begin{scriptsize}
