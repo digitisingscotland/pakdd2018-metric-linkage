@@ -290,11 +290,15 @@ normalization encodings applied to each field. These are selected as
 described in \cite{Chr12b}, exploiting knowledge of the domain and of
 the records being linked, and chosen with the intention of giving the
 best possible results for the datasets.
-%
 Each record in $A$ is placed into the appropriate block based on its
 blocking key value. The algorithm then iterates over the records in $B$,
 and for each one, compares it with each of the records from $A$ in the
 block with the same blocking key value.
+
+\textbf{THIS TEXT WAS LIFTED FROM BELOW USE HERE? Traditionally, blocking is a method for choosing candidates for linkage using manually designed criteria.
+Thanks to blocking, a distance is only computed between promising pairs of records.
+A major disadvantage of traditional blocking is the need for extra engineering effort.
+Bespoke blocking strategies need to be designed for a given data set and application domain.}
 
 \textbf{LSH-MinHash:}
 The additional parameters are \emph{shingle size} ($l_{ss}$), \emph{band
@@ -333,8 +337,6 @@ and discuss our results~\footnote{The raw data, additional figures and the sourc
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-% Peter 31 Oct: table style follows LNCS style guide
-
 \begin{table}[t]
 \caption{Characteristics of data sets used in the experiments.}
  \label{table-datasets}
@@ -347,7 +349,6 @@ and discuss our results~\footnote{The raw data, additional figures and the sourc
   name(s)  & dataset1  & dataset2  & matching pairs & linked \\
   \noalign{\smallskip} \hline \noalign{\smallskip}
   CORA  & 1,295 & 1295 & 17,184 & publication-publication\\
-  NCVR  & ~224,073~ & 224,061 & ~148,036~ & voter-voter\\
   Isle of Skye & 17,612 & 12,284& 2,900 & birth-death\\
   Kilmarnock  & 38,430 & 23,714 & 8,300 & birth-death\\
   \noalign{\smallskip} \hline
@@ -365,12 +366,6 @@ summarized in Table~\ref{table-datasets}. The first is
 records that refer to 112 machine learning publications. 
 It is used as a benchmark data set in the literature for assessing linkage algorithms. Ground truth is provided via a unique
 \emph{paper\_id} identifier of the form "blum1993". In this experiment linkage is performed over the same set of records.
-
-The second are two randomly selected sub-sets extracted from the North Carolina Voter Registration
-database (\emph{NCVR})~\footnote{Available from: \texttt{http://dl.ncsbe.gov/}}, which were collected in April and June
-2014. Each of these contains records of voters including their
-first names, surnames, and addresses. Ground truth is provided via a
-\emph{NCID} identifier which uniquely identifies a voter.
 
 The last two data sets are historical Scottish records of vital
 events (birth, marriages and deaths) one registered on the
@@ -399,7 +394,6 @@ extensive domain knowledge.
   \noalign{\smallskip} \hline \noalign{\smallskip}
   CORA & ~$[0,5,10,\ldots,95,100]$~ & ~$2$~ &
     ~$[2,5,10]$~ & ~$[2,5,10]$~  \\
-  NCVR  &  \\
   Isle of Skye &  \\
   Kilmarnock  &  \\
   \noalign{\smallskip} \hline
@@ -407,7 +401,6 @@ extensive domain knowledge.
   \end{scriptsize}
 \end{table}
 
-% \smallskip
 % \textbf{Experimental Setup:}
 % %
 % We implemented all techniques described in Sect.~\ref{sec-approach}
@@ -420,86 +413,90 @@ Table~\ref{table-parameters}.
 
 In all of our experiments we use a single distance metric which is the sum of the Levenshtein distances between the set of fields being compared.
 
-discuss measures used. PC, PQ, num comparisons, time? etc.
-
 \subsection{Cora}
 
 In this section, we perform linkage on the Cora data set using all four approaches presented in this paper: brute force, traditional blocking, LSH and M-Tree.
-The brute-force approach is used to establish the threshold value that yields the best possible linkage for the Cora dataset. The threshold value is varied between 0 and 250, \Cref{fig-cora-quality} presents the precision, recall, and F-measure values. 
+The brute-force approach is used to establish the threshold value that yields the best possible linkage for the Cora dataset. The threshold value is varied between 0 and 250, \Cref{fig-cora-brute} presents the precision, recall, and F-measure values. 
 The linkage results have high precision and low recall for low threshold values, and high recall and low precision for high threshold values.
 For this data set, the maximum F-measure value is achieved using a threshold value of 70. This value is data dependent; for different datasets the maximum F-measure will correspond to different thresholds. 
 In the rest of this section we fix the threshold value to be 70 which maximises the F-measure for this dataset.
 
 \begin{figure}
+\includegraphics[width=\textwidth]{figures/plotLQ_--_Cora_-_Brute_Force.png}
+\caption{Linkage Quality using Brute Force linking on the Cora data set\label{fig-cora-brute}}
+\end{figure}
+
+In the traditional blocking experiment the following fields from the Cora data set are used as a blocking key: \textit{author}, \textit{title}, \textit{venue}, \textit{location}, \textit{publisher} and \textit{year}. We also use a very permissive blocking key which takes the union of all the values for these fields. 
+
+\Cref{comparison-of-results} shows the results of the Cora experiments. The table shows the parameters for the experiment, the number of distance comparisons made, the precision, recall and F1 measure and the pairs quality and pair completeness achieved by each algorithm.  
+
+
+TODO: Explain pairs-quality and pairs-completeness.
+\emph{\textbf{TODO: discuss measures used. PC, PQ, num comparisons, time? etc.}}
+
+
+\begin{figure}
+\begin{table}
+\centering
+\begin{tabular}{lllllllll}
+Linker      & Linker             & Total comparisons & Number of links & Average pairs quality & Average pairs completeness & Precision & Recall & F1 Measure \\
+Brute Force & Brute Force        & 1677025           & 12474           & 0.02                  & 0.33                       & 0.84      & 0.57   & 0.68       \\
+MTree       & MTree              & 902693            & 12474           & 0.89                  & 0.22                       & 0.84      & 0.57   & 0.68       \\
+LSH         & LSH-2-2            & 175435            & 10443           & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
+LSH         & LSH-5-2            & 175435            & 10443           & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
+LSH         & LSH-10-2           & 175435            & 10443           & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
+LSH         & LSH-2-5            & 175435            & 10443           & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
+LSH         & LSH-5-5            & 175435            & 10443           & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
+LSH         & LSH-10-5           & 175435            & 10443           & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
+LSH         & LSH-2-10           & 175435            & 10443           & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
+LSH         & LSH-5-10           & 175435            & 10443           & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
+LSH         & LSH-10-10          & 175435            & 10443           & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
+Blocking    & Blocking-year      & 115893            & 6504            & 0.22                  & 0.19                       & 0.99      & 0.35   & 0.51       \\
+Blocking    & Blocking-authors   & 11039             & 3219            & 0.74                  & 0.1                        & 0.94      & 0.16   & 0.28       \\
+Blocking    & Blocking-title     & 27407             & 8225            & 0.84                  & 0.23                       & 0.95      & 0.42   & 0.58       \\
+Blocking    & Blocking-venue     & 36647             & 6383            & 0.7                   & 0.12                       & 0.85      & 0.29   & 0.44       \\
+Blocking    & Blocking-location  & 1009957           & 9551            & 0.17                  & 0.24                       & 0.83      & 0.43   & 0.57       \\
+Blocking    & Blocking-publisher & 833079            & 9634            & 0.12                  & 0.23                       & 0.85      & 0.44   & 0.58       \\
+Blocking    & Blocking-combined  & 1214269           & 12324           & 0.05                  & 0.32                       & 0.84      & 0.56   & 0.67      
+\end{tabular}
+\end{table}
+\caption{Linkage Quality on the Cora data set\label{comparison-of-results}}
+\end{figure}
+
+\subsection{Historical Demography results}
+
+\begin{figure}
 \begin{verbatim}
-Figure 3 will be a table of Comparisons, F1, precision recall and pairs stuff.
+This will be a table of Comparisons, F1, precision recall and pairs stuff for Skye/Kilmarnock
 12 ROWS ISH
 \end{verbatim}
-\caption{Linkage Quality using Brute Force linking on the Cora data set\label{fig-cora-quality}}
+\caption{Linkage Quality on the Cora data set\label{comparison-of-results}}
 \end{figure}
-
-\subsubsection{Traditional Blocking}
-
-Traditionally, blocking is a method for choosing candidates for linkage using manually designed criteria.
-Thanks to blocking, a distance is only computed between promising pairs of records.
-A major disadvantage of traditional blocking is the need for extra engineering effort.
-Bespoke blocking strategies need to be designed for a given data set and application domain.
-In this section we experiment with using each key field in the Cora data set as a blocking key one by one, followed by a very permissive blocking key which takes the union of all the blocks attained by using individual key fields.
-
-\emph{AL: The above needs more explanation and not the first bit?}
-
-TODO: Explain pairs-quality and pairs-completeness~\Cref{cora-traditional}.
-
-\begin{figure}
-\includegraphics[width=\textwidth]{figures/plotFixedThresholdTraditional2_--_Cora_-_TradBlocking_-_70}
-\caption{Blocking Quality using traditional blocking on the Cora data set\label{cora-traditional}}
-\end{figure}
-
-\Cref{cora-traditional-prf} plots the linkage quality values obtained by running traditional blocking based linkage at a threshold level of 70. Here, we see that high precision values are possible using blocking based linkage, however the recall (and as a result the F-measure) is poor in comparison to brute-force.
-
-\begin{figure}
-\includegraphics[width=\textwidth]{figures/plotFixedThresholdTraditional1_--_Cora_-_TradBlocking_-_70}
-\caption{Linkage Quality using traditional blocking on the Cora data set\label{cora-traditional-prf}}
-\end{figure}
-
-\subsection{LSH}
-
-LSH is a method for performing blocking without the engineering overhead of traditional blocking.
-It is parameterised over two integer values: number of bands, and band sizes~\footnote{LSH can also be parameterised over the shingle size, but in this paper we set the shingle size to 2.}.
-
-\subsection{M-Tree}
-
-M-Tree is a complete method that avoids brute-force search.
-In addition, it does not require any additional engineering work, it works with any distance metric.
 
 \begin{figure}
 \includegraphics[width=\textwidth]{figures/plotBQ_--_Cora_-_Brute_Force}
-\caption{Block Quality - Brute Force\label{cora-block-quality-brute}}
+\caption{Will be Linkage quality with M-Tree Skye\label{cora-block-quality-brute}}
 \end{figure}
 
 \begin{figure}
 \includegraphics[width=\textwidth]{figures/plotBQ_--_Cora_-_MTree}
-\caption{Block Quality - M-Tree\label{cora-block-quality-mtree}}
+\caption{Will be Linkage quality with M-Tree Kilmarnock\label{cora-block-quality-mtree}}
 \end{figure}
 
-\subsection{Historical Demography results}
-\begin{itemize}
-\item Fig X -1 Repeat of figure 2 with precision recall comparisons etc.
-\item Fig X - Kilmarnock M tree plot Precision,recall and F
-\item Fig X + 1 - Skye M tree plot Precision,recall and F
-\item Fig X + 2 - Mtree F measure and a bunch LSH F measures.
-\end{itemize}
-
-\subsection{NCVR}
+\begin{figure}
+\includegraphics[width=\textwidth]{figures/plotBQ_--_Cora_-_MTree}
+\caption{Will be Mtree F measure and a bunch LSH F measures\label{cora-block-quality-mtree}}
+\end{figure}
 
 
 % --------------------------------------------------------------------
 
 \section{Conclusions and Future Work}
 
-\textbf{Contribution:} The primary contribution of this paper is the novel application of MSI to achieve complete and efficient record linkage, without the need for complex parameter tuning.
-We evaluate our approach on several data sets from diverse domains and demonstrate its advantages over
-existing indexing techniques for record linkage.
+In this paper we have demonstrated the efficacy of the application of MSI to achieve complete and efficient record linkage, without the need for complex parameter tuning. In conclusion, this assertion deserves some careful unpacking. It is always possible to achieve high quality linkage using a brute-force approach. However the n-squared complexity of this approach prevents its practical application for datasets of even moderate size. The use of MSI techniques such as M-tree delivers the same results as the brute-force approach at the cost of 
+
+
+
 
 % TODO: check that the above claims have been addressed.
 
