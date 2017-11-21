@@ -17,11 +17,11 @@
 
 \begin{document}
 
-% ====================================================================
+%----------------------------------------------------------------------
        
 \title{Using Metric Space Indexing for Complete and Efficient Record Linkage}
 
-% ====================================================================
+%----------------------------------------------------------------------
 
 \author{Submitted for double-blind review}
 
@@ -38,7 +38,7 @@ Research School of Computer Science, The Australian National University,\\
 Canberra, Australia. Contact: \email{peter.christen@anu.edu.au}}
       
 \fi
-% ====================================================================
+%----------------------------------------------------------------------
 
 \maketitle
 
@@ -69,7 +69,7 @@ delivering complete and efficient record linkage.
 \keywords Entity resolution; data matching; similarity search;
          blocking.
 
-% ====================================================================
+%----------------------------------------------------------------------
 
 \section{Introduction}
 \label{sec-intro}
@@ -125,6 +125,8 @@ based techniques~\cite{Kim10,Steorts2014}. Techniques for
 unsupervised~\cite{Kej13,Ram15} and supervised~\cite{Bil06,Mic06}
 learning of optimal blocking schemes have also been proposed.
 
+%----------------------------------------------------------------------
+
 \begin{figure}[!t]
   \centering
   \includegraphics[width=1.0\textwidth]{figures/linkage-process}
@@ -135,6 +137,8 @@ learning of optimal blocking schemes have also been proposed.
            $\mathbf{D}_A$ and $\mathbf{D}_B$, are being linked.}
            \label{fig-rl-process}
 \end{figure}
+
+%----------------------------------------------------------------------
 
 Systems that perform indexing prior to comparison and classification, as
 illustrated in Fig.~\ref{fig-rl-process}, add a further practical
@@ -177,6 +181,8 @@ linkage, without the need for complex parameter tuning. We evaluate our
 approach on several datasets from diverse domains and demonstrate its
 advantages over existing indexing techniques for record linkage.
 
+%----------------------------------------------------------------------
+
 % For final paper:
 % The motivation for this work is the Digitising Scotland project
 % (Dibben 2012), which is in the process of transcribing and linking all
@@ -186,7 +192,7 @@ advantages over existing indexing techniques for record linkage.
 % work, certain data fields (locations, occupations and causes of death)
 % are also being classified to the relevant standard coding schemes.
 
-% --------------------------------------------------------------------
+%----------------------------------------------------------------------
 
 \section{Related Work}
 \label{sec-related}
@@ -269,7 +275,7 @@ achieved using Jaccard similarity over selected record fields.
 efficient than R-trees, hence their use in the experiments described in
 this paper.
 
-% --------------------------------------------------------------------
+%----------------------------------------------------------------------
 
 \section{Approach}
 \label{sec-approach}
@@ -343,7 +349,7 @@ algorithm iterates over each record $b$ in $B$. A \emph{range-search(b,d)}
 operation is performed, passing the distance threshold as the second
 parameter. All the returned records are directly recorded as links.
 
-% --------------------------------------------------------------------
+%----------------------------------------------------------------------
 
 \section{Experiments and Results}
 \label{sec-exp}
@@ -352,10 +358,10 @@ We now describe the datasets we use in our evaluation, the set-up
 employed to evaluate our proposed metric indexing approach and compare
 it with traditional blocking techniques, and we then present and discuss
 our results~\footnote{The raw data, additional figures and the source
-code required to run these experiments can be downloaded from here.
-(Link removed for double blind review)}.
+code required to run these experiments can be downloaded from:
+(link removed for double blind review).}.
 
-% - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+%----------------------------------------------------------------------
 
 \begin{table}[t]
 \caption{Characteristics of datasets used in the experiments.}
@@ -376,6 +382,8 @@ code required to run these experiments can be downloaded from here.
   \end{scriptsize}
 \end{table}
 
+%----------------------------------------------------------------------
+
 \smallskip
 \textbf{Datasets:}
 \label{sec-data}
@@ -393,7 +401,7 @@ The other datasets are historical Scottish records of vital events
 a rural district, and the other records from \emph{Kilmarnock}, an
 industrial town. These datasets were create by historical demographers
 who extensively curated and linked both
-datasets~\cite{reid2002,reid2006}. Both data sets include the names,
+datasets~\cite{reid2002,reid2006}. Both datasets include the names,
 gender, addresses of individuals and their parents. Ground truth was
 generated by the demographers based on their extensive domain knowledge.
 
@@ -401,21 +409,56 @@ In all of our experiments we use a single distance metric which is the
 sum of the Levenshtein~\cite{Levenshtein66} distances between the set of
 fields being compared.
 
-\subsection{Cora}
+\subsection{Cora Results}
 
 In this section, we perform linkage on the Cora dataset using all four
 approaches presented in this paper: brute force, traditional blocking,
-LSH and M-tree. The brute-force approach is used to establish the
-threshold value that yields the best possible linkage for the Cora
-dataset. The threshold value is varied between 0 and 250,
-\Cref{cora-quality} presents the precision, recall, and F-measure
-values. The linkage results have high precision and low recall for low
-threshold values, and high recall and low precision for high threshold
-values. For this dataset, the maximum F-measure value is achieved using
-a threshold value of 70. This value is data dependent; for different
-datasets the maximum F-measure will correspond to different thresholds.
-In the rest of this section we fix the threshold value to be 70 which
-maximises the F-measure for this dataset.
+LSH and M-tree, using several selected configurations for the blocking
+and LSH linkers. The distance threshold is varied between 0 and
+250~\footnote{Relatively high Levenshtein distances are included since
+Cora includes a number of low-similarity true matches.}. For traditional
+blocking, the following Cora fields are used individually as blocking
+keys: \textit{author}, \textit{title}, \textit{venue},
+\textit{location}, \textit{publisher} and \textit{year}. We also use a
+combined blocking key comprising all fields.
+
+\Cref{cora-quality} shows the precision, recall, and F-measure
+for various thresholds. As expected, low thresholds give high precision and low recall, and the reverse for high threshold
+values. As expected, brute force and 
+
+
+
+For a more detailed investigation of selected linkers, the brute-force
+approach is used to establish the optimum threshold value for the Cora
+dataset. The maximum F-measure value is observed at a threshold value of
+70. This value is dataset-dependent; for different datasets the maximum
+F-measure will occur at different thresholds. In the rest of this
+section we fix the threshold value at 70.
+
+\Cref{comparison-of-results-cora} shows greater detail for selected
+linkers, with the distance threshold fixed at 70. The table shows the
+parameters for the experiment, the number of distance comparisons made,
+the precision, recall and the F1 measure achieved by each algorithm.  In
+the \emph{Linker} column the algorithm name is followed by its
+parameters: for LSH the number of the bands followed by the band size,
+and for traditional blocking the fields used for blocking. The number of
+distance comparisons is reported as a machine-independent proxy for
+execution cost, since code profiling shows that distance calculations
+are dominant.
+
+M-tree yields the same linkage quality as brute-force, although using a
+significantly lower number of comparisons. This is as expected, since
+both techniques are complete. Several of the incomplete linkers give
+similar quality, for example \emph{LSH-2-2}, \emph{LSH-5-2}, \emph{LSH-10-2} and
+\emph{Block-combined}. These, and a number of other incomplete linkers give
+better precision than the complete techniques. This is due to
+high-similarity non-matches, as discussed in Sect.~\ref{sec-approach}.
+Although several of the incomplete linkers give as good quality as
+M-tree, and in some cases at lower cost, this is offset by the need to
+select appropriate configuration parameters. Some other linkers give
+very poor results.
+
+%----------------------------------------------------------------------
 
 \begin{figure}
 \centering
@@ -433,18 +476,18 @@ maximises the F-measure for this dataset.
 \begin{subfigure}{.5\textwidth}
   \centering
 \includegraphics[width=\textwidth]{figures/plotLQ-cora-trad-authors}
-\caption{Cora - Traditional Blocking on the `authors' field}
+\caption{Cora - Traditional Blocking on `authors' field}
 \end{subfigure}%
 \begin{subfigure}{.5\textwidth}
   \centering
 \includegraphics[width=\textwidth]{figures/plotLQ-cora-trad-title}
-\caption{Cora - Traditional Blocking on the `title' field}
+\caption{Cora - Traditional Blocking on `title' field}
 \end{subfigure}
 
 \begin{subfigure}{.5\textwidth}
   \centering
 \includegraphics[width=\textwidth]{figures/plotLQ-cora-trad-year}
-\caption{Cora - Traditional Blocking on the `publication year' field}
+\caption{Cora - Traditional Blocking on `publication year' field}
 \end{subfigure}%
 \begin{subfigure}{.5\textwidth}
   \centering
@@ -474,37 +517,11 @@ maximises the F-measure for this dataset.
 \caption{Cora - LSH Blocking using 10 bands of size 10}
 \end{subfigure}
 
-\caption{Linkage results on the Cora data set}
+\caption{Linkage results on Cora dataset}
 \label{cora-quality}
 \end{figure}
 
-% \begin{figure}
-% \includegraphics[width=\textwidth]{figures/plotLQ-cora-brute}
-% \caption{Linkage quality using brute-force linking on the Cora dataset\label{fig-cora-brute}}
-% \end{figure}
-
-In the traditional blocking experiment the following fields from the
-Cora dataset are used individually as blocking keys: \textit{author},
-\textit{title}, \textit{venue}, \textit{location}, \textit{publisher}
-and \textit{year}. We also use a combined blocking key comprising all
-fields.
-
-\Cref{comparison-of-results-cora} shows greater detail for a subset of
-the Cora experiments, with the distance threshold fixed at 70. The table
-shows the parameters for the experiment, the number of distance
-comparisons made, the precision, recall and the F1 measure achieved by
-each algorithm.  In the \emph{Linker} column the algorithm name is
-followed by its parameters: for LSH the number of the bands followed by
-the band size, and for traditional blocking the fields used for
-blocking. The number of distance comparisons is reported as a
-machine-independent proxy for execution cost, since code profiling shows
-that distance calculations are dominant.
-
-M-tree yields the same linkage quality as brute-force, although using a significantly lower
-number of comparisons. This is as expected, since both techniques are complete.
-
-Three of the LSH configurations give qul
-
+%----------------------------------------------------------------------
 
 \begin{table}[ht]
 \centering
@@ -515,7 +532,7 @@ Three of the LSH configurations give qul
 \parbox{0.17\textwidth}{\centering Recall} &
 \parbox{0.17\textwidth}{\centering F1 Measure} \\ \hline \hline
 Brute Force        & 1,677,025                 & 0.84      & 0.57   & 0.68       \\ \hline
-MTree              &  902,693                  & 0.84      & 0.57   & 0.68       \\ \hline
+M-tree              &  902,693                  & 0.84      & 0.57   & 0.68       \\ \hline
 LSH-2-2            &  192,199	& 0.95	& 0.47	& 0.63       \\
 LSH-5-2            &  342,849	& 0.91	& 0.55	& 0.69       \\
 LSH-10-2           &  513,947	& 0.88	& 0.57	& 0.69       \\
@@ -538,13 +555,17 @@ Block-combined     & 1,214,269                 & 0.84      & 0.56   & 0.67      
 }
 \end{table}
 
-\subsection{Historical Demography results}
+%----------------------------------------------------------------------
+
+\subsection{Demographic Dataset Results}
 
 \Cref{comparison-of-results-demography-skye} and \Cref{comparison-of-results-demography-kili} show the results for LSH-Minhash and M-tree on the Skye and Kilmarnock datasets. Linkage was performed between birth and death records. The shingle size was set to 2 for all the LSH experiments reported, as this was found to give good results and LSH was not especially sensitive to this parameter. Results for other shingle sizes were omitted from this paper for brevity. In both cases the F1 measure achieved is better for M-tree than any of the experimental settings chosen for LSH. This is largely due to the recall for M-tree being much higher than any of the LSH experiments. For all LSH parameters LSH out performs M-tree in terms of precision.
 
 Perhaps more important than the fact that M-tree gives better F1 measures than all of the LSH experiments is the fact that the LSH performance is extremely variable. For a relatively plausible settings for the number of bands and band-size the F1 measurements vary from 0.01 (extremely poor) to 0.47 (relatively good) for Skye and between 0.03 and 0.49 for the Kilmarnock dataset. In both cases LSH-10-2 performs best, but since this is data dependent there is no guarantee these parameters would work well with another dataset. Furthermore, without good ground truth, which is usually unavailable, there is no way of knowing if good linkage results are being obtained or not.
 
 Another observation that is worthy of comment is the number of (distance) comparisons being performed by the different algorithms. For M-trees the number of comparisons are closely related to the complexity of the search being performed since the algorithms are performing (range) searches over distance measures to determine the query results. This is not true of LSH which is performing Jaccard similarity using Hashes over the datasets. Comparisons are only used at the final step to determine if a candidate is a match or not. The LSH results which provide the best results by F1 measure are performing between a quarter and half the number of matches performed by M-trees. From this we can conclude that the hash algorithms are returning many candidates that are outwith the search distance. Thus, in order to get good results, LSH is tending towards a brute force search over the candidate results. Despite this LSH is much faster due to the efficiency of the hashing mechanisms.
+
+%----------------------------------------------------------------------
 
 \begin{table}[ht]
 \centering
@@ -554,7 +575,7 @@ Another observation that is worthy of comment is the number of (distance) compar
 \parbox{0.17\textwidth}{\centering Precision} &
 \parbox{0.17\textwidth}{\centering Recall} &
 \parbox{0.17\textwidth}{\centering F1 Measure} \\ \hline \hline
-MTree    & 102,318,525                 & 0.65      & 0.46   & 0.54      \\ \hline
+M-tree    & 102,318,525                 & 0.65      & 0.46   & 0.54      \\ \hline
 
 LSH-2-2  & 3,109,250                   & 0.63      & 0.03   & 0.06       \\
 
@@ -571,7 +592,7 @@ LSH-10-5 & 129,873                    & 0.72      & 0.01   & 0.02       \\ \hlin
 }
 \end{table}
 
-%-------------------------------------------------------------------------------------
+%----------------------------------------------------------------------
 
 \begin{table}[ht]
 \centering
@@ -581,7 +602,7 @@ LSH-10-5 & 129,873                    & 0.72      & 0.01   & 0.02       \\ \hlin
 \parbox{0.17\textwidth}{\centering Precision} &
 \parbox{0.17\textwidth}{\centering Recall} &
 \parbox{0.17\textwidth}{\centering F1 Measure} \\ \hline \hline
-MTree     & 514,871,153                   & 0.76      & 0.45   & 0.57      \\ \hline
+M-tree     & 514,871,153                   & 0.76      & 0.45   & 0.57      \\ \hline
 LSH-2-2   & 99,145,887                    & 0.81      & 0.16   & 0.27       \\
 LSH-5-2   & 130,721,338                   & 0.79      & 0.23   & 0.36       \\
 LSH-10-2  & 177,168,848                   & 0.79      & 0.36   & 0.49       \\
@@ -593,7 +614,7 @@ LSH-10-5  & 855,431                      & 0.87      & 0.02   & 0.03 \\ \hline
 }
 \end{table}
 
-%-------------------------------------------------------------------------------------
+%----------------------------------------------------------------------
 
 \begin{figure}
 \centering
@@ -623,7 +644,7 @@ LSH-10-5  & 855,431                      & 0.87      & 0.02   & 0.03 \\ \hline
 \label{demography-quality-mtree}
 \end{figure}
 
-% --------------------------------------------------------------------
+%----------------------------------------------------------------------
 
 \section{Conclusions and Future Work\label{sec-concl}}
 
@@ -631,7 +652,7 @@ In this paper we have demonstrated the efficacy of MSI in achieving  complete an
 
 We contrast this to traditional blocking and LSH based approaches. The major drawback of their use is that whilst they can produce extremely good results, they can also produce extremely poor results. It was our observations of low recall given by these approaches that originally led us to experiment with M-trees. Without extensive ground truth or large amounts of clerking effort by human domain experts it is impossible to determine the quality of the links produced. 
 
-However, this paper also highlights some unexpected results. Firstly, the good quality results yielded by both traditional blocking and LSH are partly due to the fact that (in the limit) they tend towards brute-force as the number of records in the block increase. A second unexpected result is that shown in \Cref{quality-cora}, namely that LSH can yield higher precision than is achieved by a complete method such as M-tree, as was discussed in Sect.~\ref{sec-approach}.
+However, this paper also highlights some unexpected results. Firstly, the good quality results yielded by both traditional blocking and LSH are partly due to the fact that (in the limit) they tend towards brute-force as the number of records in the block increase. A second unexpected result is that shown in \Cref{comparison-of-results-cora}, namely that LSH can yield higher precision than is achieved by a complete method such as M-tree, as was discussed in Sect.~\ref{sec-approach}.
 
 
 \emph{Some sentence or two about run-time?}
@@ -640,16 +661,16 @@ The observation that LSH can yield results quickly at the cost of some recall su
 
 % TODO: check that the above claims have been addressed.
 
-% --------------------------------------------------------------------
+%----------------------------------------------------------------------
 
 \bibliographystyle{splncs03}
 \bibliography{paper.bib} 
 
-% ====================================================================
+%----------------------------------------------------------------------
 
 \end{document}
 
-% ====================================================================
+%----------------------------------------------------------------------
 
 %text cut from earlier versions:
 
