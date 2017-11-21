@@ -426,7 +426,11 @@ combined blocking key comprising all fields.
 for various thresholds. As expected, low thresholds give high precision and low recall, and the reverse for high threshold
 values. As expected, brute force and M-tree give identical results.
 
+The best linkage quality, with an F-measure of around 0.7, is achieved by a number of linkers, including brute force, M-tree, blocking on `authors' and blocking and on all fields, and two of the LSH configurations.
 
+Overall the best F-measures are achieved by 
+
+GRAHAM STILL WRITING HERE
 
 
 For a more detailed investigation of selected linkers, the brute force
@@ -560,11 +564,45 @@ Block-combined     & 1,214,269                 & 0.84      & 0.56   & 0.67      
 
 \subsection{Demographic Dataset Results}
 
+GRAHAM STILL WRITING HERE
+
+Refer to Fig 3.
+
 \Cref{comparison-of-results-demography-skye} and \Cref{comparison-of-results-demography-kili} show the results for LSH-MinHash and M-tree on the Skye and Kilmarnock datasets. Linkage was performed between birth and death records. The shingle size was set to 2 for all the LSH experiments reported, as this was found to give good results and LSH was not especially sensitive to this parameter. Results for other shingle sizes were omitted from this paper for brevity. In both cases the F1 measure achieved is better for M-tree than any of the experimental settings chosen for LSH. This is largely due to the recall for M-tree being much higher than any of the LSH experiments. For most configurations, LSH out-performs M-tree in terms of precision.
 
 Perhaps more important than the fact that M-tree gives better F1 measures than all of the LSH experiments is the fact that the LSH performance is extremely variable. For a relatively plausible settings for the number of bands and band-size the F1 measurements vary from 0.01 (extremely poor) to 0.47 (relatively good) for Skye and between 0.03 and 0.49 for the Kilmarnock dataset. In both cases LSH-10-2 performs best, but since this is data dependent there is no guarantee these parameters would work well with another dataset. Furthermore, without good ground truth, which is usually unavailable, there is no way of knowing if good linkage results are being obtained or not.
 
 Another observation that is worthy of comment is the number of (distance) comparisons being performed by the different algorithms. For M-trees the number of comparisons are closely related to the complexity of the search being performed since the algorithms are performing (range) searches over distance measures to determine the query results. This is not true of LSH which is performing Jaccard similarity using Hashes over the datasets. Comparisons are only used at the final step to determine if a candidate is a match or not. The LSH results which provide the best results by F1 measure are performing between a quarter and half the number of matches performed by M-trees. From this we can conclude that the hash algorithms are returning many candidates that are outwith the search distance. Thus, in order to get good results, LSH is tending towards a brute force search over the candidate results. Despite this LSH is much faster due to the efficiency of the hashing mechanisms.
+
+%----------------------------------------------------------------------
+
+\begin{figure}
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{figures/plotLQ-skye-mtree}
+\caption{Linkage quality on Skye dataset using M-tree\label{skye-quality-mtree}}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{figures/plotLQ-kilmarnock-mtree}
+\caption{Linkage quality on Kilmarnock dataset using M-tree\label{kilmarnock-quality-mtree}}
+\end{subfigure}
+
+\begin{subfigure}{.5\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{figures/plotFs-skye-f}
+\caption{Linkage quality on Skye dataset using M-tree and all LSH configurations}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{figures/plotFs-kilmarnock-f}
+\caption{Linkage quality on Kilmarnock dataset using M-tree and all LSH configurations}
+\end{subfigure}
+
+\caption{Linkage results on the demographic datasets}
+\label{demography-quality-mtree}
+\end{figure}
 
 %----------------------------------------------------------------------
 
@@ -614,36 +652,6 @@ LSH-10-5  & 855,431                      & 0.87      & 0.02   & 0.03 \\ \hline
 \label{comparison-of-results-demography-kili}
 }
 \end{table}
-
-%----------------------------------------------------------------------
-
-\begin{figure}
-\centering
-\begin{subfigure}{.5\textwidth}
-  \centering
-\includegraphics[width=\textwidth]{figures/plotLQ-skye-mtree}
-\caption{Linkage quality on Skye dataset using M-tree\label{skye-quality-mtree}}
-\end{subfigure}%
-\begin{subfigure}{.5\textwidth}
-  \centering
-\includegraphics[width=\textwidth]{figures/plotLQ-kilmarnock-mtree}
-\caption{Linkage quality on Kilmarnock dataset using M-tree\label{kilmarnock-quality-mtree}}
-\end{subfigure}
-
-\begin{subfigure}{.5\textwidth}
-  \centering
-\includegraphics[width=\textwidth]{figures/plotFs-skye-f}
-\caption{Linkage quality on Skye dataset using M-tree and all LSH configurations}
-\end{subfigure}%
-\begin{subfigure}{.5\textwidth}
-  \centering
-\includegraphics[width=\textwidth]{figures/plotFs-kilmarnock-f}
-\caption{Linkage quality on Kilmarnock dataset using M-tree and all LSH configurations}
-\end{subfigure}
-
-\caption{Linkage results on the demographic datasets}
-\label{demography-quality-mtree}
-\end{figure}
 
 %----------------------------------------------------------------------
 
