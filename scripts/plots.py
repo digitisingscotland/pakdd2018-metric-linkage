@@ -646,7 +646,7 @@ def plotFs(title, measure, predicate):
             , [ line[measure]               for line in dataMTree ]
             , color="red"
             , marker="o"
-            , label="M-Tree"
+            , label="M-tree"
             )
 
     # plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
