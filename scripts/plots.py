@@ -79,8 +79,8 @@ def plotLQ(title, predicate):
     plt.rc("font", **font)
     # plt.rcParams["text.usetex"] = True
 
-    plt.title("Linkage Quality w.r.t. Threshold", fontsize=22)
-    plt.suptitle(title, y = 1.02, fontsize=28)
+    # plt.title("Linkage Quality w.r.t. Threshold", fontsize=22)
+    # plt.suptitle(title, y = 1.02, fontsize=28)
 
     plt.xlabel("Distance Threshold")
     plt.ylabel("Linkage Quality")
@@ -114,7 +114,8 @@ def plotLQ(title, predicate):
             , label="F1 Measure"
             )
 
-    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    # plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    plt.legend()
 
     plt.savefig("plotLQ -- %s.png" % title, bbox_inches="tight")
     plt.close()
@@ -238,7 +239,8 @@ def plotBQ(title, predicate):
             , label="Block Quality"
             )
 
-    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    # plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    plt.legend()
 
     plt.savefig("plotBQ -- %s.png" % title, bbox_inches="tight")
     plt.close()
@@ -284,7 +286,8 @@ def plotPQC(title, predicate):
             , label="Pairs Completeness"
             )
 
-    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    # plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    plt.legend()
 
     plt.savefig("plotPQC -- %s.png" % title, bbox_inches="tight")
     plt.close()
@@ -438,7 +441,8 @@ def plotFixedThresholdTraditional1(title, blockingMethods, predicate):
             , label="F1 Measure"
             )
 
-    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    # plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    plt.legend()
 
     plt.savefig("plotFixedThresholdTraditional1 -- %s.png" % title, bbox_inches="tight")
     plt.close()
@@ -487,7 +491,8 @@ def plotFixedThresholdTraditional2(title, blockingMethods, predicate):
             , label="Pairs completeness"
             )
 
-    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    # plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    plt.legend()
 
     plt.savefig("plotFixedThresholdTraditional2 -- %s.png" % title, bbox_inches="tight")
     plt.close()
@@ -553,7 +558,8 @@ def plotFixedThresholdLSH(title, predicate):
             , label="Pairs completeness"
             )
 
-    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    # plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    plt.legend()
 
     plt.savefig("plotFixedThresholdLSH -- %s.png" % title, bbox_inches="tight")
     plt.close()
