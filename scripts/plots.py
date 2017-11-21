@@ -408,7 +408,7 @@ def plotFixedThresholdTraditional1(title, blockingMethods, predicate):
     plt.ylabel("Proportion")
 
     data = [ line for line in stats if predicate(line) ]
-    
+
     # plt.xlim([ line["Blocking Method"]       for line in data ]            )
     # plt.xlim([ line["Blocking Method"] for line in data ])
     plt.ylim(-0.05, 1.05)
@@ -466,7 +466,7 @@ def plotFixedThresholdTraditional2(title, blockingMethods, predicate):
     plt.ylabel("Proportion")
 
     data = [ line for line in stats if predicate(line) ]
-    
+
     # plt.xlim([ line["Blocking Method"]       for line in data ]            )
     # plt.xlim([ line["Blocking Method"] for line in data ])
     plt.ylim(-0.05, 1.05)
@@ -516,7 +516,7 @@ def plotFixedThresholdLSH(title, predicate):
     plt.ylabel("Proportion")
 
     data = [ line for line in stats if predicate(line) ]
-    
+
     # plt.xlim([ line["Blocking Method"]       for line in data ]            )
     # plt.xlim([ line["Blocking Method"] for line in data ])
     plt.ylim(-0.05, 1.05)
@@ -589,4 +589,99 @@ plotFixedThresholdLSH(title, predicate)
 
 
 
+
+
+
+
+
+
+################################################################################
+# Plotting F-Measures against each other
+################################################################################
+
+def plotFs(title, measure, predicate):
+    title = " - ".join([title, measure])
+    plt.clf()
+
+    w,h = plt.figaspect(0.5)
+    plt.figure(figsize=(w,h))
+
+    font = {"family":"sans-serif", "weight":"normal", "size":24}
+    plt.rc("font", **font)
+    # plt.rcParams["text.usetex"] = True
+
+    # plt.title("Linkage Quality w.r.t. Threshold", fontsize=22)
+    # plt.suptitle(title, y = 1.02, fontsize=28)
+
+    plt.xlabel("Distance Threshold")
+    plt.ylabel(measure)
+
+    data = [ line for line in stats if predicate(line) ]
+
+    plt.xlim( min([ toFloat(line["Distance Threshold"]) for line in data ])
+            , max([ toFloat(line["Distance Threshold"]) for line in data ])
+            )
+    plt.ylim(-0.05, 1.05)
+    plt.grid()
+
+    shingleSizes = set([ line["Shingle size"] for line in data if predicate(line) ])
+    nbBandss = set([ line["Number of bands"] for line in data if predicate(line) ])
+    bandSizes = set([ line["Band size"] for line in data if predicate(line) ])
+    for shingleSize in shingleSizes:
+        for nbBands in nbBandss:
+            for bandSize in bandSizes:
+
+                dataLSH = [ line for line in data if line["Linker"] == "LSH" and line["Shingle size"] == shingleSize and line["Number of bands"] == nbBands and line["Band size"] == bandSize ]
+
+                plt.plot( [ line["Distance Threshold"]  for line in dataLSH ]
+                        , [ line[measure]               for line in dataLSH ]
+                        , color="blue"
+                        , marker="o"
+                        , label="LSH"
+                        )
+
+    dataMTree = [ line for line in data if line["Linker"] == "MTree" ]
+
+    plt.plot( [ line["Distance Threshold"]  for line in dataMTree ]
+            , [ line[measure]               for line in dataMTree ]
+            , color="red"
+            , marker="o"
+            , label="M-Tree"
+            )
+
+    # plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    from collections import OrderedDict
+
+    handles, labels = plt.gca().get_legend_handles_labels()
+    by_label = OrderedDict(zip(labels, handles))
+    plt.legend(by_label.values(), by_label.keys())
+
+
+    plt.savefig("plotFs -- %s.eps" % title, bbox_inches="tight")
+    plt.close()
+    print("plotFs -- %s.eps" % title)
+
+
+dataset = "Cora"
+title = " - ".join([dataset])
+predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and toFloat(line["Distance Threshold"]) <= 30
+plotFs(title, "Precision", predicate)
+plotFs(title, "Recall", predicate)
+plotFs(title, "F1 Measure", predicate)
+
+
+dataset = "Skye"
+title = " - ".join([dataset])
+predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and toFloat(line["Distance Threshold"]) <= 30
+plotFs(title, "Precision", predicate)
+plotFs(title, "Recall", predicate)
+plotFs(title, "F1 Measure", predicate)
+
+
+dataset = "Kilmarnock"
+title = " - ".join([dataset])
+predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and toFloat(line["Distance Threshold"]) <= 30
+plotFs(title, "Precision", predicate)
+plotFs(title, "Recall", predicate)
+plotFs(title, "F1 Measure", predicate)
 
