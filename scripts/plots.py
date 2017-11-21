@@ -117,9 +117,9 @@ def plotLQ(title, predicate):
     # plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
     plt.legend()
 
-    plt.savefig("plotLQ -- %s.png" % title, bbox_inches="tight")
+    plt.savefig("plotLQ -- %s.eps" % title, bbox_inches="tight")
     plt.close()
-    print("plotLQ -- %s.png" % title)
+    print("plotLQ -- %s.eps" % title)
 
 
 dataset = "Cora"
@@ -242,9 +242,9 @@ def plotBQ(title, predicate):
     # plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
     plt.legend()
 
-    plt.savefig("plotBQ -- %s.png" % title, bbox_inches="tight")
+    plt.savefig("plotBQ -- %s.eps" % title, bbox_inches="tight")
     plt.close()
-    print("plotBQ -- %s.png" % title)
+    print("plotBQ -- %s.eps" % title)
 
 
 
@@ -289,9 +289,9 @@ def plotPQC(title, predicate):
     # plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
     plt.legend()
 
-    plt.savefig("plotPQC -- %s.png" % title, bbox_inches="tight")
+    plt.savefig("plotPQC -- %s.eps" % title, bbox_inches="tight")
     plt.close()
-    print("plotPQC -- %s.png" % title)
+    print("plotPQC -- %s.eps" % title)
 
 
 
@@ -444,9 +444,9 @@ def plotFixedThresholdTraditional1(title, blockingMethods, predicate):
     # plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
     plt.legend()
 
-    plt.savefig("plotFixedThresholdTraditional1 -- %s.png" % title, bbox_inches="tight")
+    plt.savefig("plotFixedThresholdTraditional1 -- %s.eps" % title, bbox_inches="tight")
     plt.close()
-    print("plotFixedThresholdTraditional1 -- %s.png" % title)
+    print("plotFixedThresholdTraditional1 -- %s.eps" % title)
 
 
 def plotFixedThresholdTraditional2(title, blockingMethods, predicate):
@@ -494,9 +494,9 @@ def plotFixedThresholdTraditional2(title, blockingMethods, predicate):
     # plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
     plt.legend()
 
-    plt.savefig("plotFixedThresholdTraditional2 -- %s.png" % title, bbox_inches="tight")
+    plt.savefig("plotFixedThresholdTraditional2 -- %s.eps" % title, bbox_inches="tight")
     plt.close()
-    print("plotFixedThresholdTraditional2 -- %s.png" % title)
+    print("plotFixedThresholdTraditional2 -- %s.eps" % title)
 
 
 def plotFixedThresholdLSH(title, predicate):
@@ -561,9 +561,9 @@ def plotFixedThresholdLSH(title, predicate):
     # plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
     plt.legend()
 
-    plt.savefig("plotFixedThresholdLSH -- %s.png" % title, bbox_inches="tight")
+    plt.savefig("plotFixedThresholdLSH -- %s.eps" % title, bbox_inches="tight")
     plt.close()
-    print("plotFixedThresholdLSH -- %s.png" % title)
+    print("plotFixedThresholdLSH -- %s.eps" % title)
 
 
 
