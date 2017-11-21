@@ -70,7 +70,7 @@ def plotLQ(title, predicate):
 
     font = {"family":"sans-serif", "weight":"normal", "size":24}
     plt.rc("font", **font)
-    plt.rcParams["text.usetex"] = True
+    # plt.rcParams["text.usetex"] = True
 
     plt.title("Linkage Quality w.r.t. Threshold", fontsize=22)
     plt.suptitle(title, y = 1.02, fontsize=28)
@@ -78,11 +78,13 @@ def plotLQ(title, predicate):
     plt.xlabel("Threshold")
     plt.ylabel("Linkage Quality")
 
-    plt.xlim(0, 100)
+    data = [ line for line in stats if predicate(line) ]
+
+    plt.xlim( min([ float(line["Distance Threshold"]) for line in data ])
+            , max([ float(line["Distance Threshold"]) for line in data ])
+            )
     plt.ylim(-0.05, 1.05)
     plt.grid()
-
-    data = [ line for line in stats if predicate(line) ]
 
     plt.plot( [ line["Distance Threshold"]  for line in data ]
             , [ line["Precision"]           for line in data ]
@@ -109,11 +111,10 @@ def plotLQ(title, predicate):
 
     plt.savefig("plotLQ -- %s.png" % title, bbox_inches="tight")
     plt.close()
-    print("plotLC -- %s.png" % title)
+    print("plotLQ -- %s.png" % title)
 
 
 dataset = "Cora"
-
 
 linker = "Brute Force"
 title = " - ".join([dataset, linker])
@@ -157,6 +158,45 @@ for shingleSize in shingleSizes:
 # Plotting Blocking Completeness
 ################################################################################
 
+def plotBQ(title, predicate):
+    plt.clf()
+
+    w,h = plt.figaspect(0.5)
+    plt.figure(figsize=(w,h))
+
+    font = {"family":"sans-serif", "weight":"normal", "size":24}
+    plt.rc("font", **font)
+    # plt.rcParams["text.usetex"] = True
+
+    plt.title("Block Quality", fontsize=22)
+    plt.suptitle(title, y = 1.02, fontsize=28)
+
+    plt.xlabel("Threshold")
+    plt.ylabel("Proportion")
+
+    data = [ line for line in stats if predicate(line) ]
+
+    plt.xlim( min([ float(line["Distance Threshold"]) for line in data ])
+            , max([ float(line["Distance Threshold"]) for line in data ])
+            )
+    plt.ylim(-0.05, 1.05)
+    plt.grid()
+
+    plt.plot( [ line["Distance Threshold"]          for line in data ]
+            , [ line["Average links quality"]       for line in data ]
+            , color="green"
+            , marker="o"
+            , label="Block Quality"
+            )
+
+    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+
+    plt.savefig("plotBQ -- %s.png" % title, bbox_inches="tight")
+    plt.close()
+    print("plotBQ -- %s.png" % title)
+
+
+
 def plotPQC(title, predicate):
     plt.clf()
 
@@ -165,19 +205,21 @@ def plotPQC(title, predicate):
 
     font = {"family":"sans-serif", "weight":"normal", "size":24}
     plt.rc("font", **font)
-    plt.rcParams["text.usetex"] = True
+    # plt.rcParams["text.usetex"] = True
 
-    plt.title("Linkage Quality w.r.t. Threshold", fontsize=22)
+    plt.title("Pairs Quality and Completeness", fontsize=22)
     plt.suptitle(title, y = 1.02, fontsize=28)
 
     plt.xlabel("Threshold")
-    plt.ylabel("Blocking Quality \& Completeness")
-
-    plt.xlim(0, 100)
-    plt.ylim(-0.05, 1.05)
-    plt.grid()
+    plt.ylabel("Proportion")
 
     data = [ line for line in stats if predicate(line) ]
+
+    plt.xlim( min([ float(line["Distance Threshold"]) for line in data ])
+            , max([ float(line["Distance Threshold"]) for line in data ])
+            )
+    plt.ylim(-0.05, 1.05)
+    plt.grid()
 
     plt.plot( [ line["Distance Threshold"]          for line in data ]
             , [ line["Average pairs quality"]       for line in data ]
@@ -207,6 +249,7 @@ dataset = "Cora"
 linker = "Brute Force"
 title = " - ".join([dataset, linker])
 predicate = lambda line: line["Data Set (Source)"] == dataset and line["Linker"] == linker
+plotBQ(title, predicate)
 plotPQC(title, predicate)
 
 
@@ -216,12 +259,14 @@ blockingMethods = set([ line["Blocking Method"] for line in stats if predicate(l
 for blockingMethod in blockingMethods:
     title = " - ".join([dataset, linker, blockingMethod])
     predicate = lambda line: line["Data Set (Source)"] == dataset and line["Linker"] == linker and line["Blocking Method"] == blockingMethod
+    plotBQ(title, predicate)
     plotPQC(title, predicate)
 
 
 linker = "MTree"
 title = " - ".join([dataset, linker])
 predicate = lambda line: line["Data Set (Source)"] == dataset and line["Linker"] == linker
+plotBQ(title, predicate)
 plotPQC(title, predicate)
 
 
@@ -235,5 +280,171 @@ for shingleSize in shingleSizes:
         for bandSize in bandSizes:
             title = " - ".join([dataset, linker, shingleSize, nbBands, bandSize])
             predicate = lambda line: line["Data Set (Source)"] == dataset and line["Linker"] == linker and line["Shingle size"] == shingleSize and line["Number of bands"] == nbBands and line["Band size"] == bandSize
+            plotBQ(title, predicate)
             plotPQC(title, predicate)
+
+
+
+
+
+################################################################################
+# Traditional Blocking at Threshold 70
+################################################################################
+
+def plotFixedThresholdTraditional(title, blockingMethods, predicate):
+    plt.clf()
+
+    w,h = plt.figaspect(0.5)
+    plt.figure(figsize=(w,h))
+
+    font = {"family":"sans-serif", "weight":"normal", "size":24}
+    plt.rc("font", **font)
+    # plt.rcParams["text.usetex"] = True
+
+    plt.title("Block Quality", fontsize=22)
+    plt.suptitle(title, y = 1.02, fontsize=28)
+
+    plt.xlabel("Blocking Strategy")
+    plt.ylabel("Proportion")
+
+    data = [ line for line in stats if predicate(line) ]
+    
+    # plt.xlim([ line["Blocking Method"]       for line in data ]            )
+    # plt.xlim([ line["Blocking Method"] for line in data ])
+    plt.ylim(-0.05, 1.05)
+    plt.grid()
+
+
+    xRange = [ line["Blocking Method"]          for line in data ]
+    plt.xticks(range(len(xRange)), xRange)
+
+    # fig, axs = plt.subplots()
+    plt.plot( range(len(xRange))
+            , [ line["Precision"]                       for line in data ]
+            , color="blue"
+            , marker="o"
+            , label="Precision"
+            )
+    plt.plot( range(len(xRange))
+            , [ line["Recall"]                          for line in data ]
+            , color="green"
+            , marker="o"
+            , label="Recall"
+            )
+    plt.plot( range(len(xRange))
+            , [ line["F1 Measure"]                      for line in data ]
+            , color="red"
+            , marker="o"
+            , label="F1 Measure"
+            )
+
+    plt.plot( range(len(xRange))
+            , [ line["Average pairs quality"]           for line in data ]
+            , color="purple"
+            , marker="o"
+            , label="Pairs quality"
+            )
+    plt.plot( range(len(xRange))
+            , [ line["Average pairs completeness"]      for line in data ]
+            , color="pink"
+            , marker="o"
+            , label="Pairs completeness"
+            )
+
+    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+
+    plt.savefig("plotFixedThresholdTraditional -- %s.png" % title, bbox_inches="tight")
+    plt.close()
+    print("plotFixedThresholdTraditional -- %s.png" % title)
+
+
+def plotFixedThresholdLSH(title, predicate):
+    plt.clf()
+
+    w,h = plt.figaspect(0.5)
+    plt.figure(figsize=(w,h))
+
+    font = {"family":"sans-serif", "weight":"normal", "size":24}
+    plt.rc("font", **font)
+    # plt.rcParams["text.usetex"] = True
+
+    plt.title("Block Quality", fontsize=22)
+    plt.suptitle(title, y = 1.02, fontsize=28)
+
+    plt.xlabel("Blocking Strategy")
+    plt.ylabel("Proportion")
+
+    data = [ line for line in stats if predicate(line) ]
+    
+    # plt.xlim([ line["Blocking Method"]       for line in data ]            )
+    # plt.xlim([ line["Blocking Method"] for line in data ])
+    plt.ylim(-0.05, 1.05)
+    plt.grid()
+
+    xRange = [ line["Number of bands"] + " " + line["Band size"]                 for line in data ]
+    plt.xticks(range(len(xRange)), xRange)
+
+    # fig, axs = plt.subplots()
+    plt.plot( range(len(xRange))
+            , [ line["Precision"]                       for line in data ]
+            , color="blue"
+            , marker="o"
+            , label="Precision"
+            )
+    plt.plot( range(len(xRange))
+            , [ line["Recall"]                          for line in data ]
+            , color="green"
+            , marker="o"
+            , label="Recall"
+            )
+    plt.plot( range(len(xRange))
+            , [ line["F1 Measure"]                      for line in data ]
+            , color="red"
+            , marker="o"
+            , label="F1 Measure"
+            )
+
+    plt.plot( range(len(xRange))
+            , [ line["Average pairs quality"]           for line in data ]
+            , color="purple"
+            , marker="o"
+            , label="Pairs quality"
+            )
+    plt.plot( range(len(xRange))
+            , [ line["Average pairs completeness"]      for line in data ]
+            , color="pink"
+            , marker="o"
+            , label="Pairs completeness"
+            )
+
+    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+
+    plt.savefig("plotFixedThresholdLSH -- %s.png" % title, bbox_inches="tight")
+    plt.close()
+    print("plotFixedThresholdLSH -- %s.png" % title)
+
+
+
+
+dataset = "Cora"
+
+
+linker = "TradBlocking"
+threshold = 70
+predicate = lambda line: line["Data Set (Source)"] == dataset and line["Linker"] == linker and float(line["Distance Threshold"]) == threshold
+blockingMethods = ['3', '5', '7', '8', '9', '10', 'all']
+print(blockingMethods)
+title = " - ".join([dataset, linker, "70"])
+plotFixedThresholdTraditional(title, blockingMethods, predicate)
+
+
+
+linker = "LSH"
+threshold = 70
+predicate = lambda line: line["Data Set (Source)"] == dataset and line["Linker"] == linker and float(line["Distance Threshold"]) == threshold
+title = " - ".join([dataset, linker, "70"])
+plotFixedThresholdLSH(title, predicate)
+
+
+
 
