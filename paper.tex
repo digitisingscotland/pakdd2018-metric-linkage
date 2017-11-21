@@ -434,11 +434,32 @@ In the traditional blocking experiment the following fields from the Cora data s
 TODO: Explain pairs-quality and pairs-completeness.
 \emph{\textbf{TODO: discuss measures used. PC, PQ, num comparisons, time? etc.}}
 
+
 \begin{figure}
-\begin{verbatim}
-This will be a table of Comparisons, F1, precision recall and pairs stuff.
-12 ROWS ISH
-\end{verbatim}
+\begin{table}
+\centering
+\begin{tabular}{lllllllll}
+Linker      & Linker             & Total comparisons & Number of links & Average pairs quality & Average pairs completeness & Precision & Recall & F1 Measure \\
+Brute Force & Brute Force        & 1677025           & 12474           & 0.02                  & 0.33                       & 0.84      & 0.57   & 0.68       \\
+MTree       & MTree              & 902693            & 12474           & 0.89                  & 0.22                       & 0.84      & 0.57   & 0.68       \\
+LSH         & LSH-2-2            & 175435            & 10443           & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
+LSH         & LSH-5-2            & 175435            & 10443           & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
+LSH         & LSH-10-2           & 175435            & 10443           & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
+LSH         & LSH-2-5            & 175435            & 10443           & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
+LSH         & LSH-5-5            & 175435            & 10443           & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
+LSH         & LSH-10-5           & 175435            & 10443           & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
+LSH         & LSH-2-10           & 175435            & 10443           & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
+LSH         & LSH-5-10           & 175435            & 10443           & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
+LSH         & LSH-10-10          & 175435            & 10443           & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
+Blocking    & Blocking-year      & 115893            & 6504            & 0.22                  & 0.19                       & 0.99      & 0.35   & 0.51       \\
+Blocking    & Blocking-authors   & 11039             & 3219            & 0.74                  & 0.1                        & 0.94      & 0.16   & 0.28       \\
+Blocking    & Blocking-title     & 27407             & 8225            & 0.84                  & 0.23                       & 0.95      & 0.42   & 0.58       \\
+Blocking    & Blocking-venue     & 36647             & 6383            & 0.7                   & 0.12                       & 0.85      & 0.29   & 0.44       \\
+Blocking    & Blocking-location  & 1009957           & 9551            & 0.17                  & 0.24                       & 0.83      & 0.43   & 0.57       \\
+Blocking    & Blocking-publisher & 833079            & 9634            & 0.12                  & 0.23                       & 0.85      & 0.44   & 0.58       \\
+Blocking    & Blocking-combined  & 1214269           & 12324           & 0.05                  & 0.32                       & 0.84      & 0.56   & 0.67      
+\end{tabular}
+\end{table}
 \caption{Linkage Quality on the Cora data set\label{comparison-of-results}}
 \end{figure}
 
@@ -472,9 +493,10 @@ This will be a table of Comparisons, F1, precision recall and pairs stuff for Sk
 
 \section{Conclusions and Future Work}
 
-\textbf{Contribution:} The primary contribution of this paper is the novel application of MSI to achieve complete and efficient record linkage, without the need for complex parameter tuning.
-We evaluate our approach on several data sets from diverse domains and demonstrate its advantages over
-existing indexing techniques for record linkage.
+In this paper we have demonstrated the efficacy of the application of MSI to achieve complete and efficient record linkage, without the need for complex parameter tuning. In conclusion, this assertion deserves some careful unpacking. It is always possible to achieve high quality linkage using a brute-force approach. However the n-squared complexity of this approach prevents its practical application for datasets of even moderate size. The use of MSI techniques such as M-tree delivers the same results as the brute-force approach at the cost of 
+
+
+
 
 % TODO: check that the above claims have been addressed.
 
