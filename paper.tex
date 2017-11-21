@@ -158,7 +158,7 @@ determine the final outcome of a linkage.
 This paper focuses on approaches that use a similarity threshold to
 classify links. Such techniques are fundamentally limited by the extent
 to which true matching records are similar, and true non-matches are
-dissimilar---this is dataset dependent. Within this domain, we define
+dissimilar---this is dataset-dependent. Within this domain, we define
 a technique to be \emph{complete} if it is guaranteed to identify all
 pairs within the specified similarity threshold. Commonly used indexing
 techniques are incomplete, since they reduce computational cost at the
@@ -195,9 +195,9 @@ advantages over existing indexing techniques for record linkage.
 \section{Related Work}
 \label{sec-related}
 
-We now briefly review relevant work in the areas of indexing
-for record linkage (for recent surveys see~\cite{Chr12b,Pap16}),
-and metric space indexing~\cite{Zezula2010}.
+We now briefly review relevant work in the areas of indexing for record
+linkage (for recent surveys see~\cite{Chr12b,Pap16}), and metric space
+indexing~\cite{Zezula2010}.
 
 Techniques to link records across datasets have been investigated for
 over five decades~\cite{Fel69,New59}, with the scalability of linking
@@ -213,7 +213,7 @@ according to its pronunciation, assigning the same code to similar
 sounding names (such as `Gail' and `Gayle'). Multiple blocking keys may
 be used to deal with the problem of missing attribute values.
 
-A different approach to indexing is the sorted neighborhood
+A different approach to indexing is the sorted neighbourhood
 method~\cite{Mon96}, where the datasets to be linked are sorted
 according to a \emph{sorting key} (usually a concatenation of the values
 from several attributes). A sliding window is then moved over the
@@ -233,7 +233,7 @@ out to have low similarity, corresponding to non-matches, resulting in
 \emph{inefficient} linkage.
 
 Locality sensitive hashing (LSH), originally proposed to allow efficient
-nearest-neighbor search in high-dimensional spaces~\cite{Ind98}, has
+nearest-neighbour search in high-dimensional spaces~\cite{Ind98}, has
 been employed in record linkage as an indexing technique where attribute
 values are hashed multiple times, and blocks are created from those
 records that share some hash values. \emph{HARRA}~\cite{Kim10} is a
@@ -283,7 +283,7 @@ datasets $A$ and $B$, we wish to find, for each record in $A$, all the
 records in $B$ that match it. We compare several algorithms for record
 linkage: traditional blocking, one incomplete similarity search method,
 LSH-MinHash, and one complete method, M-tree~\cite{paolociaccia2m}. We
-also use a simple brute-force complete technique as a baseline for
+also use a simple complete brute-force technique as a baseline for
 comparison, although this can only feasibly be applied to the smallest
 of our datasets. All experiments have a number of parameters to
 configure the search space and algorithm behaviour, including a
@@ -307,13 +307,17 @@ Each record in $A$ is placed into the appropriate block based on its
 blocking key value. The algorithm then iterates over the records in $B$,
 and for each one, compares it with each of the records from $A$ in the
 block with the same blocking key value.
+In some circumstances, incomplete approaches such as blocking can yield
+higher precision than complete techniques. This can occur when the
+datasets contain a significant number
+of non-matches that nonetheless have high similarity. In this situation,
+the fact that an incomplete technique omits consideration of some
+potential links can serve to improve precision, since the similarity
+distance 
 
 TODO: add stuff about how incomplete methods may yield higher precision than complete
 
-\textbf{THIS TEXT WAS LIFTED FROM BELOW USE HERE? Traditionally, blocking is a method for choosing candidates for linkage using manually designed criteria.
-Thanks to blocking, a distance is only computed between promising pairs of records.
-A major disadvantage of traditional blocking is the need for extra engineering effort.
-Bespoke blocking strategies need to be designed for a given data set and application domain.}
+
 
 \textbf{LSH-MinHash:}
 The additional parameters are \emph{shingle size} ($l_{ss}$), \emph{band
@@ -392,27 +396,27 @@ extensive domain knowledge.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-\begin{table}[t]
-\caption{Parameter settings used for the different data sets used in
-   the experiments,with $d$ the distance threshold used, $l_{ss}$, $l_{sb}$ and $l_{nb}$ the LSH
-   shingle size, and the size and number of bands, respectively.}
- \label{table-parameters}
-  \centering
-  \begin{scriptsize}
-  %\addtolength{\tabcolsep}{-0.5pt}
-  \begin{tabular}{ccccc}
-  \hline\noalign{\smallskip}
-  Data set~ & $d$ & $l_{ss}$ & $l_{bs}$ & $l_{nb}$ \\
-  name(s) & & & &  \\
-  \noalign{\smallskip} \hline \noalign{\smallskip}
-  CORA & ~$[0,5,10,\ldots,95,100]$~ & ~$2$~ &
-    ~$[2,5,10]$~ & ~$[2,5,10]$~  \\
-  Isle of Skye &  \\
-  Kilmarnock  &  \\
-  \noalign{\smallskip} \hline
-  \end{tabular}
-  \end{scriptsize}
-\end{table}
+% \begin{table}[t]
+% \caption{Parameter settings used for the different data sets used in
+%    the experiments,with $d$ the distance threshold used, $l_{ss}$, $l_{sb}$ and $l_{nb}$ the LSH
+%    shingle size, and the size and number of bands, respectively.}
+%  \label{table-parameters}
+%   \centering
+%   \begin{scriptsize}
+%   %\addtolength{\tabcolsep}{-0.5pt}
+%   \begin{tabular}{ccccc}
+%   \hline\noalign{\smallskip}
+%   Data set~ & $d$ & $l_{ss}$ & $l_{bs}$ & $l_{nb}$ \\
+%   name(s) & & & &  \\
+%   \noalign{\smallskip} \hline \noalign{\smallskip}
+%   CORA & ~$[0,5,10,\ldots,95,100]$~ & ~$2$~ &
+%     ~$[2,5,10]$~ & ~$[2,5,10]$~  \\
+%   Isle of Skye &  \\
+%   Kilmarnock  &  \\
+%   \noalign{\smallskip} \hline
+%   \end{tabular}
+%   \end{scriptsize}
+% \end{table}
 
 % \textbf{Experimental Setup:}
 % %
@@ -441,17 +445,18 @@ In the rest of this section we fix the threshold value to be 70 which maximises 
 
 In the traditional blocking experiment the following fields from the Cora data set are used as a blocking key: \textit{author}, \textit{title}, \textit{venue}, \textit{location}, \textit{publisher} and \textit{year}. We also use a very permissive blocking key which takes the union of all the values for these fields. 
 
-\Cref{comparison-of-results-cora} shows the results of the Cora experiments. The table shows the parameters for the experiment, the number of distance comparisons made, the precision, recall and F1 measure and the pairs quality and pair completeness achieved by each algorithm.  The linker labels may be interpreted as follows: the algorithm name is followed by its parameters, for LSH this is the size of the bands followed by the number of bands. For traditional blocking the parameters are the fields used for blocking.
+\Cref{comparison-of-results-cora} shows the results of the Cora experiments. The table shows the parameters for the experiment, the number of distance comparisons made, the precision, recall and F1 measure and the pairs quality and pair completeness achieved by each algorithm.  The linker labels may be interpreted as follows: the algorithm name is followed by its parameters, for LSH this is the number of the bands followed by the size of bands. For traditional blocking the parameters are the fields used for blocking.
 
 
 TODO: Explain pairs-quality and pairs-completeness.
-\emph{\textbf{TODO: discuss measures used. PC, PQ, num comparisons, time? etc.}}
+\emph{\textbf{TODO: discuss measures used. num comparisons, time? etc.}}
 
 
 \begin{table}[ht]
 \centering
 \begin{tabular}{l|r|r|r|r|r|r}
-Linker   & Comparisons & Pairs quality & Pairs completeness & Precision & Recall & F1 Measure \\ \hline{=#=#=}
+Linker & Comparisons & Pairs quality & Pairs completeness & Precision & Recall & F1 Measure \\
+\hline
 Brute Force        & 1,677,025                    & 0.02                  & 0.33                       & 0.84      & 0.57   & 0.68       \\ \hline
 MTree              &  902,693                     & 0.89                  & 0.22                       & 0.84      & 0.57   & 0.68       \\ \hline
 LSH-2-2            &  175,435                     & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
@@ -483,7 +488,7 @@ Blocking-combined  & 1,214,269                    & 0.05                  & 0.32
 \begin{table}[ht]
 \centering
 \begin{tabular}{l|r|r|r|r|r|r}
-Linker   & Comparisons & Pairs quality & Pairs completeness & Precision & Recall & F1 Measure \\ \hhline{=#=#=}
+Linker   & Comparisons & Pairs quality & Pairs completeness & Precision & Recall & F1 Measure \\ \hline
 MTree    & 102,318,525         & 0.84                  & 0.86                       & 0.65      & 0.46   & 0.54      \\ \hline
 LSH-2-2  & 3,109,250           & 0                     & 0.05                       & 0.63      & 0.03   & 0.06       \\
 LSH-5-2  & 10,412,496          & 0                     & 0.16                       & 0.64      & 0.11   & 0.19       \\
@@ -499,7 +504,7 @@ LSH-10-5 & 129,873            & 0                     & 0.01                    
 
 
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \begin{tabular}{l|r|r|r|r|r|r}
 Linker   & Comparisons & Pairs quality & Pairs completeness & Precision & Recall & F1 Measure \\ \hline
@@ -510,7 +515,7 @@ LSH-10-2  & 177,168,848         & 0                     & 0.48                  
 LSH-5-5   & 239,368            & 0.01                  & 0.02                       & 0.84      & 0.01   & 0.02       \\
 LSH-10-5  & 855,431            & 0.01                  & 0.03                       & 0.87      & 0.02   & 0.03 \\ \hline
 \end{tabular}
-\caption{Linkage Quality on demography datasets\textbf{This is for Kilmarnock. Threshold value is 2.
+\caption{Linkage Quality on demography datasets\textbf{This is for Kilmarnock. Threshold value is 2.}
 \label{comparison-of-results-demography-kili}
 }
 \end{table}
