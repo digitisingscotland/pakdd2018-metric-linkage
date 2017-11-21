@@ -417,19 +417,89 @@ datasets the maximum F-measure will correspond to different thresholds.
 In the rest of this section we fix the threshold value to be 70 which
 maximises the F-measure for this dataset.
 
+
 \begin{figure}
-\includegraphics[width=\textwidth]{figures/plotLQ_--_Cora_-_Brute_Force.png}
-\caption{Linkage Quality using Brute Force linking on the Cora dataset\label{fig-cora-brute}}
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{figures/plotLQ-cora-brute}
+\caption{Cora - Brute Force}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{figures/plotLQ-cora-mtree}
+\caption{Cora - M-Tree}
+\end{subfigure}
+
+\begin{subfigure}{.5\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{figures/plotLQ-cora-trad-authors}
+\caption{Cora - Traditional Blocking on the `authors' field}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{figures/plotLQ-cora-trad-title}
+\caption{Cora - Traditional Blocking on the `title' field}
+\end{subfigure}
+
+\begin{subfigure}{.5\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{figures/plotLQ-cora-trad-year}
+\caption{Cora - Traditional Blocking on the `publication year' field}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{figures/plotLQ-cora-trad-combined}
+\caption{Cora - Traditional Blocking using the union of blocking on all fields}
+\end{subfigure}
+
+\begin{subfigure}{.5\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{figures/plotLQ-cora-lsh-2-2}
+\caption{Cora - LSH Blocking using 2 bands of size 2}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{figures/plotLQ-cora-lsh-2-10}
+\caption{Cora - LSH Blocking using 2 bands of size 10}
+\end{subfigure}
+
+\begin{subfigure}{.5\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{figures/plotLQ-cora-lsh-10-2}
+\caption{Cora - LSH Blocking using 10 bands of size 2}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{figures/plotLQ-cora-lsh-10-10}
+\caption{Cora - LSH Blocking using 10 bands of size 10}
+\end{subfigure}
+
+
+\caption{Linkage results on the Cora data set}
+\label{demography-quality-mtree}
 \end{figure}
 
-In the traditional blocking experiment the following fields from the Cora dataset are used as individually as blocking keys: \textit{author}, \textit{title}, \textit{venue}, \textit{location}, \textit{publisher} and \textit{year}. We also use a combined blocking key comprising these fields. 
+\begin{figure}
+\includegraphics[width=\textwidth]{figures/plotLQ-cora-brute}
+\caption{Linkage quality using brute-force linking on the Cora dataset\label{fig-cora-brute}}
+\end{figure}
 
-\Cref{comparison-of-results-cora} shows the results of the Cora experiments. The table shows the parameters for the experiment, the number of distance comparisons made, the precision, recall and the F1 measure achieved by each algorithm.  The linker column may be interpreted as follows: the algorithm name is followed by its parameters, for LSH this is the number of the bands followed by the size of bands. For traditional blocking the parameters are the fields used for blocking.
+In the traditional blocking experiment the following fields from the
+Cora dataset are used individually as blocking keys: \textit{author},
+\textit{title}, \textit{venue}, \textit{location}, \textit{publisher}
+and \textit{year}. We also use a combined blocking key comprising all
+fields.
 
+\Cref{comparison-of-results-cora} shows the results of the Cora
+experiments. The table shows the parameters for the experiment, the
+number of distance comparisons made, the precision, recall and the F1
+measure achieved by each algorithm.  In the \emph{Linker} column the algorithm name is followed by its
+parameters: for LSH the number of the bands followed by the band size, and for traditional blocking the fields used
+for blocking.
 
-As can be seen in \Cref{comparison-of-results-cora}, M-tree reports the same results as brute-force....
-
-\emph{\textbf{TODO: discuss measures used. num comparisons, time? etc.}}
+M-tree yields the same linkage quality as brute-force, although using a significantly lower
+number of comparisons.
 
 
 \begin{table}[ht]
@@ -459,14 +529,18 @@ Block-location     & 1,009,957                 & 0.83      & 0.43   & 0.57      
 Block-publisher    &  833,079                  & 0.85      & 0.44   & 0.58       \\
 Block-combined     & 1,214,269                 & 0.84      & 0.56   & 0.67       \\ \hline
 \end{tabular}
-\caption{Linkage Quality on the Cora dataset distance=70\label{comparison-of-results-cora}
-\textbf{TODO: The table needs some rows removed. Note that this table is with a threshold value of 70.}
+\caption{Linkage quality on Cora dataset with distance threshold = 70
+\label{comparison-of-results-cora}
 }
 \end{table}
 
-
-
 \subsection{Historical Demography results}
+
+\Cref{comparison-of-results-demography-skye} and \Cref{comparison-of-results-demography-kili} show the results for LSH-Minhash and M-tree on the Skye and Kilmarnock datasets. Linkage was performed between birth and death records. The shingle size was set to 2 for all the LSH experiments reported, as this was found to give good results and LSH was not especially sensitive to this parameter. Results for other shingle sizes were omitted from this paper for brevity. In both cases the F1 measure achieved is better for M-tree than any of the experimental settings chosen for LSH. This is largely due to the recall for M-tree being much higher than any of the LSH experiments. For all LSH parameters LSH out performs M-tree in terms of precision.
+
+Perhaps more important than the fact that M-tree gives better F1 measures than all of the LSH experiments is the fact that the LSH performance is extremely variable. For a relatively plausible settings for the number of bands and band-size the F1 measurements vary from 0.01 (extremely poor) to 0.47 (relatively good) for Skye and between 0.03 and 0.49 for the Kilmarnock dataset. In both cases LSH-10-2 performs best, but since this is data dependent there is no guarantee these parameters would work well with another dataset. Furthermore, without good ground truth, which is usually unavailable, there is no way of knowing if good linkage results are being obtained or not.
+
+Another observation that is worthy of comment is the number of (distance) comparisons being performed by the different algorithms. For M-trees the number of comparisons are closely related to the complexity of the search being performed since the algorithms are performing (range) searches over distance measures to determine the query results. This is not true of LSH which is performing Jaccard similarity using Hashes over the datasets. Comparisons are only used at the final step to determine if a candidate is a match or not. The LSH results which provide the best results by F1 measure are performing between a quarter and half the number of matches performed by M-trees. From this we can conclude that the hash algorithms are returning many candidates that are outwith the search distance. Thus, in order to get good results, LSH is tending towards a brute force search over the candidate results. Despite this LSH is much faster due to the efficiency of the hashing mechanisms.
 
 \begin{table}[ht]
 \centering
@@ -488,16 +562,12 @@ LSH-5-5  & 36,566                     & 0.76      & 0.01   & 0.01       \\
 
 LSH-10-5 & 129,873                    & 0.72      & 0.01   & 0.02       \\ \hline
 \end{tabular}
-\caption{Linkage Quality on demography datasets \textbf{This is for Skye. Threshold value is 2.}
+\caption{Linkage quality on Skye dataset with distance threshold = 2
 \label{comparison-of-results-demography-skye}
 }
 \end{table}
 
-\Cref{comparison-of-results-demography-skye} and \Cref{comparison-of-results-demography-kili} shows the results for LSH-Minhash and M-tree applied to The Isle of Skye and Kilmarnock datasets. The shingle-size was set to 2 for all the LSH experiments shown as this was found to give good results and LSH was not especially sensitive to this parameter. Results for other shingle sizes were omitted from this paper for brevity. In these experiments the linkage performed is between birth and death records. In both cases the F1 measure achieved is better for M-tree than any of the experimental settings chosen for LSH. This is largely due to the recall for M-tree being much higher than any of the LSH experiments. For all LSH parameters LSH out performs M-tree in terms of precision.
-
-Perhaps more important than the fact that M-tree gives better F1 measures than all of the LSH experiments is the fact that the LSH performance is extremely variable. For a relatively plausible settings for the number of bands and band-size the F1 measurements vary from 0.01 (extremely poor) to 0.47 (relatively good) for Skye and between 0.03 and 0.49 for the Kilmarnock dataset. In both cases LSH-10-2 performs best, but since this is data dependent there is no guarantee these parameters would work well with another dataset. Furthermore, without good ground truth, which is usually unavailable, there is no way of knowing if good linkage results are being obtained or not.
-
-Another observation that is worthy of comment is the number of (distance) comparisons being performed by the different algorithms. For M-trees the number of comparisons are closely related to the complexity of the search being performed since the algorithms are performing (range) searches over distance measures to determine the query results. This is not true of LSH which is performing Jaccard similarity using Hashes over the datasets. Comparisons are only used at the final step to determine if a candidate is a match or not. The LSH results which provide the best results by F1 measure are performing between a quarter and half the number of matches performed by M-trees. From this we can conclude that the hash algorithms are returning many candidates that are outwith the search distance. Thus, in order to get good results, LSH is tending towards a brute force search over the candidate results. Despite this LSH is much faster due to the efficiency of the hashing mechanisms.
+%-------------------------------------------------------------------------------------
 
 \begin{table}[ht]
 \centering
@@ -514,11 +584,12 @@ LSH-10-2  & 177,168,848                   & 0.79      & 0.36   & 0.49       \\
 LSH-5-5   & 239,368                      & 0.84      & 0.01   & 0.02       \\
 LSH-10-5  & 855,431                      & 0.87      & 0.02   & 0.03 \\ \hline
 \end{tabular}
-\caption{Linkage Quality on demography datasets\textbf{This is for Kilmarnock. Threshold value is 2.}
+\caption{Linkage quality on Kilmarnock dataset with distance threshold = 2
 \label{comparison-of-results-demography-kili}
 }
 \end{table}
 
+%-------------------------------------------------------------------------------------
 
 \begin{figure}
 \centering
@@ -551,7 +622,6 @@ We contrast this to traditional blocking and LSH based approaches. The major dra
 
 However, this paper also highlights some unexpected results. Firstly, the good quality results yielded by both traditional blocking and LSH are partly due to the fact that (in the limit) they tend towards brute-force as the number of records in the block increase. A second unexpected result is that shown in \Cref{fig-cora-brute}, namely that LSH can yield higher precision than is achieved by a complete method such as M-Tree as was discussed in Sect.~\ref{sec-approach}.
 
-\emph{IS THIS RIGHT?}.
 
 \emph{Some sentence or two about run-time?}
 
