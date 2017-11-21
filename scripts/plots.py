@@ -52,6 +52,13 @@ def loadCSV(filepath, delimiter=",", verbose=0):
         return (fieldNames, rawValues)
 
 
+def toFloat(s):
+    if s == "NA":
+        return 0
+    else:
+        return float(s)
+
+
 (fields, stats) = loadCSV("stats.tsv", delimiter="\t")
 
 for f in fields:
@@ -80,8 +87,8 @@ def plotLQ(title, predicate):
 
     data = [ line for line in stats if predicate(line) ]
 
-    plt.xlim( min([ float(line["Distance Threshold"]) for line in data ])
-            , max([ float(line["Distance Threshold"]) for line in data ])
+    plt.xlim( min([ toFloat(line["Distance Threshold"]) for line in data ])
+            , max([ toFloat(line["Distance Threshold"]) for line in data ])
             )
     plt.ylim(-0.05, 1.05)
     plt.grid()
@@ -218,14 +225,14 @@ def plotBQ(title, predicate):
 
     data = [ line for line in stats if predicate(line) ]
 
-    plt.xlim( min([ float(line["Distance Threshold"]) for line in data ])
-            , max([ float(line["Distance Threshold"]) for line in data ])
+    plt.xlim( min([ toFloat(line["Distance Threshold"]) for line in data ])
+            , max([ toFloat(line["Distance Threshold"]) for line in data ])
             )
     plt.ylim(-0.05, 1.05)
     plt.grid()
 
-    plt.plot( [ line["Distance Threshold"]          for line in data ]
-            , [ line["Average links quality"]       for line in data ]
+    plt.plot( [         line["Distance Threshold"]          for line in data ]
+            , [ toFloat(line["Average links quality"])       for line in data ]
             , color="green"
             , marker="o"
             , label="Block Quality"
@@ -257,21 +264,21 @@ def plotPQC(title, predicate):
 
     data = [ line for line in stats if predicate(line) ]
 
-    plt.xlim( min([ float(line["Distance Threshold"]) for line in data ])
-            , max([ float(line["Distance Threshold"]) for line in data ])
+    plt.xlim( min([ toFloat(line["Distance Threshold"]) for line in data ])
+            , max([ toFloat(line["Distance Threshold"]) for line in data ])
             )
     plt.ylim(-0.05, 1.05)
     plt.grid()
 
-    plt.plot( [ line["Distance Threshold"]          for line in data ]
-            , [ line["Average pairs quality"]       for line in data ]
+    plt.plot( [         line["Distance Threshold"]          for line in data ]
+            , [ toFloat(line["Average pairs quality"])       for line in data ]
             , color="green"
             , marker="o"
             , label="Pairs Quality"
             )
 
-    plt.plot( [ line["Distance Threshold"]          for line in data ]
-            , [ line["Average pairs completeness"]  for line in data ]
+    plt.plot( [         line["Distance Threshold"]          for line in data ]
+            , [ toFloat(line["Average pairs completeness"])  for line in data ]
             , color="red"
             , marker="o"
             , label="Pairs Completeness"
@@ -560,7 +567,7 @@ dataset = "Cora"
 
 linker = "TradBlocking"
 threshold = 70
-predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker and float(line["Distance Threshold"]) == threshold
+predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker and toFloat(line["Distance Threshold"]) == threshold
 blockingMethods = ['5', '3', '7', '10', '8', '9', 'all']
 print(blockingMethods)
 title = " - ".join([dataset, linker, "70"])
@@ -570,7 +577,7 @@ plotFixedThresholdTraditional2(title, blockingMethods, predicate)
 
 linker = "LSH"
 threshold = 70
-predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker and float(line["Distance Threshold"]) == threshold
+predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker and toFloat(line["Distance Threshold"]) == threshold
 title = " - ".join([dataset, linker, "70"])
 plotFixedThresholdLSH(title, predicate)
 
