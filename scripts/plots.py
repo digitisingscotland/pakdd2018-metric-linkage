@@ -75,7 +75,7 @@ def plotLQ(title, predicate):
     plt.title("Linkage Quality w.r.t. Threshold", fontsize=22)
     plt.suptitle(title, y = 1.02, fontsize=28)
 
-    plt.xlabel("Threshold")
+    plt.xlabel("Distance Threshold")
     plt.ylabel("Linkage Quality")
 
     data = [ line for line in stats if predicate(line) ]
@@ -213,7 +213,7 @@ def plotBQ(title, predicate):
     plt.title("Block Quality", fontsize=22)
     plt.suptitle(title, y = 1.02, fontsize=28)
 
-    plt.xlabel("Threshold")
+    plt.xlabel("Distance Threshold")
     plt.ylabel("Proportion")
 
     data = [ line for line in stats if predicate(line) ]
@@ -252,7 +252,7 @@ def plotPQC(title, predicate):
     plt.title("Pairs Quality and Completeness", fontsize=22)
     plt.suptitle(title, y = 1.02, fontsize=28)
 
-    plt.xlabel("Threshold")
+    plt.xlabel("Distance Threshold")
     plt.ylabel("Proportion")
 
     data = [ line for line in stats if predicate(line) ]
