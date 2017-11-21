@@ -60,7 +60,7 @@ true matching records with high similarity. Conversely, they may group
 records with low similarity, leading to high computational overhead.
 %
 We propose using metric space indexing to perform \emph{complete} record
-linkage, which results in a parameterless record linkage process
+linkage, which results in a parameter-free record linkage process
 combining indexing, comparison and classification into a single step
 delivering complete and efficient record linkage.
 
@@ -405,10 +405,10 @@ fields being compared.
 
 In this section, we perform linkage on the Cora dataset using all four
 approaches presented in this paper: brute force, traditional blocking,
-LSH and M-Tree. The brute-force approach is used to establish the
+LSH and M-tree. The brute-force approach is used to establish the
 threshold value that yields the best possible linkage for the Cora
 dataset. The threshold value is varied between 0 and 250,
-\Cref{fig-cora-brute} presents the precision, recall, and F-measure
+\Cref{cora-quality} presents the precision, recall, and F-measure
 values. The linkage results have high precision and low recall for low
 threshold values, and high recall and low precision for high threshold
 values. For this dataset, the maximum F-measure value is achieved using
@@ -416,7 +416,6 @@ a threshold value of 70. This value is data dependent; for different
 datasets the maximum F-measure will correspond to different thresholds.
 In the rest of this section we fix the threshold value to be 70 which
 maximises the F-measure for this dataset.
-
 
 \begin{figure}
 \centering
@@ -428,7 +427,7 @@ maximises the F-measure for this dataset.
 \begin{subfigure}{.5\textwidth}
   \centering
 \includegraphics[width=\textwidth]{figures/plotLQ-cora-mtree}
-\caption{Cora - M-Tree}
+\caption{Cora - M-tree}
 \end{subfigure}
 
 \begin{subfigure}{.5\textwidth}
@@ -475,9 +474,8 @@ maximises the F-measure for this dataset.
 \caption{Cora - LSH Blocking using 10 bands of size 10}
 \end{subfigure}
 
-
 \caption{Linkage results on the Cora data set}
-\label{demography-quality-mtree}
+\label{cora-quality}
 \end{figure}
 
 % \begin{figure}
@@ -491,15 +489,21 @@ Cora dataset are used individually as blocking keys: \textit{author},
 and \textit{year}. We also use a combined blocking key comprising all
 fields.
 
-\Cref{comparison-of-results-cora} shows the results of the Cora
-experiments. The table shows the parameters for the experiment, the
-number of distance comparisons made, the precision, recall and the F1
-measure achieved by each algorithm.  In the \emph{Linker} column the algorithm name is followed by its
-parameters: for LSH the number of the bands followed by the band size, and for traditional blocking the fields used
-for blocking.
+\Cref{comparison-of-results-cora} shows greater detail for a subset of
+the Cora experiments, with the distance threshold fixed at 70. The table
+shows the parameters for the experiment, the number of distance
+comparisons made, the precision, recall and the F1 measure achieved by
+each algorithm.  In the \emph{Linker} column the algorithm name is
+followed by its parameters: for LSH the number of the bands followed by
+the band size, and for traditional blocking the fields used for
+blocking. The number of distance comparisons is reported as a
+machine-independent proxy for execution cost, since code profiling shows
+that distance calculations are dominant.
 
 M-tree yields the same linkage quality as brute-force, although using a significantly lower
-number of comparisons.
+number of comparisons. This is as expected, since both techniques are complete.
+
+Three of the LSH configurations give qul
 
 
 \begin{table}[ht]
@@ -607,24 +611,17 @@ LSH-10-5  & 855,431                      & 0.87      & 0.02   & 0.03 \\ \hline
 \begin{subfigure}{.5\textwidth}
   \centering
 \includegraphics[width=\textwidth]{figures/plotFs-skye-f}
-\caption{F-Measure values of all LSH variations vs M-Tree for the Skye data set}
+\caption{Linkage quality on Skye dataset using M-tree and all LSH configurations}
 \end{subfigure}%
 \begin{subfigure}{.5\textwidth}
   \centering
 \includegraphics[width=\textwidth]{figures/plotFs-kilmarnock-f}
-\caption{F-Measure values of all LSH variations vs M-Tree for the Kilmarnock data set}
+\caption{Linkage quality on Kilmarnock dataset using M-tree and all LSH configurations}
 \end{subfigure}
 
-\caption{Linkage results on the demographic data set}
+\caption{Linkage results on the demographic datasets}
 \label{demography-quality-mtree}
 \end{figure}
-
-% \begin{figure}
-% \includegraphics[width=\textwidth]{figures/plotBQ_--_Cora_-_MTree}
-% \caption{Comparison of quality attainable on Skye dataset using M-tree and various LSH configurations\label{mtree-lsh-quality}}
-% \end{figure}
-
-
 
 % --------------------------------------------------------------------
 
@@ -634,7 +631,7 @@ In this paper we have demonstrated the efficacy of MSI in achieving  complete an
 
 We contrast this to traditional blocking and LSH based approaches. The major drawback of their use is that whilst they can produce extremely good results, they can also produce extremely poor results. It was our observations of low recall given by these approaches that originally led us to experiment with M-trees. Without extensive ground truth or large amounts of clerking effort by human domain experts it is impossible to determine the quality of the links produced. 
 
-However, this paper also highlights some unexpected results. Firstly, the good quality results yielded by both traditional blocking and LSH are partly due to the fact that (in the limit) they tend towards brute-force as the number of records in the block increase. A second unexpected result is that shown in \Cref{fig-cora-brute}, namely that LSH can yield higher precision than is achieved by a complete method such as M-Tree as was discussed in Sect.~\ref{sec-approach}.
+However, this paper also highlights some unexpected results. Firstly, the good quality results yielded by both traditional blocking and LSH are partly due to the fact that (in the limit) they tend towards brute-force as the number of records in the block increase. A second unexpected result is that shown in \Cref{quality-cora}, namely that LSH can yield higher precision than is achieved by a complete method such as M-tree, as was discussed in Sect.~\ref{sec-approach}.
 
 
 \emph{Some sentence or two about run-time?}
