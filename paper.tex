@@ -8,6 +8,7 @@
 \usepackage{url}
 \usepackage{hyperref}
 \usepackage{cleveref}
+\usepackage{hhline}
 
 %\pagestyle{empty}
 \pagestyle{headings} 
@@ -148,34 +149,46 @@ followed by a manual assessment (auditing) of the linkage
 outcomes~\cite{Chr12}. If the quality of the resulting links is not good
 enough for a certain application, the linkage process needs to be
 repeated with different parameter settings and possibly also alternative
-algorithms. This can result in a time-consuming and labor-intensive
+algorithms. This can result in a time-consuming and labour-intensive
 iterative process. A major challenge is often the heuristic nature of
 indexing, where the choice of a certain indexing technique and its
 parameters (including which attributes to use in indexing) will
 determine the final outcome of a linkage.
 
-\textbf{TODO: GK rewrite this paragraph. Make the connection between completeness and high recall. Define completenes.}
-Here we explore how existing indexing techniques can lead to
-low recall, even for record pairs that are highly similar and likely
-correspond to true matches. As a result, such techniques can lead
-to \emph{incomplete} record linkage results. To address this problem,
-\emph{metric space indexing} (MSI) can be used to guarantee that all
-record pairs, up to a certain distance threshold, are considered in the
-record linkage results. MSI also avoids the need for costly detailed
-comparison of record pairs with low similarities, which may be inserted
-into the same block with traditional indexing techniques. It allows
-indexing, comparison and classification to be combined into a
-single step, as shown in Fig.~\ref{fig-rl-process}, making the overall
-record linkage process simpler, more efficient and more effective than
-the traditional approach.
+This paper focuses on approaches that use a similarity threshold to
+classify links. Such techniques are fundamentally limited by the extent
+to which true matching records are similar, and true non-matches are
+dissimilar---this is dataset dependent. Within this domain, we define
+a technique to be \emph{complete} if it is guaranteed to identify all
+pairs within the specified similarity threshold. Commonly used indexing
+techniques are incomplete, since they reduce computational cost at the
+expense of potentially overlooking some true matches. By definition,
+incomplete techniques yield lower recall than complete techniques.
+Conversely, and perhaps counter-intuitively, complete techniques can
+yield lower precision with some datasets. This is discussed further in
+Sect.~\ref{sec-approach}.
 
+\emph{Metric space indexing} (MSI) is a complete technique with much
+lower computational overheads than a brute-force approach. It allows
+indexing, comparison and classification to be combined into a single
+step, as shown in Fig.~\ref{fig-rl-process}, making the overall record
+linkage process simpler, more efficient and more effective than
+incomplete indexing approaches.
 
-\textbf{Contribution:} The primary contribution of this paper is the novel application of MSI to achieve complete and efficient record linkage, without the need for complex parameter tuning.
-We evaluate our approach on several data sets from diverse domains and demonstrate its advantages over
-existing indexing techniques for record linkage.
+\textbf{Contribution:} the primary contribution of this paper is the
+novel application of MSI to achieve complete and efficient record
+linkage, without the need for complex parameter tuning. We evaluate our
+approach on several data sets from diverse domains and demonstrate its
+advantages over existing indexing techniques for record linkage.
 
 % For final paper:
-% The motivation for this work is the Digitising Scotland project (Dibben 2012), which is in the process of transcribing and linking all the vital events recorded in Scotland between 1856 and 1977. This data set will, when complete, include around 14 million birth records, 11 million death records and 4 million marriage records. As part of the work, certain data fields (locations, occupations and causes of death) are also being classified to the relevant standard coding schemes.
+% The motivation for this work is the Digitising Scotland project
+% (Dibben 2012), which is in the process of transcribing and linking all
+% the vital events recorded in Scotland between 1856 and 1977. This data
+% set will, when complete, include around 14 million birth records, 11
+% million death records and 4 million marriage records. As part of the
+% work, certain data fields (locations, occupations and causes of death)
+% are also being classified to the relevant standard coding schemes.
 
 % --------------------------------------------------------------------
 
@@ -284,7 +297,7 @@ record in $B$. Each pair is classified as a link if the distance between
 the records is less than the threshold. This approach is guaranteed to
 identify all links, with complexity $ O(|A| \times |B|) $.
 
-\textbf{Traditional  blocking:}
+\textbf{Traditional blocking:}
 The additional parameters are the set of blocking keys and the
 normalization encodings applied to each field. These are selected as
 described in \cite{Chr12b}, exploiting knowledge of the domain and of
@@ -294,6 +307,8 @@ Each record in $A$ is placed into the appropriate block based on its
 blocking key value. The algorithm then iterates over the records in $B$,
 and for each one, compares it with each of the records from $A$ in the
 block with the same blocking key value.
+
+TODO: add stuff about how incomplete methods may yield higher precision than complete
 
 \textbf{THIS TEXT WAS LIFTED FROM BELOW USE HERE? Traditionally, blocking is a method for choosing candidates for linkage using manually designed criteria.
 Thanks to blocking, a distance is only computed between promising pairs of records.
@@ -305,15 +320,14 @@ The additional parameters are \emph{shingle size} ($l_{ss}$), \emph{band
 size} ($l_{bs}$) and \emph{number of bands} ($l_{nb}$). Each record in
 $A$ is placed in an \emph{LSH-MinHash} data structure. First, all the
 fields of the record are concatenated, and the result \emph{shingled}
-into a set of n-grams with $n = l_{ss}$. Next, a set of 
-deterministically generated hash functions are applied to
-each n-gram in the set
-and the smallest result (the MinHash) of each hash application is added
-to a signature for the record. The number of hashes used, and thus the
-size of the signature, is set to $l_{nb} \times l_{bs}$. Finally, the
-signature is split into $l_{nb}$ bands and the values from each band
-are hashed again to create a number of keys. The original record is
-added to a map associated with each of the keys. 
+into a set of n-grams with $n = l_{ss}$. Next, a set of
+deterministically generated hash functions are applied to each n-gram in
+the set and the smallest result (the MinHash) of each hash application
+is added to a signature for the record. The number of hashes used, and
+thus the size of the signature, is set to $l_{nb} \times l_{bs}$.
+Finally, the signature is split into $l_{nb}$ bands and the values from
+each band are hashed again to create a number of keys. The original
+record is added to a map associated with each of the keys. 
 
 To perform linkage, the algorithm iterates over the records in $B$. Each
 record is hashed using the procedure described above, to obtain a set of
@@ -361,8 +375,7 @@ and discuss our results~\footnote{The raw data, additional figures and the sourc
 %\label{sec-data}
 We used four data sets from three domains in our experiments, as
 summarized in Table~\ref{table-datasets}. The first is
-\emph{CORA}~\footnote{Available from:
-\texttt{http://secondstring.sourceforge.net}}, which contains 1,295
+\emph{Cora}~\cite{Cora2017}, which contains 1,295
 records that refer to 112 machine learning publications. 
 It is used as a benchmark data set in the literature for assessing linkage algorithms. Ground truth is provided via a unique
 \emph{paper\_id} identifier of the form "blum1993". In this experiment linkage is performed over the same set of records.
@@ -428,81 +441,110 @@ In the rest of this section we fix the threshold value to be 70 which maximises 
 
 In the traditional blocking experiment the following fields from the Cora data set are used as a blocking key: \textit{author}, \textit{title}, \textit{venue}, \textit{location}, \textit{publisher} and \textit{year}. We also use a very permissive blocking key which takes the union of all the values for these fields. 
 
-\Cref{comparison-of-results} shows the results of the Cora experiments. The table shows the parameters for the experiment, the number of distance comparisons made, the precision, recall and F1 measure and the pairs quality and pair completeness achieved by each algorithm.  
+\Cref{comparison-of-results-cora} shows the results of the Cora experiments. The table shows the parameters for the experiment, the number of distance comparisons made, the precision, recall and F1 measure and the pairs quality and pair completeness achieved by each algorithm.  The linker labels may be interpreted as follows: the algorithm name is followed by its parameters, for LSH this is the size of the bands followed by the number of bands. For traditional blocking the parameters are the fields used for blocking.
 
 
 TODO: Explain pairs-quality and pairs-completeness.
 \emph{\textbf{TODO: discuss measures used. PC, PQ, num comparisons, time? etc.}}
 
 
-\begin{figure}
-\begin{table}
+\begin{table}[ht]
 \centering
-\begin{tabular}{lllllllll}
-Linker      & Linker             & Total comparisons & Number of links & Average pairs quality & Average pairs completeness & Precision & Recall & F1 Measure \\
-Brute Force & Brute Force        & 1677025           & 12474           & 0.02                  & 0.33                       & 0.84      & 0.57   & 0.68       \\
-MTree       & MTree              & 902693            & 12474           & 0.89                  & 0.22                       & 0.84      & 0.57   & 0.68       \\
-LSH         & LSH-2-2            & 175435            & 10443           & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
-LSH         & LSH-5-2            & 175435            & 10443           & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
-LSH         & LSH-10-2           & 175435            & 10443           & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
-LSH         & LSH-2-5            & 175435            & 10443           & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
-LSH         & LSH-5-5            & 175435            & 10443           & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
-LSH         & LSH-10-5           & 175435            & 10443           & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
-LSH         & LSH-2-10           & 175435            & 10443           & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
-LSH         & LSH-5-10           & 175435            & 10443           & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
-LSH         & LSH-10-10          & 175435            & 10443           & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
-Blocking    & Blocking-year      & 115893            & 6504            & 0.22                  & 0.19                       & 0.99      & 0.35   & 0.51       \\
-Blocking    & Blocking-authors   & 11039             & 3219            & 0.74                  & 0.1                        & 0.94      & 0.16   & 0.28       \\
-Blocking    & Blocking-title     & 27407             & 8225            & 0.84                  & 0.23                       & 0.95      & 0.42   & 0.58       \\
-Blocking    & Blocking-venue     & 36647             & 6383            & 0.7                   & 0.12                       & 0.85      & 0.29   & 0.44       \\
-Blocking    & Blocking-location  & 1009957           & 9551            & 0.17                  & 0.24                       & 0.83      & 0.43   & 0.57       \\
-Blocking    & Blocking-publisher & 833079            & 9634            & 0.12                  & 0.23                       & 0.85      & 0.44   & 0.58       \\
-Blocking    & Blocking-combined  & 1214269           & 12324           & 0.05                  & 0.32                       & 0.84      & 0.56   & 0.67      
+\begin{tabular}{l|r|r|r|r|r|r}
+Linker   & Comparisons & Pairs quality & Pairs completeness & Precision & Recall & F1 Measure \\ \hline{=#=#=}
+Brute Force        & 1,677,025                    & 0.02                  & 0.33                       & 0.84      & 0.57   & 0.68       \\ \hline
+MTree              &  902,693                     & 0.89                  & 0.22                       & 0.84      & 0.57   & 0.68       \\ \hline
+LSH-2-2            &  175,435                     & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
+LSH-5-2            &  175,435                     & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
+LSH-10-2           &  175,435                     & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
+LSH-2-5            &  175,435                     & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
+LSH-5-5            &  175,435                     & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
+LSH-10-5           &  175,435                     & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
+LSH-2-10           &  175,435                     & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
+LSH-5-10           &  175,435                     & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
+LSH-10-10          &  175,435                     & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\  \hline
+Blocking-year      &  115,893                     & 0.22                  & 0.19                       & 0.99      & 0.35   & 0.51       \\
+Blocking-authors   &   11,039                      & 0.74                  & 0.1                        & 0.94      & 0.16   & 0.28       \\
+Blocking-title     &   27,407                      & 0.84                  & 0.23                       & 0.95      & 0.42   & 0.58       \\
+Blocking-venue     &   36,647                      & 0.7                   & 0.12                       & 0.85      & 0.29   & 0.44       \\
+Blocking-location  & 1,009,957                    & 0.17                  & 0.24                       & 0.83      & 0.43   & 0.57       \\
+Blocking-publisher &  833,079                     & 0.12                  & 0.23                       & 0.85      & 0.44   & 0.58       \\
+Blocking-combined  & 1,214,269                    & 0.05                  & 0.32                       & 0.84      & 0.56   & 0.67       \\ \hline
 \end{tabular}
+\caption{Linkage Quality on the Cora data set distance=70\label{comparison-of-results-cora}
+\textbf{TODO: The table needs some rows removed. Note that this table is with a threshold value of 70.}
+}
 \end{table}
-\caption{Linkage Quality on the Cora data set\label{comparison-of-results}}
-\end{figure}
+
+
 
 \subsection{Historical Demography results}
 
-\begin{figure}
-\begin{verbatim}
-This will be a table of Comparisons, F1, precision recall and pairs stuff for Skye/Kilmarnock
-12 ROWS ISH
-\end{verbatim}
-\caption{Linkage Quality on the Cora data set\label{comparison-of-results}}
-\end{figure}
+\begin{table}[ht]
+\centering
+\begin{tabular}{l|r|r|r|r|r|r}
+Linker   & Comparisons & Pairs quality & Pairs completeness & Precision & Recall & F1 Measure \\ \hhline{=#=#=}
+MTree    & 102,318,525         & 0.84                  & 0.86                       & 0.65      & 0.46   & 0.54      \\ \hline
+LSH-2-2  & 3,109,250           & 0                     & 0.05                       & 0.63      & 0.03   & 0.06       \\
+LSH-5-2  & 10,412,496          & 0                     & 0.16                       & 0.64      & 0.11   & 0.19       \\
+LSH-10-2 & 53,874,127          & 0                     & 0.46                       & 0.68      & 0.36   & 0.47       \\
+LSH-5-5  & 36,566             & 0                     & 0.01                       & 0.76      & 0.01   & 0.01       \\
+LSH-10-5 & 129,873            & 0                     & 0.01                       & 0.72      & 0.01   & 0.02       \\ \hline
+\end{tabular}
+\caption{Linkage Quality on demography datasets \textbf{This is for Skye. Threshold value is 2.}
+\label{comparison-of-results-demography-skye}
+}
+\end{table}
+
+
+
+
+\begin{table}[h]
+\centering
+\begin{tabular}{l|r|r|r|r|r|r}
+Linker   & Comparisons & Pairs quality & Pairs completeness & Precision & Recall & F1 Measure \\ \hline
+MTree     & 514,871,153         & 0.89                  & 0.82                       & 0.76      & 0.45   & 0.57      \\ \hline
+LSH-2-2   & 99,145,887          & 0                     & 0.23                       & 0.81      & 0.16   & 0.27       \\
+LSH-5-2   & 130,721,338         & 0                     & 0.32                       & 0.79      & 0.23   & 0.36       \\
+LSH-10-2  & 177,168,848         & 0                     & 0.48                       & 0.79      & 0.36   & 0.49       \\
+LSH-5-5   & 239,368            & 0.01                  & 0.02                       & 0.84      & 0.01   & 0.02       \\
+LSH-10-5  & 855,431            & 0.01                  & 0.03                       & 0.87      & 0.02   & 0.03 \\ \hline
+\end{tabular}
+\caption{Linkage Quality on demography datasets\textbf{This is for Kilmarnock. Threshold value is 2.
+\label{comparison-of-results-demography-kili}
+}
+\end{table}
 
 \begin{figure}
 \includegraphics[width=\textwidth]{figures/plotBQ_--_Cora_-_Brute_Force}
-\caption{Will be Linkage quality with M-Tree Skye\label{cora-block-quality-brute}}
+\caption{Linkage quality on Skye dataset using M-tree\label{skye-quality-mtree}}
 \end{figure}
 
 \begin{figure}
 \includegraphics[width=\textwidth]{figures/plotBQ_--_Cora_-_MTree}
-\caption{Will be Linkage quality with M-Tree Kilmarnock\label{cora-block-quality-mtree}}
+\caption{Linkage quality on Kilmarnock dataset using M-tree\label{kilmarnock-quality-mtree}}
 \end{figure}
 
 \begin{figure}
 \includegraphics[width=\textwidth]{figures/plotBQ_--_Cora_-_MTree}
-\caption{Will be Mtree F measure and a bunch LSH F measures\label{cora-block-quality-mtree}}
+\caption{Comparison of quality attainable on Skye dataset using M-tree and various LSH configurations\label{mtree-lsh-quality}}
 \end{figure}
-
 
 % --------------------------------------------------------------------
 
-\section{Conclusions and Future Work}
+\section{Conclusions and Future Work\label{sec-concl}}
 
-In this paper we have demonstrated the efficacy of the application of MSI to achieve complete and efficient record linkage, without the need for complex parameter tuning. In conclusion, this assertion deserves some careful unpacking. It is always possible to achieve high quality linkage using a brute-force approach. However the n-squared complexity of this approach prevents its practical application for datasets of even moderate size. The use of MSI techniques such as M-tree delivers the same results as the brute-force approach at the cost of 
+In this paper we have demonstrated the efficacy of MSI in achieving consistently complete and efficient record linkage, without the need for complex parameter tuning. In conclusion, this assertion deserves some careful unpacking. It is always possible to achieve high quality linkage using a brute-force approach. However the n-squared complexity of this approach prevents its practical application for datasets of even moderate size. The use of MSI techniques such as M-tree delivers the same results as the brute-force approach with fewer comparisons. We have shown that the M-tree approach delivers high precision, high recall results that are the same as those delivered by the brute-force approach. Furthermore this is achieved consistently without the need for complex parameter tuning.
 
+We contrast this to traditional blocking and LSH based approaches. The major drawback of their use is that whilst they can produce extremely good results, they can also produce extremely poor results. It was our observations of low recall given by these approaches that originally led us to experiment with M-trees. Without extensive ground truth or large amounts of clerking effort by human domain experts it is impossible to determine the quality of the links produced. 
 
+However, this paper also highlights some unexpected results. Firstly, the good quality results yielded by both traditional blocking and LSH are partly due to the fact that (in the limit) they tend towards brute-force as the number of records in the block increase. A second unexpected result is that shown in \Cref{fig-cora-brute}, namely that LSH can yield higher precision than is achieved by a complete method such as M-Tree. This is due to complex reasons .... \emph{TODO EXPAND HERE}.
 
+\emph{Some sentence or two about run-time?}
+
+The observation that LSH can yield results quickly at the cost of some recall suggests a potentially profitable future direction for exploration, namely the use of hybrid algorithms. We hypothesise that it may be possible to use an incomplete technique like LSH to form indices into a data structure such as an M-tree. In this manner, M-tree nodes could be used as the starting point for range-search queries and, in so doing, prune the search space considerably to yield highly quality complete results quickly.
 
 % TODO: check that the above claims have been addressed.
-
-
-
-\label{sec-concl}
 
 % --------------------------------------------------------------------
 
@@ -515,47 +557,9 @@ In this paper we have demonstrated the efficacy of the application of MSI to ach
 
 % ====================================================================
 
-OLD STUFF
+%text cut from earlier versions:
 
-\section{The Plan}
-
-\vspace{5mm}
-
-Plan in a bulleted list:
-
-\begin{itemize}
-\item Design: Traditionally it has two stages. A blocking method needs to be developed separately from a similarity method. With similarity search based record linkage, there is only one method, and that is the similarity method.
-\item Efficiency: I am not convinced of this, but Peter thinks there may be efficiency benefits. The reasoning behind this is that with blocking-based methods we would have to calculate some sort of a similarity value first. This value will only be used for blocking, and later a similarity value between candidate pairs will need to be calculated again.
-\item Completeness: Similarity search based methods will be complete (with respect to the given similarity method) whereas blocking based methods (including LSH) are likely to be incomplete (there will be high-similarity pairs which are not places in the same block)
-\item Data sets
-\begin{itemize}
-\item Kilmarnock Birth-Death
-\item Skye Birth-Death
-\item CORA
-\item North Carolina Voter Registration DB
-\end{itemize}
-\item The following is a list of all methods we thought we would have to compare.
-\begin{itemize}
-\item Similarity search (M-Tree, others?)
-\item LSH-blocking
-\item Traditional blocking (e.g. Region, Surname) - \textbf{why this? - this was done in the paper: A Comparison of Blocking Methods for Record Linkage}
-\item Sorted Neighbourhood blocking - \textbf{why this?}
-\end{itemize}
-\item Pairs-completeness and pairs-quality (w.r.t high similarity instead of true-link status). I will expand on this a bit more later.
-\item Comparison (for blocking based methods)
-		Precision/Recall/F1-Measure
-\item Which similarity methods are metric?
-\item Run time and memory usage comparisons
-\item Theorem. Precision might get better or worse with similarity search based methods, but recall should never get worse.
-\end{itemize}
-
-Note: The rest of this paper should be regarded as a placeholder for now.
-
-% ====================================================================
-
-\smallskip
-\textbf{MIfile:}
-The MIFile \cite{amato2014mi} approach is an inexact technique for performing similarity search based on metric spaces. Using  MI\_file,  each record is represented by the ordering of distances from a collection of reference objects.
+%The MIFile \cite{amato2014mi} approach is an inexact technique for performing similarity search based on metric spaces. Using  MI\_file,  each record is represented by the ordering of distances from a collection of reference objects.
 % Peter: are these reference object also records? 
 It is based on the idea that two records close to each other will have similar neighbours and will thus be represented by similar of distances
 % Peter: unclear what you mean with: similar of distances
@@ -607,108 +611,5 @@ threshold, the candidate may be discarded.
 Threshold-based algorithms include M-trees, Trie-Join, Pass-Join and
 Partenum.
 
-
-%the following is a sentence we culled earlier but may be needed.
-We will evaluate the performance of LSH based blocking with regard to the three parameters $l_{ss}$, $l_{bs}$ and $l_{nb}$ in
+%We will evaluate the performance of LSH based blocking with regard to the three parameters $l_{ss}$, $l_{bs}$ and $l_{nb}$ in
 Sect.~\ref{sec-exp}.
-
-
-\begin{verbatim}
-for each record a in A
-    for each record b in B
-        classify (a,b) as link if distance(a,b) < threshold
-\end{verbatim}
-
-
-
-
-% PAKDD 2018: maximum 12 pages
-% Abstract max 200 words
-% title, abstract: 1/2 page
-% introduction: 1 1/2 page (2 pages so far)
-% related work: 1 to 1 1/2 pages (3 pages so far)
-% method: 4 pages (7 pages so far)
-% experiments: 3 (10 pages so far)
-% discussion /conclusion: 1 page
-% citations 1
-
-% ====================================================================
-
-% Eamonn ICDM'10 tutorial slides
-% - clear problem statement in abstract
-% - To convince a reviewer, you must think like a reviewer
-
-% Writing the paper:
-% - Make a working title
-% - Introduce the topic and define (informally at this stage)
-%   terminology
-% - Motivation: Emphasize why is the topic important
-% - Relate to current knowledge: what’s been done
-% - Indicate the gap: what need’s to be done?
-% - Formally pose research questions
-% - Explain any necessary background material.
-% - Introduce formal definitions.
-% - Introduce your novel algorithm/representation/data structure etc.
-% - Describe experimental set-up, explain what the experiments will
-%   show
-% - Describe the datasets
-% - Summarize results with figures/tables
-% - Discuss results
-% - Explain conflicting results, unexpected findings and discrepancies
-%   with other research
-% - State limitations of the study
-% - State importance of findings
-% - Announce directions for further research
-% - Acknowledgements
-% - References
-%
-% - Don’t make the reviewer of your paper think!
-% - Reviewers make an initial impression on the first page and don’t
-%   change 80% of the time
-% - A good introduction with a good motivation is half your success
-% - By the end of the introduction the reviewer mustknow.
-%   - What is the problem?
-%   - Why is it interesting and important?
-%   - Why is it hard?why do naive approaches fail?
-%   - Why hasn't it been solved before?(Or, what's wrong with previous
-%     proposed solutions?)
-%   - What are the key components of my approach and results?Also
-%     include any specific limitations.
-%   - A final paragraph or subsection: “Summary of Contributions”.
-%     It should list the major contributions in bullet form,
-%     mentioning in which sections they can be found. This material
-%     doubles as an outline of the rest of the paper, saving space and
-%     eliminating redundancy
-% - Unjustified Choices (are bad)
-% - Optimal: Does not mean `very good'
-% - Proved: Does not mean `demonstrated'
-% - Significant: There is a danger of confusing the informal statement
-%   and the statistical claim
-% - Use all the Space Available
-% - Avoid Weak Language: aim, attempt, might, etc.
-% - Use the Active Voice
-% - ALWAYS put some variance estimate on performance measures (do
-%   everything 10 times and give me the variance of whatever you are
-%   reporting)
-
-% Figures:
-% - Don't cover the data with the labels!
-% - Color helps -Direct labeling helps -Meaningful captions help
-%
-% Common problem with figures:
-% 1.Too many patterns on bars
-% 2.Use of both different symbols and different lines
-% 3.Too many shades of gray on bars
-% 4.Lines too thin (or thick)
-% 5.Use of three-dimensional bars for only two variables
-% 6.Lettering too small and font difficult to read
-% 7.Symbols too small or difficult to distinguish
-% 8.Redundant title printed on graph
-% 9.Use of gray symbols or lines
-% 10.Key outside the graph
-% 11.Unnecessary numbers in the axis
-% 12.Multiple colors map to the same shade of gray
-% 13.Unnecessary shading in background
-% 14.Using bitmap graphics (instead of vector graphics)
-% 15.General carelessness
-
