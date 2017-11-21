@@ -118,27 +118,27 @@ dataset = "Cora"
 
 linker = "Brute Force"
 title = " - ".join([dataset, linker])
-predicate = lambda line: line["Data Set (Source)"] == dataset and line["Linker"] == linker
+predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker
 plotLQ(title, predicate)
 
 
 linker = "TradBlocking"
-predicate = lambda line: line["Data Set (Source)"] == dataset and line["Linker"] == linker
+predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker
 blockingMethods = set([ line["Blocking Method"] for line in stats if predicate(line) ])
 for blockingMethod in blockingMethods:
     title = " - ".join([dataset, linker, blockingMethod])
-    predicate = lambda line: line["Data Set (Source)"] == dataset and line["Linker"] == linker and line["Blocking Method"] == blockingMethod
+    predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker and line["Blocking Method"] == blockingMethod
     plotLQ(title, predicate)
 
 
 linker = "MTree"
 title = " - ".join([dataset, linker])
-predicate = lambda line: line["Data Set (Source)"] == dataset and line["Linker"] == linker
+predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker
 plotLQ(title, predicate)
 
 
 linker = "LSH"
-predicate = lambda line: line["Data Set (Source)"] == dataset and line["Linker"] == linker
+predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker
 shingleSizes = set([ line["Shingle size"] for line in stats if predicate(line) ])
 nbBandss = set([ line["Number of bands"] for line in stats if predicate(line) ])
 bandSizes = set([ line["Band size"] for line in stats if predicate(line) ])
@@ -146,7 +146,49 @@ for shingleSize in shingleSizes:
     for nbBands in nbBandss:
         for bandSize in bandSizes:
             title = " - ".join([dataset, linker, shingleSize, nbBands, bandSize])
-            predicate = lambda line: line["Data Set (Source)"] == dataset and line["Linker"] == linker and line["Shingle size"] == shingleSize and line["Number of bands"] == nbBands and line["Band size"] == bandSize
+            predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker and line["Shingle size"] == shingleSize and line["Number of bands"] == nbBands and line["Band size"] == bandSize
+            plotLQ(title, predicate)
+
+
+dataset = "Skye"
+
+linker = "MTree"
+title = " - ".join([dataset, linker])
+predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker
+plotLQ(title, predicate)
+
+
+linker = "LSH"
+predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker
+shingleSizes = set([ line["Shingle size"] for line in stats if predicate(line) ])
+nbBandss = set([ line["Number of bands"] for line in stats if predicate(line) ])
+bandSizes = set([ line["Band size"] for line in stats if predicate(line) ])
+for shingleSize in shingleSizes:
+    for nbBands in nbBandss:
+        for bandSize in bandSizes:
+            title = " - ".join([dataset, linker, shingleSize, nbBands, bandSize])
+            predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker and line["Shingle size"] == shingleSize and line["Number of bands"] == nbBands and line["Band size"] == bandSize
+            plotLQ(title, predicate)
+
+
+dataset = "Kilmarnock"
+
+linker = "MTree"
+title = " - ".join([dataset, linker])
+predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker
+plotLQ(title, predicate)
+
+
+linker = "LSH"
+predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker
+shingleSizes = set([ line["Shingle size"] for line in stats if predicate(line) ])
+nbBandss = set([ line["Number of bands"] for line in stats if predicate(line) ])
+bandSizes = set([ line["Band size"] for line in stats if predicate(line) ])
+for shingleSize in shingleSizes:
+    for nbBands in nbBandss:
+        for bandSize in bandSizes:
+            title = " - ".join([dataset, linker, shingleSize, nbBands, bandSize])
+            predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker and line["Shingle size"] == shingleSize and line["Number of bands"] == nbBands and line["Band size"] == bandSize
             plotLQ(title, predicate)
 
 
@@ -248,30 +290,30 @@ dataset = "Cora"
 
 linker = "Brute Force"
 title = " - ".join([dataset, linker])
-predicate = lambda line: line["Data Set (Source)"] == dataset and line["Linker"] == linker
+predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker
 plotBQ(title, predicate)
 plotPQC(title, predicate)
 
 
 linker = "TradBlocking"
-predicate = lambda line: line["Data Set (Source)"] == dataset and line["Linker"] == linker
+predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker
 blockingMethods = set([ line["Blocking Method"] for line in stats if predicate(line) ])
 for blockingMethod in blockingMethods:
     title = " - ".join([dataset, linker, blockingMethod])
-    predicate = lambda line: line["Data Set (Source)"] == dataset and line["Linker"] == linker and line["Blocking Method"] == blockingMethod
+    predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker and line["Blocking Method"] == blockingMethod
     plotBQ(title, predicate)
     plotPQC(title, predicate)
 
 
 linker = "MTree"
 title = " - ".join([dataset, linker])
-predicate = lambda line: line["Data Set (Source)"] == dataset and line["Linker"] == linker
+predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker
 plotBQ(title, predicate)
 plotPQC(title, predicate)
 
 
 linker = "LSH"
-predicate = lambda line: line["Data Set (Source)"] == dataset and line["Linker"] == linker
+predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker
 shingleSizes = set([ line["Shingle size"] for line in stats if predicate(line) ])
 nbBandss = set([ line["Number of bands"] for line in stats if predicate(line) ])
 bandSizes = set([ line["Band size"] for line in stats if predicate(line) ])
@@ -279,7 +321,55 @@ for shingleSize in shingleSizes:
     for nbBands in nbBandss:
         for bandSize in bandSizes:
             title = " - ".join([dataset, linker, shingleSize, nbBands, bandSize])
-            predicate = lambda line: line["Data Set (Source)"] == dataset and line["Linker"] == linker and line["Shingle size"] == shingleSize and line["Number of bands"] == nbBands and line["Band size"] == bandSize
+            predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker and line["Shingle size"] == shingleSize and line["Number of bands"] == nbBands and line["Band size"] == bandSize
+            plotBQ(title, predicate)
+            plotPQC(title, predicate)
+
+
+dataset = "Skye"
+
+
+linker = "MTree"
+title = " - ".join([dataset, linker])
+predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker
+plotBQ(title, predicate)
+plotPQC(title, predicate)
+
+
+linker = "LSH"
+predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker
+shingleSizes = set([ line["Shingle size"] for line in stats if predicate(line) ])
+nbBandss = set([ line["Number of bands"] for line in stats if predicate(line) ])
+bandSizes = set([ line["Band size"] for line in stats if predicate(line) ])
+for shingleSize in shingleSizes:
+    for nbBands in nbBandss:
+        for bandSize in bandSizes:
+            title = " - ".join([dataset, linker, shingleSize, nbBands, bandSize])
+            predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker and line["Shingle size"] == shingleSize and line["Number of bands"] == nbBands and line["Band size"] == bandSize
+            plotBQ(title, predicate)
+            plotPQC(title, predicate)
+
+
+dataset = "Kilmarnock"
+
+
+linker = "MTree"
+title = " - ".join([dataset, linker])
+predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker
+plotBQ(title, predicate)
+plotPQC(title, predicate)
+
+
+linker = "LSH"
+predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker
+shingleSizes = set([ line["Shingle size"] for line in stats if predicate(line) ])
+nbBandss = set([ line["Number of bands"] for line in stats if predicate(line) ])
+bandSizes = set([ line["Band size"] for line in stats if predicate(line) ])
+for shingleSize in shingleSizes:
+    for nbBands in nbBandss:
+        for bandSize in bandSizes:
+            title = " - ".join([dataset, linker, shingleSize, nbBands, bandSize])
+            predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker and line["Shingle size"] == shingleSize and line["Number of bands"] == nbBands and line["Band size"] == bandSize
             plotBQ(title, predicate)
             plotPQC(title, predicate)
 
@@ -291,7 +381,7 @@ for shingleSize in shingleSizes:
 # Traditional Blocking at Threshold 70
 ################################################################################
 
-def plotFixedThresholdTraditional(title, blockingMethods, predicate):
+def plotFixedThresholdTraditional1(title, blockingMethods, predicate):
     plt.clf()
 
     w,h = plt.figaspect(0.5)
@@ -315,47 +405,86 @@ def plotFixedThresholdTraditional(title, blockingMethods, predicate):
     plt.grid()
 
 
-    xRange = [ line["Blocking Method"]          for line in data ]
+    xRange = blockingMethods
     plt.xticks(range(len(xRange)), xRange)
 
     # fig, axs = plt.subplots()
     plt.plot( range(len(xRange))
-            , [ line["Precision"]                       for line in data ]
+            , [ line["Precision"]                       for blockingMethod in blockingMethods
+                                                        for line in data if line["Blocking Method"] == blockingMethod ]
             , color="blue"
             , marker="o"
             , label="Precision"
             )
     plt.plot( range(len(xRange))
-            , [ line["Recall"]                          for line in data ]
+            , [ line["Recall"]                          for blockingMethod in blockingMethods
+                                                        for line in data if line["Blocking Method"] == blockingMethod ]
             , color="green"
             , marker="o"
             , label="Recall"
             )
     plt.plot( range(len(xRange))
-            , [ line["F1 Measure"]                      for line in data ]
+            , [ line["F1 Measure"]                      for blockingMethod in blockingMethods
+                                                        for line in data if line["Blocking Method"] == blockingMethod ]
             , color="red"
             , marker="o"
             , label="F1 Measure"
             )
 
+    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+
+    plt.savefig("plotFixedThresholdTraditional1 -- %s.png" % title, bbox_inches="tight")
+    plt.close()
+    print("plotFixedThresholdTraditional1 -- %s.png" % title)
+
+
+def plotFixedThresholdTraditional2(title, blockingMethods, predicate):
+    plt.clf()
+
+    w,h = plt.figaspect(0.5)
+    plt.figure(figsize=(w,h))
+
+    font = {"family":"sans-serif", "weight":"normal", "size":24}
+    plt.rc("font", **font)
+    # plt.rcParams["text.usetex"] = True
+
+    plt.title("Block Quality", fontsize=22)
+    plt.suptitle(title, y = 1.02, fontsize=28)
+
+    plt.xlabel("Blocking Strategy")
+    plt.ylabel("Proportion")
+
+    data = [ line for line in stats if predicate(line) ]
+    
+    # plt.xlim([ line["Blocking Method"]       for line in data ]            )
+    # plt.xlim([ line["Blocking Method"] for line in data ])
+    plt.ylim(-0.05, 1.05)
+    plt.grid()
+
+
+    xRange = blockingMethods
+    plt.xticks(range(len(xRange)), xRange)
+
     plt.plot( range(len(xRange))
-            , [ line["Average pairs quality"]           for line in data ]
-            , color="purple"
+            , [ line["Average pairs quality"]           for blockingMethod in blockingMethods
+                                                        for line in data if line["Blocking Method"] == blockingMethod ]
+            , color="blue"
             , marker="o"
             , label="Pairs quality"
             )
     plt.plot( range(len(xRange))
-            , [ line["Average pairs completeness"]      for line in data ]
-            , color="pink"
+            , [ line["Average pairs completeness"]      for blockingMethod in blockingMethods
+                                                        for line in data if line["Blocking Method"] == blockingMethod ]
+            , color="green"
             , marker="o"
             , label="Pairs completeness"
             )
 
     plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
-    plt.savefig("plotFixedThresholdTraditional -- %s.png" % title, bbox_inches="tight")
+    plt.savefig("plotFixedThresholdTraditional2 -- %s.png" % title, bbox_inches="tight")
     plt.close()
-    print("plotFixedThresholdTraditional -- %s.png" % title)
+    print("plotFixedThresholdTraditional2 -- %s.png" % title)
 
 
 def plotFixedThresholdLSH(title, predicate):
@@ -431,17 +560,17 @@ dataset = "Cora"
 
 linker = "TradBlocking"
 threshold = 70
-predicate = lambda line: line["Data Set (Source)"] == dataset and line["Linker"] == linker and float(line["Distance Threshold"]) == threshold
-blockingMethods = ['3', '5', '7', '8', '9', '10', 'all']
+predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker and float(line["Distance Threshold"]) == threshold
+blockingMethods = ['5', '3', '7', '10', '8', '9', 'all']
 print(blockingMethods)
 title = " - ".join([dataset, linker, "70"])
-plotFixedThresholdTraditional(title, blockingMethods, predicate)
-
+plotFixedThresholdTraditional1(title, blockingMethods, predicate)
+plotFixedThresholdTraditional2(title, blockingMethods, predicate)
 
 
 linker = "LSH"
 threshold = 70
-predicate = lambda line: line["Data Set (Source)"] == dataset and line["Linker"] == linker and float(line["Distance Threshold"]) == threshold
+predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker and float(line["Distance Threshold"]) == threshold
 title = " - ".join([dataset, linker, "70"])
 plotFixedThresholdLSH(title, predicate)
 
