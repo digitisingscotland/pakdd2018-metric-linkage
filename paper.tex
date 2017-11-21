@@ -178,7 +178,7 @@ incomplete indexing approaches.
 \textbf{Contribution:} the primary contribution of this paper is the
 novel application of MSI to achieve complete and efficient record
 linkage, without the need for complex parameter tuning. We evaluate our
-approach on several data sets from diverse domains and demonstrate its
+approach on several datasets from diverse domains and demonstrate its
 advantages over existing indexing techniques for record linkage.
 
 % For final paper:
@@ -302,22 +302,20 @@ The additional parameters are the set of blocking keys and the
 normalization encodings applied to each field. These are selected as
 described in \cite{Chr12b}, exploiting knowledge of the domain and of
 the records being linked, and chosen with the intention of giving the
-best possible results for the datasets.
-Each record in $A$ is placed into the appropriate block based on its
-blocking key value. The algorithm then iterates over the records in $B$,
-and for each one, compares it with each of the records from $A$ in the
-block with the same blocking key value.
+best possible results for the datasets. Each record in $A$ is placed
+into the appropriate block based on its blocking key value. The
+algorithm then iterates over the records in $B$, and for each one,
+compares it with each of the records from $A$ in the block with the same
+blocking key value.
+
 In some circumstances, incomplete approaches such as blocking can yield
 higher precision than complete techniques. This can occur when the
-datasets contain a significant number
-of non-matches that nonetheless have high similarity. In this situation,
-the fact that an incomplete technique omits consideration of some
-potential links can serve to improve precision, since the similarity
-distance 
-
-TODO: add stuff about how incomplete methods may yield higher precision than complete
-
-
+datasets contain a significant number of non-matches that nonetheless
+have high similarity. In this situation, the fact that an incomplete
+technique omits consideration of some potential links can serve to
+improve precision, since a classification decision based on similarity
+threshold is incorrect for high-similarity non-matches. By definition,
+recall is never higher for incomplete techniques.
 
 \textbf{LSH-MinHash:}
 The additional parameters are \emph{shingle size} ($l_{ss}$), \emph{band
@@ -341,29 +339,36 @@ result set. Finally, the record from $B$ is compared in turn with each
 record in the result set, with the pair being classified as a link or
 non-link based on their distance.
 
-\textbf{M-Tree:} The M-tree linkage algorithm has no additional parameters. In a similar manner to the \emph{LSH-MinHash} approach, M-trees are constructed by supplying the implementation with a set of records and a \emph{distance function}. The distance functions used are the same as those used for \emph{Nested-loop} and \emph{LSH-MinHash} experiments. To perform linkage, the data-structure is searched using a \emph{range-search} query which yields all records within distance $d$ of the query object and all the returned records are directly recorded as links.
+\textbf{M-tree:} The M-tree linkage algorithm has no additional
+parameters. In a similar manner to the \emph{LSH-MinHash} approach, each
+record in A is inserted into an M-tree. To perform linkage, the
+algorithm iterates over each record $b$ in $B$. A $range-search(b,d)$
+operation is performed, passing the distance threshold as the second
+parameter. All the returned records are directly recorded as links.
 
 % --------------------------------------------------------------------
 
 \section{Experiments and Results}
 \label{sec-exp}
 
-We now describe the data sets we use in our evaluation, the setup
-employed to evaluate our proposed metric indexing approach and
-compare it with traditional blocking techniques, and we then present
-and discuss our results~\footnote{The raw data, additional figures and the source code required to run these experiments can be downloaded from here. (Link removed for double blind review)}.
+We now describe the datasets we use in our evaluation, the set-up
+employed to evaluate our proposed metric indexing approach and compare
+it with traditional blocking techniques, and we then present and discuss
+our results~\footnote{The raw data, additional figures and the source
+code required to run these experiments can be downloaded from here.
+(Link removed for double blind review)}.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 \begin{table}[t]
-\caption{Characteristics of data sets used in the experiments.}
+\caption{Characteristics of datasets used in the experiments.}
  \label{table-datasets}
   \centering
   \begin{scriptsize}
   %\addtolength{\tabcolsep}{-0.5pt}
   \begin{tabular}{ccccc}
   \hline\noalign{\smallskip}
-  Data set~ & ~Records in~& ~Records in~ & ~Number of true~& ~Entities\\
+  Dataset~ & ~Records in~& ~Records in~ & ~Number of true~& ~Entities\\
   name(s)  & dataset1  & dataset2  & matching pairs & linked \\
   \noalign{\smallskip} \hline \noalign{\smallskip}
   CORA  & 1,295 & 1295 & 17,184 & publication-publication\\
@@ -375,21 +380,23 @@ and discuss our results~\footnote{The raw data, additional figures and the sourc
 \end{table}
 
 \smallskip
-\textbf{Data Sets:}
-%\label{sec-data}
-We used four data sets from three domains in our experiments, as
-summarized in Table~\ref{table-datasets}. The first is
-\emph{Cora}~\cite{Cora2017}, which contains 1,295
-records that refer to 112 machine learning publications. 
-It is used as a benchmark data set in the literature for assessing linkage algorithms. Ground truth is provided via a unique
-\emph{paper\_id} identifier of the form "blum1993". In this experiment linkage is performed over the same set of records.
+\textbf{Datasets:}
+\label{sec-data}
+We used three datasets from two domains in our experiments, as
+summarised in Table~\ref{table-datasets}. The first is
+\emph{Cora}~\cite{Cora2017}, which contains 1,295 records that refer to
+112 machine learning publications. It is used as a benchmark dataset in
+the literature for assessing linkage algorithms. Ground truth is
+provided via a unique \emph{paper\_id} identifier of the form
+``blum1993". In this experiment linkage is performed over the same set
+of records.
 
-The last two data sets are historical Scottish records of vital
+The other datasets are historical Scottish records of vital
 events (birth, marriages and deaths) one registered on the
 \emph{Isle of Skye}, a rural district, and the other
-records from \emph{Kilmarnock}, an industrial town. These data sets
-were provided to us by historical demographers who extensively
-curated and linked both data sets~\cite{reid2002,reid2006}. Both data
+records from \emph{Kilmarnock}, an industrial town. These datasets
+were create by historical demographers who extensively
+curated and linked both datasets~\cite{reid2002,reid2006}. Both data
 sets include the  names, gender, addresses of individuals and their
 parents. Ground truth was generated by the demographers based on their
 extensive domain knowledge.
@@ -397,7 +404,7 @@ extensive domain knowledge.
 % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 % \begin{table}[t]
-% \caption{Parameter settings used for the different data sets used in
+% \caption{Parameter settings used for the different datasets used in
 %    the experiments,with $d$ the distance threshold used, $l_{ss}$, $l_{sb}$ and $l_{nb}$ the LSH
 %    shingle size, and the size and number of bands, respectively.}
 %  \label{table-parameters}
@@ -406,7 +413,7 @@ extensive domain knowledge.
 %   %\addtolength{\tabcolsep}{-0.5pt}
 %   \begin{tabular}{ccccc}
 %   \hline\noalign{\smallskip}
-%   Data set~ & $d$ & $l_{ss}$ & $l_{bs}$ & $l_{nb}$ \\
+%   Dataset~ & $d$ & $l_{ss}$ & $l_{bs}$ & $l_{nb}$ \\
 %   name(s) & & & &  \\
 %   \noalign{\smallskip} \hline \noalign{\smallskip}
 %   CORA & ~$[0,5,10,\ldots,95,100]$~ & ~$2$~ &
@@ -432,20 +439,27 @@ In all of our experiments we use a single distance metric which is the sum of th
 
 \subsection{Cora}
 
-In this section, we perform linkage on the Cora data set using all four approaches presented in this paper: brute force, traditional blocking, LSH and M-Tree.
+In this section, we perform linkage on the Cora dataset using all four approaches presented in this paper: brute force, traditional blocking, LSH and M-Tree.
 The brute-force approach is used to establish the threshold value that yields the best possible linkage for the Cora dataset. The threshold value is varied between 0 and 250, \Cref{fig-cora-brute} presents the precision, recall, and F-measure values. 
 The linkage results have high precision and low recall for low threshold values, and high recall and low precision for high threshold values.
-For this data set, the maximum F-measure value is achieved using a threshold value of 70. This value is data dependent; for different datasets the maximum F-measure will correspond to different thresholds. 
+For this dataset, the maximum F-measure value is achieved using a threshold value of 70. This value is data dependent; for different datasets the maximum F-measure will correspond to different thresholds. 
 In the rest of this section we fix the threshold value to be 70 which maximises the F-measure for this dataset.
 
 \begin{figure}
 \includegraphics[width=\textwidth]{figures/plotLQ_--_Cora_-_Brute_Force.png}
-\caption{Linkage Quality using Brute Force linking on the Cora data set\label{fig-cora-brute}}
+\caption{Linkage Quality using Brute Force linking on the Cora dataset\label{fig-cora-brute}}
 \end{figure}
 
-In the traditional blocking experiment the following fields from the Cora data set are used as a blocking key: \textit{author}, \textit{title}, \textit{venue}, \textit{location}, \textit{publisher} and \textit{year}. We also use a very permissive blocking key which takes the union of all the values for these fields. 
+In the traditional blocking experiment the following fields from the Cora dataset are used as a blocking key: \textit{author}, \textit{title}, \textit{venue}, \textit{location}, \textit{publisher} and \textit{year}. We also use a very permissive blocking key which takes the union of all the values for these fields. 
 
-\Cref{comparison-of-results-cora} shows the results of the Cora experiments. The table shows the parameters for the experiment, the number of distance comparisons made, the precision, recall and F1 measure and the pairs quality and pair completeness achieved by each algorithm.  The linker labels may be interpreted as follows: the algorithm name is followed by its parameters, for LSH this is the number of the bands followed by the size of bands. For traditional blocking the parameters are the fields used for blocking.
+\Cref{comparison-of-results-cora} shows the results of the Cora experiments. The table shows the parameters for the experiment, the number of distance comparisons made, the precision, recall and F1 measure and the \textit{pairs quality} and\textit{ pairs completeness} achieved by each algorithm.  The linker column may be interpreted as follows: the algorithm name is followed by its parameters, for LSH this is the number of the bands followed by the size of bands. For traditional blocking the parameters are the fields used for blocking. \textit{Pairs quality} and \textit{pairs completeness}  are given to illustrate the efficacy of the algorithms and are defined as follows: XXXXXXXXXXX. 
+
+\textit{Pairs quality}  relates to recall and gives an indication of the number of (correct) matches amongst the links. 
+Pairs completeness BLAH BLAH.
+
+As can be seen in \Cref{comparison-of-results-cora}, M-tree reports the same results as brute-force....
+
+
 
 
 TODO: Explain pairs-quality and pairs-completeness.
@@ -455,8 +469,13 @@ TODO: Explain pairs-quality and pairs-completeness.
 \begin{table}[ht]
 \centering
 \begin{tabular}{l|r|r|r|r|r|r}
-Linker & Comparisons & Pairs quality & Pairs completeness & Precision & Recall & F1 Measure \\
-\hline
+\parbox{0.18\linewidth}{\centering Linker} &
+\parbox{0.16\linewidth}{\centering Comparisons} &
+\parbox{0.11\linewidth}{\centering Pairs Quality} &
+\parbox{0.17\linewidth}{\centering Pairs \\ Completeness} &
+\parbox{0.11\linewidth}{\centering Precision} &
+\parbox{0.08\linewidth}{\centering Recall} &
+\parbox{0.11\linewidth}{\centering F1 Measure} \\ \hline \hline
 Brute Force        & 1,677,025                    & 0.02                  & 0.33                       & 0.84      & 0.57   & 0.68       \\ \hline
 MTree              &  902,693                     & 0.89                  & 0.22                       & 0.84      & 0.57   & 0.68       \\ \hline
 LSH-2-2            &  175,435                     & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
@@ -468,15 +487,15 @@ LSH-10-5           &  175,435                     & 0.31                  & 0.29
 LSH-2-10           &  175,435                     & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
 LSH-5-10           &  175,435                     & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\
 LSH-10-10          &  175,435                     & 0.31                  & 0.29                       & 0.94      & 0.53   & 0.68       \\  \hline
-Blocking-year      &  115,893                     & 0.22                  & 0.19                       & 0.99      & 0.35   & 0.51       \\
-Blocking-authors   &   11,039                      & 0.74                  & 0.1                        & 0.94      & 0.16   & 0.28       \\
-Blocking-title     &   27,407                      & 0.84                  & 0.23                       & 0.95      & 0.42   & 0.58       \\
-Blocking-venue     &   36,647                      & 0.7                   & 0.12                       & 0.85      & 0.29   & 0.44       \\
-Blocking-location  & 1,009,957                    & 0.17                  & 0.24                       & 0.83      & 0.43   & 0.57       \\
-Blocking-publisher &  833,079                     & 0.12                  & 0.23                       & 0.85      & 0.44   & 0.58       \\
-Blocking-combined  & 1,214,269                    & 0.05                  & 0.32                       & 0.84      & 0.56   & 0.67       \\ \hline
+Block-year      &  115,893                     & 0.22                  & 0.19                       & 0.99      & 0.35   & 0.51       \\
+Block-authors   &   11,039                      & 0.74                  & 0.1                        & 0.94      & 0.16   & 0.28       \\
+Block-title     &   27,407                      & 0.84                  & 0.23                       & 0.95      & 0.42   & 0.58       \\
+Block-venue     &   36,647                      & 0.7                   & 0.12                       & 0.85      & 0.29   & 0.44       \\
+Block-location  & 1,009,957                    & 0.17                  & 0.24                       & 0.83      & 0.43   & 0.57       \\
+Block-publisher &  833,079                     & 0.12                  & 0.23                       & 0.85      & 0.44   & 0.58       \\
+Block-combined  & 1,214,269                    & 0.05                  & 0.32                       & 0.84      & 0.56   & 0.67       \\ \hline
 \end{tabular}
-\caption{Linkage Quality on the Cora data set distance=70\label{comparison-of-results-cora}
+\caption{Linkage Quality on the Cora dataset distance=70\label{comparison-of-results-cora}
 \textbf{TODO: The table needs some rows removed. Note that this table is with a threshold value of 70.}
 }
 \end{table}
@@ -488,7 +507,13 @@ Blocking-combined  & 1,214,269                    & 0.05                  & 0.32
 \begin{table}[ht]
 \centering
 \begin{tabular}{l|r|r|r|r|r|r}
-Linker   & Comparisons & Pairs quality & Pairs completeness & Precision & Recall & F1 Measure \\ \hline
+\parbox{0.18\linewidth}{\centering Linker} &
+\parbox{0.16\linewidth}{\centering Comparisons} &
+\parbox{0.11\linewidth}{\centering Pairs Quality} &
+\parbox{0.17\linewidth}{\centering Pairs \\ Completeness} &
+\parbox{0.11\linewidth}{\centering Precision} &
+\parbox{0.08\linewidth}{\centering Recall} &
+\parbox{0.11\linewidth}{\centering F1 Measure} \\ \hline \hline
 MTree    & 102,318,525         & 0.84                  & 0.86                       & 0.65      & 0.46   & 0.54      \\ \hline
 LSH-2-2  & 3,109,250           & 0                     & 0.05                       & 0.63      & 0.03   & 0.06       \\
 LSH-5-2  & 10,412,496          & 0                     & 0.16                       & 0.64      & 0.11   & 0.19       \\
@@ -507,7 +532,13 @@ LSH-10-5 & 129,873            & 0                     & 0.01                    
 \begin{table}[ht]
 \centering
 \begin{tabular}{l|r|r|r|r|r|r}
-Linker   & Comparisons & Pairs quality & Pairs completeness & Precision & Recall & F1 Measure \\ \hline
+\parbox{0.18\linewidth}{\centering Linker} &
+\parbox{0.16\linewidth}{\centering Comparisons} &
+\parbox{0.11\linewidth}{\centering Pairs Quality} &
+\parbox{0.17\linewidth}{\centering Pairs \\ Completeness} &
+\parbox{0.11\linewidth}{\centering Precision} &
+\parbox{0.08\linewidth}{\centering Recall} &
+\parbox{0.11\linewidth}{\centering F1 Measure} \\ \hline \hline
 MTree     & 514,871,153         & 0.89                  & 0.82                       & 0.76      & 0.45   & 0.57      \\ \hline
 LSH-2-2   & 99,145,887          & 0                     & 0.23                       & 0.81      & 0.16   & 0.27       \\
 LSH-5-2   & 130,721,338         & 0                     & 0.32                       & 0.79      & 0.23   & 0.36       \\
