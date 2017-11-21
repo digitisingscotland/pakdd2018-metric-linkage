@@ -480,10 +480,10 @@ maximises the F-measure for this dataset.
 \label{demography-quality-mtree}
 \end{figure}
 
-\begin{figure}
-\includegraphics[width=\textwidth]{figures/plotLQ-cora-brute}
-\caption{Linkage quality using brute-force linking on the Cora dataset\label{fig-cora-brute}}
-\end{figure}
+% \begin{figure}
+% \includegraphics[width=\textwidth]{figures/plotLQ-cora-brute}
+% \caption{Linkage quality using brute-force linking on the Cora dataset\label{fig-cora-brute}}
+% \end{figure}
 
 In the traditional blocking experiment the following fields from the
 Cora dataset are used individually as blocking keys: \textit{author},
@@ -603,14 +603,28 @@ LSH-10-5  & 855,431                      & 0.87      & 0.02   & 0.03 \\ \hline
 \includegraphics[width=\textwidth]{figures/kili-mtree}
 \caption{Linkage quality on Kilmarnock dataset using M-tree\label{kilmarnock-quality-mtree}}
 \end{subfigure}
-\caption{M-Tree based linkage on the demographic data sets}
+
+\begin{subfigure}{.5\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{figures/plotFs-skye-f}
+\caption{F-Measure values of all LSH variations vs M-Tree for the Skye data set}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{figures/plotFs-kilmarnock-f}
+\caption{F-Measure values of all LSH variations vs M-Tree for the Kilmarnock data set}
+\end{subfigure}
+
+\caption{Linkage results on the demographic data set}
 \label{demography-quality-mtree}
 \end{figure}
 
-\begin{figure}
-\includegraphics[width=\textwidth]{figures/plotBQ_--_Cora_-_MTree}
-\caption{Comparison of quality attainable on Skye dataset using M-tree and various LSH configurations\label{mtree-lsh-quality}}
-\end{figure}
+% \begin{figure}
+% \includegraphics[width=\textwidth]{figures/plotBQ_--_Cora_-_MTree}
+% \caption{Comparison of quality attainable on Skye dataset using M-tree and various LSH configurations\label{mtree-lsh-quality}}
+% \end{figure}
+
+
 
 % --------------------------------------------------------------------
 
