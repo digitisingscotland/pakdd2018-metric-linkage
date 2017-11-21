@@ -9,6 +9,8 @@
 \usepackage{hyperref}
 \usepackage{cleveref}
 \usepackage{hhline}
+\usepackage{caption}
+\usepackage{subcaption}
 
 %\pagestyle{empty}
 \pagestyle{headings} 
@@ -308,15 +310,6 @@ algorithm then iterates over the records in $B$, and for each one,
 compares it with each of the records from $A$ in the block with the same
 blocking key value.
 
-In some circumstances, incomplete approaches such as blocking can yield
-higher precision than complete techniques. This can occur when the
-datasets contain a significant number of non-matches that nonetheless
-have high similarity. In this situation, the fact that an incomplete
-technique omits consideration of some potential links can serve to
-improve precision, since a classification decision based on similarity
-threshold is incorrect for high-similarity non-matches. By definition,
-recall is never higher for incomplete techniques.
-
 \textbf{LSH-MinHash:}
 The additional parameters are \emph{shingle size} ($l_{ss}$), \emph{band
 size} ($l_{bs}$) and \emph{number of bands} ($l_{nb}$). Each record in
@@ -338,6 +331,15 @@ data structure, and the records from $A$ associated with it added to the
 result set. Finally, the record from $B$ is compared in turn with each
 record in the result set, with the pair being classified as a link or
 non-link based on their distance.
+
+In some circumstances, incomplete approaches such as traditional blocking and LSH-MinHash can yield
+higher precision than complete techniques. This can occur when the
+datasets contain a significant number of non-matches that nonetheless
+have high similarity. In this situation, the fact that an incomplete
+technique omits consideration of some potential links can serve to
+improve precision, since a classification decision based on similarity
+threshold is incorrect for high-similarity non-matches. By definition,
+recall is never higher for incomplete techniques.
 
 \textbf{M-tree:} The M-tree linkage algorithm has no additional
 parameters. In a similar manner to the \emph{LSH-MinHash} approach, each
@@ -551,14 +553,21 @@ LSH-10-5  & 855,431            & 0.01                  & 0.03                   
 }
 \end{table}
 
-\begin{figure}
-\includegraphics[width=\textwidth]{figures/plotBQ_--_Cora_-_Brute_Force}
-\caption{Linkage quality on Skye dataset using M-tree\label{skye-quality-mtree}}
-\end{figure}
 
 \begin{figure}
-\includegraphics[width=\textwidth]{figures/plotBQ_--_Cora_-_MTree}
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{figures/skye-mtree}
+\caption{Linkage quality on Skye dataset using M-tree\label{skye-quality-mtree}}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+\includegraphics[width=\textwidth]{figures/kili-mtree}
 \caption{Linkage quality on Kilmarnock dataset using M-tree\label{kilmarnock-quality-mtree}}
+\end{subfigure}
+\caption{M-Tree based linkage on the demographic data sets}
+\label{demography-quality-mtree}
 \end{figure}
 
 \begin{figure}
@@ -570,11 +579,13 @@ LSH-10-5  & 855,431            & 0.01                  & 0.03                   
 
 \section{Conclusions and Future Work\label{sec-concl}}
 
-In this paper we have demonstrated the efficacy of MSI in achieving consistently complete and efficient record linkage, without the need for complex parameter tuning. In conclusion, this assertion deserves some careful unpacking. It is always possible to achieve high quality linkage using a brute-force approach. However the n-squared complexity of this approach prevents its practical application for datasets of even moderate size. The use of MSI techniques such as M-tree delivers the same results as the brute-force approach with fewer comparisons. We have shown that the M-tree approach delivers high precision, high recall results that are the same as those delivered by the brute-force approach. Furthermore this is achieved consistently without the need for complex parameter tuning.
+In this paper we have demonstrated the efficacy of MSI in achieving  complete and efficient record linkage, without the need for complex parameter tuning. In conclusion, this assertion deserves some careful unpacking. It is always possible to achieve high quality linkage using a brute-force approach. However the n-squared complexity of this approach prevents its practical application for datasets of even moderate size. The use of MSI techniques such as M-tree delivers the same results as the brute-force approach with fewer comparisons. We have shown that the M-tree approach delivers high precision, high recall results that are the same as those delivered by the brute-force approach. Furthermore this is achieved consistently without the need for complex parameter tuning.
 
 We contrast this to traditional blocking and LSH based approaches. The major drawback of their use is that whilst they can produce extremely good results, they can also produce extremely poor results. It was our observations of low recall given by these approaches that originally led us to experiment with M-trees. Without extensive ground truth or large amounts of clerking effort by human domain experts it is impossible to determine the quality of the links produced. 
 
-However, this paper also highlights some unexpected results. Firstly, the good quality results yielded by both traditional blocking and LSH are partly due to the fact that (in the limit) they tend towards brute-force as the number of records in the block increase. A second unexpected result is that shown in \Cref{fig-cora-brute}, namely that LSH can yield higher precision than is achieved by a complete method such as M-Tree. This is due to complex reasons .... \emph{TODO EXPAND HERE}.
+However, this paper also highlights some unexpected results. Firstly, the good quality results yielded by both traditional blocking and LSH are partly due to the fact that (in the limit) they tend towards brute-force as the number of records in the block increase. A second unexpected result is that shown in \Cref{fig-cora-brute}, namely that LSH can yield higher precision than is achieved by a complete method such as M-Tree as was discussed in Sect.~\ref{sec-approach}.
+
+\emph{IS THIS RIGHT?}.
 
 \emph{Some sentence or two about run-time?}
 
