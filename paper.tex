@@ -47,12 +47,11 @@ Canberra, Australia. Contact: \email{peter.christen@anu.edu.au}}
 Record linkage is the process of identifying records that refer to the
 same real-world entities, in situations where entity identifiers are
 unavailable. Records are linked on the basis of similarity between
-common attributes, with every pair of records being classified as a
-link or non-link depending on the degree of similarity between them.
-Record linkage is usually performed in a three-step process: first
-groups of similar candidate records are identified using indexing; 
-pairs within the same group are then compared in more detail, and
-finally classified.
+common attributes, with every pair being classified as a link or
+non-link depending on their degree of similarity. Record linkage is
+usually performed in a three-step process: first groups of similar
+candidate records are identified using indexing; pairs within the same
+group are then compared in more detail, and finally classified.
 %
 Even state-of-the-art indexing techniques, such as Locality Sensitive
 Hashing, have potential drawbacks. They may fail to group together some
@@ -122,7 +121,7 @@ While indexing techniques facilitate efficient linkage of very large
 datasets~\cite{Don15}, they generally achieve scalability at the cost
 of reduced linkage quality, because potentially true matching record
 pairs are removed in the indexing step, leading to a reduction in
-recall of the final linkage result~\cite{Chr12}. A variety of indexing
+recall~\cite{Chr12}. A variety of indexing
 techniques, discussed in more detail in the following section, have
 been proposed, ranging from simple phonetic based blocking~\cite{Chr12}
 and sorting of the datasets~\cite{Dra12} to locality sensitive hashing
@@ -146,8 +145,8 @@ learning of optimal blocking schemes have also been proposed.
 %----------------------------------------------------------------------
 
 Traditional record linkage systems that perform indexing prior to
-comparison and classification, as illustrated in left-hand side in
-Fig.~\ref{fig-rl-process}, add a further practical complexity to the
+comparison and classification, as illustrated on the left in
+\Cref{fig-rl-process}, add a further practical complexity to the
 process. Indexing, comparison and classification are often conducted
 using algorithms and parameters selected based on technical and
 domain expertise of the user of the record linkage system, followed
@@ -229,10 +228,10 @@ according to a \emph{sorting key} (usually a concatenation of the values
 from several attributes). A sliding window is then moved over the
 datasets and only records within the window are compared. Techniques
 that adaptively shrink or expand the window size based on the
-characteristics of the sorting key values have shown to improve both
+characteristics of the sorting key values have been shown to improve both
 linkage efficiency and quality~\cite{Dra12} over
 %other sliding window
-approaches that use fixed sizes windows.
+approaches that use fixed size windows.
 
 These blocking techniques are heuristics, commonly requiring domain
 knowledge, such as the choice of appropriate blocking or sorting keys.
@@ -269,7 +268,7 @@ returning the record $\mathbf{r} \in \mathbf{D}$ with smallest
 distance to $\mathbf{q}$; and \emph{nearest-n(\textbf{q},n)}, returning
 the $n$ closest records in $\mathbf{D}$ to $\mathbf{q}$.
 \cite{Zezula2010} gives an overview of MSI techniques. Here we choose
-one metric space indexing structure, the M-tree~\cite{paolociaccia2m},
+one metric space indexing structure, the M-tree~\cite{Ciaccia97indexingmetric},
 and investigate its efficacy for record linkage.
 
 The M-tree is a dynamically balanced tree structure. Every node contains
@@ -296,7 +295,7 @@ datasets $\mathbf{D}_A$ and $\mathbf{D}_B$, we wish to find, for each
 record in $\mathbf{D}_A$, all the records in $\mathbf{D}_B$ that match
 it. We compare several algorithms for record linkage: traditional
 blocking, one incomplete similarity search method, LSH-MinHash, and
-one complete method, M-tree~\cite{paolociaccia2m}. We also use a
+one complete method, M-tree. We also use a
 simple complete brute force technique as a baseline for comparison,
 although this can only feasibly be applied to the smallest of our
 datasets. All experiments have a number of parameters to configure
@@ -508,26 +507,26 @@ other linkers give very poor results.
   \centering
 \includegraphics[width=\textwidth]{figures/plotLQ-cora-trad-authors}
 \vspace{-6mm}
-\caption{Blocking on `authors' field}
+\caption{Blocking on `authors' attr.}
 \end{subfigure}%
 \begin{subfigure}{.5\textwidth}
   \centering
 \includegraphics[width=\textwidth]{figures/plotLQ-cora-trad-title}
 \vspace{-6mm}
-\caption{Blocking on `title' field}
+\caption{Blocking on `title' attr.}
 \end{subfigure} \vspace{5mm}
 
 \begin{subfigure}{.5\textwidth}
   \centering
 \includegraphics[width=\textwidth]{figures/plotLQ-cora-trad-year}
 \vspace{-6mm}
-\caption{Blocking on `publication year' field}
+\caption{Blocking on `publication year' attr.}
 \end{subfigure}%
 \begin{subfigure}{.5\textwidth}
   \centering
 \includegraphics[width=\textwidth]{figures/plotLQ-cora-trad-combined}
 \vspace{-6mm}
-\caption{Blocking using the union of all fields}
+\caption{Blocking using the union of all attrs.}
 \end{subfigure} \vspace{5mm}
 
 \begin{subfigure}{.5\textwidth}
@@ -609,22 +608,23 @@ Birth records were linked to death records, separately for the Skye and
 Kilmarnock datasets, using M-tree and a range of LSH configurations. It
 was not computationally feasible to run the brute force linker. Of the
 incomplete linkers, LSH was selected as it gave slightly better results
-for Cora. The shingle size was set to 2 for all the LSH experiments
-reported, as this was found to give good results and LSH was not
-especially sensitive to this parameter. Results for other shingle sizes
-are omitted from this paper for brevity. A lower range of distance
-thresholds was explored, based on domain knowledge of the datasets.
+for Cora. The shingle size was set to $l_{ss}=2$ for all the LSH
+experiments reported, as this was found to give good results and LSH
+was not especially sensitive to this parameter. Results for other
+shingle sizes are omitted from this paper for brevity. A lower range
+of distance thresholds was explored, based on domain knowledge of the
+datasets.
 
 \Cref{demography-quality} plots (a) and (b) show the M-tree precision,
 recall, and F-measure for various thresholds. In both datasets, the best
-F-measure values are obtained with a low distance threshold of 2. Plots
-(c) and (d) compare the F-measure curves for M-tree with those obtained
-from a range of LSH configurations. The best F-measure value for M-tree
-is higher than that of any of the LSH configurations, for both datasets.
-This demonstrates both the competitiveness of M-tree with respect to
-linkage quality, and its important characteristic of being
-parameter-free---the linkage quality is obtained without the need to
-tuning for the dataset.
+F-measure values are obtained with a low distance threshold of $d=2$.
+Plots (c) and (d) compare the F-measure curves for M-tree with those
+obtained from a range of LSH configurations. The best F-measure value
+for M-tree is higher than that of any of the LSH configurations, for
+both datasets. This demonstrates both the competitiveness of M-tree
+with respect to linkage quality, and its important characteristic of
+being parameter-free---the linkage quality is obtained without the
+need to tuning for the dataset.
 
 \Cref{comparison-of-results-demography-skye} and
 \Cref{comparison-of-results-demography-kili} show greater detail for
@@ -634,11 +634,11 @@ by M-tree is largely due to recall for M-tree being much higher than for
 any of the LSH configurations. In most cases, LSH out-performs M-tree in
 terms of precision. More significantly, LSH linkage quality is heavily
 dependent on the configuration parameters. For plausible settings for
-the number of bands and band size, F-measure varies from 0.01 (extremely
-poor) to 0.47 (relatively good) for Skye and from 0.03 to 0.49 for
-Kilmarnock. In both cases \emph{LSH-10-2} performs best, but since this
-is data-dependent there is no guarantee that these parameters would work
-well with another dataset.
+the number of bands and band size, F-measure varies from $0.01$
+(extremely poor) to $0.47$ (relatively good) for Skye and from $0.03$
+to $0.49$ for Kilmarnock. In both cases \emph{LSH-10-2} performs best,
+but since this is data-dependent there is no guarantee that these
+parameters would work well with another dataset.
 
 The number of distance comparisons varies dramatically among the various
 linkers. M-tree always performs the most comparisons, since they are
@@ -681,7 +681,6 @@ this, LSH is much faster due to the efficiency of the hashing process.
 \vspace{-6mm}
 \caption{F1 Measure on Kilmarnock dataset \\ with M-tree and all LSH configurations}
 \end{subfigure}
-
 \caption{Linkage results on the demographic datasets}
 \label{demography-quality}
 \end{figure}
