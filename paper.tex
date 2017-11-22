@@ -293,9 +293,10 @@ experiments described in this paper.
 We address the following general record linkage problem: for two
 datasets $\mathbf{D}_A$ and $\mathbf{D}_B$, we wish to find, for each
 record in $\mathbf{D}_A$, all the records in $\mathbf{D}_B$ that match
-it. We compare several algorithms for record linkage: traditional
-blocking, one incomplete similarity search method, LSH-MinHash, and
-one complete method, M-tree. We also use a
+it with regard to a certain distance threshold, $d$ (i.e.\ have a
+distance of $d$ or less). We compare several algorithms for record
+linkage: traditional blocking, one incomplete similarity search method,
+LSH-MinHash, and one complete method, M-tree. We also use a
 simple complete brute force technique as a baseline for comparison,
 although this can only feasibly be applied to the smallest of our
 datasets. All experiments have a number of parameters to configure
@@ -362,7 +363,7 @@ classification decision based on a certain similarity threshold is
 incorrect for high-similarity non-matches. By definition, recall can
 never be higher for incomplete techniques.
 
-%\smallskip
+\smallskip
 \textbf{M-tree:} Besides the distance threshold, $d$, the M-tree
 linkage algorithm has no additional parameters. In a similar manner
 to the \emph{LSH-MinHash} approach, each record in $\mathbf{D}_A$ is inserted into an M-tree. To perform linkage, the algorithm iterates
@@ -407,8 +408,8 @@ code required to run these experiments can be downloaded from:
 
 %----------------------------------------------------------------------
 
-\smallskip
-\textbf{Datasets:}
+%\smallskip
+%\textbf{Datasets:}
 \label{sec-data}
 We used three datasets from two domains in our experiments, as
 summarised in Table~\ref{table-datasets}. The first is
@@ -449,7 +450,7 @@ also use a combined blocking key comprising all attributes.
 thresholds give high precision and low recall, and the reverse for high
 threshold values. Brute force and M-tree give identical results, as
 expected. The best linkage quality, with an F-measure of around 0.7,
-is achieved by a number of linkers, including brute force, M-tree, blocking on \emph{authors} and blocking and on all attributes, and two
+is achieved by a number of linkers, including brute force, M-tree, blocking on \emph{authors} and blocking on all attributes, and two
 of the LSH configurations. All of these give similar overall results,
 apart from blocking on \emph{authors}, which gives much better quality
 at very high distance threshold values. This is due to the incomplete
@@ -479,7 +480,7 @@ significantly lower number of comparisons. This is as expected, since
 both techniques are complete. Several of the incomplete linkers give
 similar quality, for example \emph{LSH-2-2}, \emph{LSH-5-2},
 \emph{LSH-10-2} and \emph{Block-combined}. These, and a number of other
-incomplete linkers give better precision than the complete techniques.
+incomplete linkers, give better precision than the complete techniques.
 This is due to high-similarity non-matches, as discussed in
 Sect.~\ref{sec-approach}. Although several of the incomplete linkers
 give as good quality as M-tree, and in some cases at lower cost, this is
@@ -624,7 +625,7 @@ for M-tree is higher than that of any of the LSH configurations, for
 both datasets. This demonstrates both the competitiveness of M-tree
 with respect to linkage quality, and its important characteristic of
 being parameter-free---the linkage quality is obtained without the
-need to tuning for the dataset.
+need to tune for the dataset.
 
 \Cref{comparison-of-results-demography-skye} and
 \Cref{comparison-of-results-demography-kili} show greater detail for
