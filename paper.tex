@@ -136,8 +136,8 @@ learning of optimal blocking schemes have also been proposed.
   \centering
   \includegraphics[width=1.0\textwidth]{figures/linkage-process}
   \caption{Overview of the steps of the traditional record linkage
-           process (left-hand side) and our proposed metric space
-           indexing based approach (right-hand side), as described in
+           process (left side) and our proposed metric space
+           indexing based approach (right side), as described in
            Sect.~\ref{sec-intro}, where records from two datasets,
            $\mathbf{D}_A$ and $\mathbf{D}_B$, are being linked.}
            \label{fig-rl-process}
@@ -266,7 +266,7 @@ inequality}. Similarity search operations include
 in a database $\mathbf{D}$ within a distance $d$ of a query record
 $\mathbf{q}$ are identified; \emph{nearest-neighbour(\textbf{q})},
 returning the record $\mathbf{r} \in \mathbf{D}$ with smallest
-distance to $\q$; and \emph{nearest-n(\textbf{q},n)}, returning
+distance to $\mathbf{q}$; and \emph{nearest-n(\textbf{q},n)}, returning
 the $n$ closest records in $\mathbf{D}$ to $\mathbf{q}$.
 \cite{Zezula2010} gives an overview of MSI techniques. Here we choose
 one metric space indexing structure, the M-tree~\cite{paolociaccia2m},
@@ -292,73 +292,85 @@ experiments described in this paper.
 \label{sec-approach}
 
 We address the following general record linkage problem: for two
-datasets $A$ and $B$, we wish to find, for each record in $A$, all the
-records in $B$ that match it. We compare several algorithms for record
-linkage: traditional blocking, one incomplete similarity search method,
-LSH-MinHash, and one complete method, M-tree~\cite{paolociaccia2m}. We
-also use a simple complete brute force technique as a baseline for
-comparison, although this can only feasibly be applied to the smallest
-of our datasets. All experiments have a number of parameters to
-configure the search space and algorithm behaviour, including a
-\emph{distance threshold} specifying a maximum distance, equivalent to a
-minimum similarity, for two records to be classified as a link (i.e.\
-referring to the same entity).
+datasets $\mathbf{D}_A$ and $\mathbf{D}_B$, we wish to find, for each
+record in $\mathbf{D}_A$, all the records in $\mathbf{D}_B$ that match
+it. We compare several algorithms for record linkage: traditional
+blocking, one incomplete similarity search method, LSH-MinHash, and
+one complete method, M-tree~\cite{paolociaccia2m}. We also use a
+simple complete brute force technique as a baseline for comparison,
+although this can only feasibly be applied to the smallest of our
+datasets. All experiments have a number of parameters to configure
+the search space and algorithm behaviour, including a
+\emph{distance threshold}, $d$, specifying a maximum distance,
+equivalent to a minimum similarity, for two records to be classified
+as a link (i.e.\ referring to the same entity).
 
+\smallskip
 \textbf{Brute force:}
-Two nested loops are used to compare every record in $A$ with every
-record in $B$. Each pair is classified as a link if the distance between
-the records is less than the threshold. This approach is guaranteed to
-identify all links, with complexity $ O(|A| \times |B|) $.
+Two nested loops are used to compare every record in
+$\mathbf{D}_A$ with every record in $\mathbf{D}_B$. Each pair is
+classified as a link if the distance $d$ between the records is less
+than the threshold. This approach is guaranteed to identify all links,
+with complexity $ O(|\mathbf{D}_A| \times |\mathbf{D}_B|) $.
 
+\smallskip
 \textbf{Traditional blocking:}
-The additional parameters are the set of blocking keys and the
-normalization encodings applied to each field. These are selected as
-described in \cite{Chr12b}, exploiting knowledge of the domain and of
-the records being linked, and chosen with the intention of giving the
-best possible results for the datasets. Each record in $A$ is placed
-into the appropriate block based on its blocking key value. The
-algorithm then iterates over the records in $B$, and for each one,
-compares it with each of the records from $A$ in the block with the same
-blocking key value.
+The parameters of traditional blocking are the set of blocking keys
+and the (optionally) phonetic
+% Peter: normalisation?
+encodings applied to each attribute. These are selected as described
+in~\cite{Chr12b}, exploiting knowledge of the domain and of the
+records being linked, and chosen with the intention of giving the
+best possible results for the datasets. Each record in $\mathbf{D}_A$
+is placed into the appropriate block based on its blocking key value.
+The algorithm then iterates over the records in $\mathbf{D}_B$, and
+for each one, compares it with each of the records from $\mathbf{D}_A$
+in the block with the same blocking key value.
 
+\smallskip
 \textbf{LSH-MinHash:}
-The additional parameters are \emph{shingle size} ($l_{ss}$), \emph{band
-size} ($l_{bs}$) and \emph{number of bands} ($l_{nb}$). Each record in
-$A$ is placed in an \emph{LSH-MinHash} data structure. First, all the
-fields of the record are concatenated, and the result \emph{shingled}
-into a set of n-grams with $n = l_{ss}$. Next, a set of
-deterministically generated hash functions are applied to each n-gram in
-the set and the smallest result (the MinHash) of each hash application
-is added to a signature for the record. The number of hashes used, and
-thus the size of the signature, is set to $l_{nb} \times l_{bs}$.
-Finally, the signature is split into $l_{nb}$ bands and the values from
-each band are hashed again to create a number of keys. The original
-record is added to a map associated with each of the keys. 
+The parameters for LSH-Minhash are~\cite{Broder1997} \emph{shingle
+size} ($l_{ss}$), \emph{band size} ($l_{bs}$) and \emph{number of
+bands} ($l_{nb}$). Each record in $\mathbf{D}_A$ is placed in an
+\emph{LSH-MinHash} data structure. First, all the attributes of the
+record are concatenated, and the result \emph{shingled} into a set of
+n-grams with $n = l_{ss}$. Next, a set of deterministically generated
+hash functions are applied to each n-gram in the set and the smallest
+result (the MinHash) of each hash application is added to a signature
+for the record. The number of hashes used, and thus the size of the
+signature, is set to $l_{nb} \times l_{bs}$. Finally, the signature is
+split into $l_{nb}$ bands and the values from each band are hashed
+again to create a number of keys. The original record is added to a
+map associated with each of the keys. 
 
-To perform linkage, the algorithm iterates over the records in $B$. Each
-record is hashed using the procedure described above, to obtain a set of
-keys. For each of these keys, the key is looked up in the LSH-MinHash
-data structure, and the records from $A$ associated with it added to the
-result set. Finally, the record from $B$ is compared in turn with each
-record in the result set, with the pair being classified as a link or
-non-link based on their distance.
+To perform linkage, the algorithm iterates over the records in
+$\mathbf{D}_B$. Each record is hashed using the procedure described
+above, to obtain a set of keys. For each of these keys, the key is
+looked up in the LSH-MinHash data structure, and the records from
+$\mathbf{D}_A$ associated with it added to the result set. Finally,
+the record from $\mathbf{D}_B$ is compared in turn with each record
+in the result set using the same distance function and threshold, $d$,
+as with the other approaches, with the pair being classified as a link
+or non-link based on their distance.
 
 In some circumstances, incomplete approaches such as traditional
 blocking and LSH-MinHash can yield higher precision than complete
 techniques. This can occur when the datasets contain a significant
 number of non-matches that nonetheless have high similarity. In this
-situation, the fact that an incomplete technique omits consideration of
-some potential links can serve to improve precision, since a
-classification decision based on similarity threshold is incorrect for
-high-similarity non-matches. By definition, recall is never higher for
-incomplete techniques.
+situation, the fact that an incomplete technique omits consideration
+of some potential links can serve to improve precision, since a
+classification decision based on a certain similarity threshold is
+incorrect for high-similarity non-matches. By definition, recall can
+never be higher for incomplete techniques.
 
-\textbf{M-tree:} The M-tree linkage algorithm has no additional
-parameters. In a similar manner to the \emph{LSH-MinHash} approach, each
-record in A is inserted into an M-tree. To perform linkage, the
-algorithm iterates over each record $b$ in $B$. A \emph{range-search(b,d)}
-operation is performed, passing the distance threshold as the second
-parameter. All the returned records are directly recorded as links.
+%\smallskip
+\textbf{M-tree:} Besides the distance threshold, $d$, the M-tree
+linkage algorithm has no additional parameters. In a similar manner
+to the \emph{LSH-MinHash} approach, each record in $\mathbf{D}_A$ is inserted into an M-tree. To perform linkage, the algorithm iterates
+over each record in $\mathbf{b} \in \mathbf{D}_B$. A
+\emph{range-search(\textbf{b},d)} operation is performed, passing the
+distance threshold as the second parameter. All the returned records
+are directly classified as links.
 
 %----------------------------------------------------------------------
 
@@ -382,12 +394,13 @@ code required to run these experiments can be downloaded from:
   %\addtolength{\tabcolsep}{-0.5pt}
   \begin{tabular}{ccccc}
   \hline\noalign{\smallskip}
-  Dataset~ & ~Records in~& ~Records in~ & ~Number of true~& ~Entities\\
-  name(s)  & dataset 1  & dataset 2  & matching pairs & linked \\
+  Dataset~ & ~Records in~& ~Records in~ & ~Number of true~& ~Entities \\
+    name(s)  & ~dataset $\mathbf{D}_A$~ & ~dataset $\mathbf{D}_B$~ &
+    matching pairs & linked \\
   \noalign{\smallskip} \hline \noalign{\smallskip}
-  Cora & 1,295 & 1,295 & 17,184 & publication-publication\\
-  Isle of Skye & 17,612 & 12,284& 2,900 & birth-death\\
-  Kilmarnock & 38,430 & 23,714 & 8,300 & birth-death\\
+  Cora & 1,295 & 1,295 & 17,184 & Publication--Publication\\
+  ~Isle of Skye~ & 17,612 & 12,284& 2,900 & Birth--Death \\
+  Kilmarnock & ~38,430~ & ~23,714~ & ~8,300~ & ~Birth--Death~ \\
   \noalign{\smallskip} \hline
   \end{tabular}
   \end{scriptsize}
@@ -400,68 +413,67 @@ code required to run these experiments can be downloaded from:
 \label{sec-data}
 We used three datasets from two domains in our experiments, as
 summarised in Table~\ref{table-datasets}. The first is
-\emph{Cora}~\cite{Cora2017}, which contains 1,295 records that refer to
-112 machine learning publications. It is used as a benchmark dataset in
-the literature for assessing linkage algorithms. Ground truth is
-provided via a unique \emph{paper\_id} identifier of the form
-``blum1993". In this experiment linkage is performed over the same set
-of records.
+\emph{Cora}~\cite{Cora2017}, which contains 1,295 records that refer
+to 112 machine learning publications. Cora is commonly used as a
+benchmark dataset in the literature for assessing linkage algorithms.
+Ground truth is provided via a unique \emph{paper\_id} identifier of
+the form ``blum1993". In this experiment linkage is performed over
+the same set of records.
 
-The other datasets are historical Scottish records of vital events
-(birth, marriages and deaths) one registered on the \emph{Isle of Skye},
-a rural district, and the other records from \emph{Kilmarnock}, an
-industrial town. These datasets were create by historical demographers
-who extensively curated and linked both
+The other two datasets are historical Scottish records of vital events
+(birth, marriages and deaths) one registered on the \emph{Isle of
+Skye}, a rural district, and the other records from
+\emph{Kilmarnock}, an industrial town. These datasets were created by
+historical demographers who extensively curated and linked both
 datasets~\cite{reid2002,reid2006}. Both datasets include the names,
 gender, addresses of individuals and their parents. Ground truth was
-generated by the demographers based on their extensive domain knowledge.
+generated by the demographers based on their extensive domain
+knowledge.
 
 In all of our experiments we use a single distance metric which is the
-sum of the Levenshtein~\cite{Levenshtein66} distances between the set of
-fields being compared.
+sum of the Levenshtein~\cite{Levenshtein66} distances between the set
+of attributes being compared.
 
 \subsection{Cora Results}
 
 In this section, we perform linkage on the Cora dataset using all four
 approaches presented in this paper: brute force, traditional blocking,
 LSH and M-tree, using several selected configurations for the blocking
-and LSH linkers. The distance threshold is varied between 0 and
-250~\footnote{Relatively high Levenshtein distances are included since
-Cora includes a number of low-similarity true matches.}. For traditional
-blocking, the following Cora fields are used individually as blocking
-keys: \textit{author}, \textit{title}, \textit{venue},
-\textit{location}, \textit{publisher} and \textit{year}. We also use a
-combined blocking key comprising all fields.
+and LSH approaches. The distance threshold is varied between $0 \le d \le 250$~\footnote{Relatively high Levenshtein distances are included
+since Cora includes a number of low-similarity true matches.}. For
+traditional blocking, the following Cora attributes are used
+individually as blocking keys: \emph{author}, \emph{title},
+\emph{venue}, \emph{location}, \emph{publisher} and \emph{year}. We
+also use a combined blocking key comprising all attributes.
 
-\Cref{cora-quality} shows the precision, recall, and F-measure for
-various thresholds. As expected, low thresholds give high precision and
-low recall, and the reverse for high threshold values. Brute force and
-M-tree give identical results. The best linkage quality, with an
-F-measure of around 0.7, is achieved by a number of linkers, including
-brute force, M-tree, blocking on `authors' and blocking and on all
-fields, and two of the LSH configurations. All of these give similar
-overall results, apart from blocking on `authors', which gives much
-better quality at very high distance threshold values. This is due to
-the incomplete nature of the linker, avoiding consideration of
-significant numbers of high-similarity non-matches, thus avoiding these
-becoming false positives and keeping precision high.
+\Cref{cora-quality} shows the precision, recall, and F-measure~\cite{Chr12} for various thresholds. As expected, low 
+thresholds give high precision and low recall, and the reverse for high
+threshold values. Brute force and M-tree give identical results, as
+expected. The best linkage quality, with an F-measure of around 0.7,
+is achieved by a number of linkers, including brute force, M-tree, blocking on \emph{authors} and blocking and on all attributes, and two
+of the LSH configurations. All of these give similar overall results,
+apart from blocking on \emph{authors}, which gives much better quality
+at very high distance threshold values. This is due to the incomplete
+nature of the approach, avoiding comparisons of significant numbers
+of high-similarity non-matches and thus avoiding these becoming false
+positives and keeping precision high.
 
 For a more detailed investigation of selected linkers, the brute force
 approach is used to establish a good threshold value for the Cora
 dataset. The maximum F-measure is observed at a threshold value of
-70. This value is dataset-dependent; for different datasets the maximum
-F-measure will occur at different thresholds. In the rest of this
-section we fix the threshold value at 70.
+$d=70$. This value is dataset-dependent; for different datasets the
+maximum F-measure will occur at different thresholds. In the rest of
+this section we fix the threshold value at $d=70$.
 
 \Cref{comparison-of-results-cora} shows greater detail for selected
 linkers, showing the parameters for the experiment, the number of
 distance comparisons made, the precision, recall and the F-measure
-achieved by each algorithm.  In the \emph{Linker} column the algorithm
+achieved by each algorithm. In the \emph{Linker} column the algorithm
 name is followed by its parameters: for LSH the number of the bands
-followed by the band size, and for traditional blocking the fields used
-for blocking. The number of distance comparisons is reported as a
-machine-independent proxy for execution cost, since code profiling shows
-that distance calculations are dominant.
+followed by the band size, and for traditional blocking the attributes
+used for blocking. The number of distance comparisons is reported as a
+machine-independent proxy for execution cost, since code profiling
+shows that distance calculations are dominant.
 
 M-tree yields the same linkage quality as brute force, although using a
 significantly lower number of comparisons. This is as expected, since
@@ -551,15 +563,22 @@ other linkers give very poor results.
 %----------------------------------------------------------------------
 
 \begin{table}[ht]
-\centering
-\begin{tabular}{l|r|r|r|r}
+\caption{Linkage quality on Cora dataset with distance threshold
+  $d= 70$.}
+  \label{comparison-of-results-cora}
+  \centering
+  \begin{footnotesize}
+  \begin{tabular}{lrrrr} \hline\noalign{\smallskip}
 \parbox{0.2\textwidth}{\centering Linker} &
 \parbox{0.2\textwidth}{\centering Comparisons} &
 \parbox{0.17\textwidth}{\centering Precision} &
 \parbox{0.17\textwidth}{\centering Recall} &
-\parbox{0.17\textwidth}{\centering F1 Measure} \\ \hline \hline
-Brute Force        & 1,677,025                 & 0.84      & 0.57   & 0.68       \\ \hline
-M-tree              &  902,693                  & 0.84      & 0.57   & 0.68       \\ \hline
+\parbox{0.17\textwidth}{\centering F1 Measure} \\
+  \noalign{\smallskip} \hline \noalign{\smallskip}
+Brute Force        & 1,677,025                 & 0.84      & 0.57   & 0.68  \\
+\noalign{\smallskip} \hline \noalign{\smallskip}
+M-tree              &  902,693                  & 0.84      & 0.57   & 0.68       \\
+\noalign{\smallskip} \hline \noalign{\smallskip}
 LSH-2-2            &  192,199	& 0.95	& 0.47	& 0.63       \\
 LSH-5-2            &  342,849	& 0.91	& 0.55	& 0.69       \\
 LSH-10-2           &  513,947	& 0.88	& 0.57	& 0.69       \\
@@ -568,70 +587,70 @@ LSH-5-5            &  22,057	& 0.99	& 0.36	& 0.53       \\
 LSH-10-5           &  26,167	& 0.98	& 0.4	& 0.57      \\
 LSH-2-10           &  4,711	& 1	& 0.15	& 0.27    \\
 LSH-5-10           &  6,501	& 1	& 0.19	& 0.32      \\
-LSH-10-10          & 10,627  	& 0.99	& 0.27& 	0.43       \\  \hline
+LSH-10-10          & 10,627  	& 0.99	& 0.27& 	0.43       \\
+\noalign{\smallskip} \hline \noalign{\smallskip}
 Block-year         &  115,893                  & 0.99      & 0.35   & 0.51       \\
 Block-authors      &   11,039                   & 0.94      & 0.16   & 0.28       \\
 Block-title        &   27,407                   & 0.95      & 0.42   & 0.58       \\
 Block-venue        &   36,647                   & 0.85      & 0.29   & 0.44       \\
 Block-location     & 1,009,957                 & 0.83      & 0.43   & 0.57       \\
 Block-publisher    &  833,079                  & 0.85      & 0.44   & 0.58       \\
-Block-combined     & 1,214,269                 & 0.84      & 0.56   & 0.67       \\ \hline
+Block-combined     & 1,214,269                 & 0.84      & 0.56   & 0.67       \\
+\noalign{\smallskip} \hline
 \end{tabular}
-\caption{Linkage quality on Cora dataset with distance threshold = 70
-\label{comparison-of-results-cora}
-}
+\end{footnotesize}
 \end{table}
 
 %----------------------------------------------------------------------
 
 \subsection{Demographic Dataset Results}
 
-GRAHAM STILL WRITING HERE
+Birth records were linked to death records, separately for the Skye and
+Kilmarnock datasets, using M-tree and a range of LSH configurations. It
+was not computationally feasible to run the brute force linker. Of the
+incomplete linkers, LSH was selected as it gave slightly better results
+for Cora. The shingle size was set to 2 for all the LSH experiments
+reported, as this was found to give good results and LSH was not
+especially sensitive to this parameter. Results for other shingle sizes
+are omitted from this paper for brevity. A lower range of distance
+thresholds was explored, based on domain knowledge of the datasets.
 
-Birth records were linked to death records, separately for the Skye and Kilmarnock datasets, using M-tree and LSH.
+\Cref{demography-quality} plots (a) and (b) show the M-tree precision,
+recall, and F-measure for various thresholds. In both datasets, the best
+F-measure values are obtained with a low distance threshold of 2. Plots
+(c) and (d) compare the F-measure curves for M-tree with those obtained
+from a range of LSH configurations. The best F-measure value for M-tree
+is higher than that of any of the LSH configurations, for both datasets.
+This demonstrates both the competitiveness of M-tree with respect to
+linkage quality, and its important characteristic of being
+parameter-free---the linkage quality is obtained without the need to
+tuning for the dataset.
 
-It was not computationally feasible to run the brute force linker. Of the incomplete linkers, LSH was selected as it gave slightly better results for Cora.
+\Cref{comparison-of-results-demography-skye} and
+\Cref{comparison-of-results-demography-kili} show greater detail for
+selected linkers. In both cases the F-measure achieved is better for
+M-tree than any of the LSH linkers. The better linkage quality achieved
+by M-tree is largely due to recall for M-tree being much higher than for
+any of the LSH configurations. In most cases, LSH out-performs M-tree in
+terms of precision. More significantly, LSH linkage quality is heavily
+dependent on the configuration parameters. For plausible settings for
+the number of bands and band size, F-measure varies from 0.01 (extremely
+poor) to 0.47 (relatively good) for Skye and from 0.03 to 0.49 for
+Kilmarnock. In both cases \emph{LSH-10-2} performs best, but since this
+is data-dependent there is no guarantee that these parameters would work
+well with another dataset.
 
-The shingle size was set to 2 for all the LSH experiments reported, as this was found to give good results and LSH was not especially sensitive to this parameter. Results for other shingle sizes are omitted from this paper for brevity. 
-
-
-
-
-
-on the Cora dataset using all four
-approaches presented in this paper: brute force, traditional blocking,
-LSH and M-tree, using several selected configurations for the blocking
-and LSH linkers. The distance threshold is varied between 0 and
-250~\footnote{Relatively high Levenshtein distances are included since
-Cora includes a number of low-similarity true matches.}. For traditional
-blocking, the following Cora fields are used individually as blocking
-keys: \textit{author}, \textit{title}, \textit{venue},
-\textit{location}, \textit{publisher} and \textit{year}. We also use a
-combined blocking key comprising all fields.
-
-\Cref{cora-quality} shows the precision, recall, and F-measure for
-various thresholds. As expected, low thresholds give high precision and
-low recall, and the reverse for high threshold values. Brute force and
-M-tree give identical results. The best linkage quality, with an
-F-measure of around 0.7, is achieved by a number of linkers, including
-brute force, M-tree, blocking on `authors' and blocking and on all
-fields, and two of the LSH configurations. All of these give similar
-overall results, apart from blocking on `authors', which gives much
-better quality at very high distance threshold values. This is due to
-the incomplete nature of the linker, avoiding consideration of
-significant numbers of high-similarity non-matches, thus avoiding these
-becoming false positives and keeping precision high.
-
-
-\Cref{demography-quality}
-
-\Cref{comparison-of-results-demography-skye} and \Cref{comparison-of-results-demography-kili} show the results for LSH-MinHash and M-tree on the Skye and Kilmarnock datasets. 
-
-In both cases the F1 measure achieved is better for M-tree than any of the experimental settings chosen for LSH. This is largely due to the recall for M-tree being much higher than any of the LSH experiments. For most configurations, LSH out-performs M-tree in terms of precision.
-
-Perhaps more important than the fact that M-tree gives better F1 measures than all of the LSH experiments is the fact that the LSH performance is extremely variable. For a relatively plausible settings for the number of bands and band-size the F1 measurements vary from 0.01 (extremely poor) to 0.47 (relatively good) for Skye and between 0.03 and 0.49 for the Kilmarnock dataset. In both cases LSH-10-2 performs best, but since this is data dependent there is no guarantee these parameters would work well with another dataset. Furthermore, without good ground truth, which is usually unavailable, there is no way of knowing if good linkage results are being obtained or not.
-
-Another observation that is worthy of comment is the number of (distance) comparisons being performed by the different algorithms. For M-trees the number of comparisons are closely related to the complexity of the search being performed since the algorithms are performing (range) searches over distance measures to determine the query results. This is not true of LSH which is performing Jaccard similarity using Hashes over the datasets. Comparisons are only used at the final step to determine if a candidate is a match or not. The LSH results which provide the best results by F1 measure are performing between a quarter and half the number of matches performed by M-trees. From this we can conclude that the hash algorithms are returning many candidates that are outwith the search distance. Thus, in order to get good results, LSH is tending towards a brute force search over the candidate results. Despite this LSH is much faster due to the efficiency of the hashing mechanisms.
+The number of distance comparisons varies dramatically among the various
+linkers. M-tree always performs the most comparisons, since they are
+intrinsic to the \emph{range-search} algorithm. The core part of the LSH
+linker performs Jaccard similarity comparisons and hashing; distance
+comparisons are only performed in the final step to determine whether a
+candidate pair is a link. The LSH configurations yielding the best
+results perform distance comparisons of the same order of magnitude as
+M-tree. This indicates that the good LSH linkers return many candidates
+beyond the distance threshold. Thus, in order to get good results, LSH
+tends towards a brute force search over the candidate results. Despite
+this, LSH is much faster due to the efficiency of the hashing process.
 
 %----------------------------------------------------------------------
 
@@ -640,23 +659,27 @@ Another observation that is worthy of comment is the number of (distance) compar
 \begin{subfigure}{.5\textwidth}
   \centering
 \includegraphics[width=\textwidth]{figures/plotLQ-skye-mtree}
-\caption{Linkage quality on Skye dataset using M-tree\label{skye-quality-mtree}}
+\vspace{-6mm}
+\caption{M-tree linkage on Skye dataset\label{skye-quality-mtree}}
 \end{subfigure}%
 \begin{subfigure}{.5\textwidth}
   \centering
 \includegraphics[width=\textwidth]{figures/plotLQ-kilmarnock-mtree}
-\caption{Linkage quality on Kilmarnock dataset using M-tree\label{kilmarnock-quality-mtree}}
-\end{subfigure}
+\vspace{-6mm}
+\caption{M-tree linkage on Kilmarnock dataset\label{kilmarnock-quality-mtree}}
+\end{subfigure} \vspace{5mm}
 
 \begin{subfigure}{.5\textwidth}
   \centering
 \includegraphics[width=\textwidth]{figures/plotFs-skye-f}
-\caption{Linkage quality on Skye dataset using M-tree and all LSH configurations}
+\vspace{-6mm}
+\caption{F1 Measure on Skye dataset \\ with M-tree and all LSH configurations}
 \end{subfigure}%
 \begin{subfigure}{.5\textwidth}
   \centering
 \includegraphics[width=\textwidth]{figures/plotFs-kilmarnock-f}
-\caption{Linkage quality on Kilmarnock dataset using M-tree and all LSH configurations}
+\vspace{-6mm}
+\caption{F1 Measure on Kilmarnock dataset \\ with M-tree and all LSH configurations}
 \end{subfigure}
 
 \caption{Linkage results on the demographic datasets}
@@ -666,15 +689,20 @@ Another observation that is worthy of comment is the number of (distance) compar
 %----------------------------------------------------------------------
 
 \begin{table}[ht]
+\caption{Linkage quality on Skye dataset with distance threshold
+$d= 2$.}
+\label{comparison-of-results-demography-skye}
 \centering
-\begin{tabular}{l|r|r|r|r}
+\begin{footnotesize}
+\begin{tabular}{lrrrr} \hline\noalign{\smallskip}
 \parbox{0.2\textwidth}{\centering Linker} &
 \parbox{0.2\textwidth}{\centering Comparisons} &
 \parbox{0.17\textwidth}{\centering Precision} &
 \parbox{0.17\textwidth}{\centering Recall} &
-\parbox{0.17\textwidth}{\centering F1 Measure} \\ \hline \hline
+\parbox{0.17\textwidth}{\centering F1 Measure} \\
+\noalign{\smallskip} \hline \noalign{\smallskip}
 M-tree    & 102,318,525                 & 0.65      & 0.46   & 0.54      \\ \hline
-
+\noalign{\smallskip} \hline \noalign{\smallskip}
 LSH-2-2  & 3,109,250                   & 0.63      & 0.03   & 0.06       \\
 
 LSH-5-2  & 10,412,496                  & 0.64      & 0.11   & 0.19       \\
@@ -683,51 +711,79 @@ LSH-10-2 & 53,874,127                  & 0.68      & 0.36   & 0.47       \\
 
 LSH-5-5  & 36,566                     & 0.76      & 0.01   & 0.01       \\
 
-LSH-10-5 & 129,873                    & 0.72      & 0.01   & 0.02       \\ \hline
+LSH-10-5 & 129,873                    & 0.72      & 0.01   & 0.02       \\
+\noalign{\smallskip} \hline
 \end{tabular}
-\caption{Linkage quality on Skye dataset with distance threshold = 2
-\label{comparison-of-results-demography-skye}
-}
+\end{footnotesize}
 \end{table}
 
 %----------------------------------------------------------------------
 
 \begin{table}[ht]
+\caption{Linkage quality on Kilmarnock dataset with distance
+threshold $d= 2$.}
+\label{comparison-of-results-demography-kili}
 \centering
-\begin{tabular}{l|r|r|r|r|r|r}
+\begin{footnotesize}
+\begin{tabular}{lrrrrrr} \hline\noalign{\smallskip}
 \parbox{0.2\textwidth}{\centering Linker} &
 \parbox{0.2\textwidth}{\centering Comparisons} &
 \parbox{0.17\textwidth}{\centering Precision} &
 \parbox{0.17\textwidth}{\centering Recall} &
-\parbox{0.17\textwidth}{\centering F1 Measure} \\ \hline \hline
-M-tree     & 514,871,153                   & 0.76      & 0.45   & 0.57      \\ \hline
+\parbox{0.17\textwidth}{\centering F1 Measure} \\
+\noalign{\smallskip} \hline \noalign{\smallskip}
+M-tree     & 514,871,153                   & 0.76      & 0.45   & 0.57      \\
+\noalign{\smallskip} \hline \noalign{\smallskip}
 LSH-2-2   & 99,145,887                    & 0.81      & 0.16   & 0.27       \\
 LSH-5-2   & 130,721,338                   & 0.79      & 0.23   & 0.36       \\
 LSH-10-2  & 177,168,848                   & 0.79      & 0.36   & 0.49       \\
 LSH-5-5   & 239,368                      & 0.84      & 0.01   & 0.02       \\
-LSH-10-5  & 855,431                      & 0.87      & 0.02   & 0.03 \\ \hline
+LSH-10-5  & 855,431                      & 0.87      & 0.02   & 0.03 \\ 
+\noalign{\smallskip} \hline
 \end{tabular}
-\caption{Linkage quality on Kilmarnock dataset with distance threshold = 2
-\label{comparison-of-results-demography-kili}
-}
+\end{footnotesize}
 \end{table}
 
 %----------------------------------------------------------------------
 
 \section{Conclusions and Future Work\label{sec-concl}}
 
-In this paper we have demonstrated the efficacy of MSI in achieving  complete and efficient record linkage, without the need for complex parameter tuning. In conclusion, this assertion deserves some careful unpacking. It is always possible to achieve high quality linkage using a brute force approach. However the n-squared complexity of this approach prevents its practical application for datasets of even moderate size. The use of MSI techniques such as M-tree delivers the same results as brute force with fewer comparisons. We have shown that the M-tree approach delivers high precision, high recall results that are the same as those delivered by brute force. Furthermore this is achieved consistently without the need for complex parameter tuning.
+In this paper we have demonstrated the efficacy of MSI in achieving
+complete and efficient record linkage, without the need for complex
+parameter tuning. In conclusion, this claim deserves some careful
+unpacking. It is always possible to achieve high quality linkage using a
+brute force approach. However the quadratic complexity of this approach
+prevents its practical application for datasets of even moderate size.
+We have shown that MSI techniques such as M-tree can deliver high
+precision, high recall results that are the same as those delivered by
+brute force. Furthermore this is achieved with fewer distance
+comparisons, and consistently without the need for complex parameter
+tuning.
 
-We contrast this to traditional blocking and LSH based approaches. The major drawback of their use is that whilst they can produce extremely good results, they can also produce extremely poor results. It was our observations of low recall given by these approaches that originally led us to experiment with M-trees. Without extensive ground truth or large amounts of clerking effort by human domain experts it is impossible to determine the quality of the links produced. 
+We contrast this to traditional blocking and LSH-based approaches. Their
+major drawback is that whilst they can produce extremely good results,
+they can also produce extremely poor results. It was our observations of
+low recall given by these approaches that originally led us to
+experiment with M-trees.
 
-However, this paper also highlights some unexpected results. Firstly, the good quality results yielded by both traditional blocking and LSH are partly due to the fact that (in the limit) they tend towards brute force as the number of records in the block increase. A second unexpected result is that shown in \Cref{comparison-of-results-cora}, namely that LSH can yield higher precision than is achieved by a complete method such as M-tree, as was discussed in Sect.~\ref{sec-approach}.
+We note that the good results yielded by both traditional blocking and
+LSH are partly due to the fact that (in the limit) they tend towards
+brute force as the number of records in the block increase. A second,
+unexpected, result is that illustrated in
+\Cref{comparison-of-results-cora}, namely that incomplete approaches
+such as LSH can in some cases yield higher precision than that achieved
+by a complete method such as M-tree. This is due to the incomplete
+linker's ability to mask the inability of a classifier based solely on
+record similarity to correctly classify high-similarity non-matches or
+low-similarity matches.
 
-
-\emph{Some sentence or two about run-time?}
-
-The observation that LSH can yield results quickly at the cost of some recall suggests a potentially profitable future direction for exploration, namely the use of hybrid algorithms. We hypothesise that it may be possible to use an incomplete technique like LSH to form indices into a data structure such as an M-tree. In this manner, M-tree nodes could be used as the starting point for range-search queries and, in so doing, prune the search space considerably to yield highly quality complete results quickly.
-
-% TODO: check that the above claims have been addressed.
+The observation that LSH can yield results quickly at the cost of some
+recall suggests that hybrid algorithms may be a potentially profitable
+future direction for exploration. We hypothesise that it may be possible
+to use an incomplete technique like LSH to form indices into a data
+structure such as an M-tree. In this manner, M-tree nodes could be used
+as the starting point for range-search queries and, in so doing, prune
+the search space considerably to yield high quality results quickly.
 
 %----------------------------------------------------------------------
 
