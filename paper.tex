@@ -50,7 +50,7 @@ unavailable. Records are linked on the basis of similarity between
 common attributes, with every pair being classified as a link or
 non-link depending on their degree of similarity. Record linkage is
 usually performed in a three-step process: first groups of similar
-candidate records are identified using indexing; pairs within the same
+candidate records are identified using indexing, pairs within the same
 group are then compared in more detail, and finally classified.
 %
 Even state-of-the-art indexing techniques, such as Locality Sensitive
@@ -88,15 +88,15 @@ of unique entity identifiers (keys) in the datasets to be linked, which
 prevents the use of a database join. Instead, the linkage of records
 requires the comparison of the common attributes (or fields) that are
 available within the datasets. For datasets that contain information
-about individuals, these attributes include the names, address, dates of
-birth, and so on, of individuals.
+about individuals, these attributes include the names, addresses,
+dates of birth, and so on, of individuals.
 
 To overcome data quality issues such as typographical errors and
 variations (which are common in name and address values~\cite{Chr12}),
 approximate string comparison functions (such as edit distance, the
 Jaro-Winkler comparator, or Jaccard similarity~\cite{Chr12}) are used to
 compare pairs of records, leading to a vector of similarities (one
-similarity per attribute/field compared) for each pair. These similarity
+similarity per attribute compared) for each pair. These similarity
 vectors are then used to classify the compared record pairs into
 \emph{links} (where it is assumed both records in a pair correspond to
 the same real-world entity) and \emph{non-links} (where the records are
@@ -106,7 +106,7 @@ linkage~\cite{Chr12,Don15}, ranging from simple threshold-based to
 sophisticated clustering, supervised classification techniques, and
 active learning approaches~\cite{Wan15}.
 
-Besides the issues of a lack of unique entity identifiers, and data
+Besides the issues of a lack of unique entity identifiers and data
 quality (which will affect linkage quality), record linkage is also
 challenged by the increasing sizes of the datasets to be
 linked~\cite{Don15}. To avoid full pair-wise comparison of all possible
@@ -220,7 +220,7 @@ encoded using functions such as Soundex, NYSIIS, or
 Double-Metaphone~\cite{Chr12}. These convert a string into a code
 according to its pronunciation, assigning the same code to similar
 sounding names (such as `Gail' and `Gayle'). Multiple blocking keys
-may be used to deal with the problem of missing attribute values.
+may also be used to deal with the problem of missing attribute values.
 
 A different approach to indexing is the sorted neighbourhood
 method~\cite{Mon96}, where the datasets to be linked are sorted
@@ -228,8 +228,8 @@ according to a \emph{sorting key} (usually a concatenation of the values
 from several attributes). A sliding window is then moved over the
 datasets and only records within the window are compared. Techniques
 that adaptively shrink or expand the window size based on the
-characteristics of the sorting key values have been shown to improve both
-linkage efficiency and quality~\cite{Dra12} over
+characteristics of the sorting key values have been shown to improve
+both linkage efficiency and quality~\cite{Dra12} over
 %other sliding window
 approaches that use fixed size windows.
 
@@ -238,8 +238,8 @@ knowledge, such as the choice of appropriate blocking or sorting keys.
 Poor choices of blocking attributes result in records being inserted
 into inappropriate blocks, and thus true matches being missed. As a
 result, such techniques can lead to \emph{incomplete} linkage.
-Conversely, many of the record pairs compared in a block may turn
-out to have low similarity, corresponding to non-matches, resulting in
+Conversely, many of the record pairs compared in a block may turn out
+to have low similarity, corresponding to non-matches, resulting in
 \emph{inefficient} linkage.
 
 Locality sensitive hashing (LSH), originally proposed to allow efficient
@@ -255,21 +255,23 @@ that in order to get good results, LSH methods must be tuned to the
 particular datasets being linked. This requires good quality ground
 truth data which may be unavailable or expensive to obtain.
 
-Metric space indexing (MSI) techniques provide indexing structures to
-support the comparison of records in one set with those in another,
-typically also offering similarity search operations. To create an MSI
-data structure, it is necessary to define a distance measure between
-records, with certain properties including the \emph{triangle
-inequality}. Similarity search operations include
-\emph{range-search(\textbf{q},d)}, where all records $\mathbf{r}$
-in a database $\mathbf{D}$ within a distance $d$ of a query record
-$\mathbf{q}$ are identified; \emph{nearest-neighbour(\textbf{q})},
-returning the record $\mathbf{r} \in \mathbf{D}$ with smallest
-distance to $\mathbf{q}$; and \emph{nearest-n(\textbf{q},n)}, returning
-the $n$ closest records in $\mathbf{D}$ to $\mathbf{q}$.
-\cite{Zezula2010} gives an overview of MSI techniques. Here we choose
-one metric space indexing structure, the M-tree~\cite{Ciaccia97indexingmetric},
-and investigate its efficacy for record linkage.
+Metric space indexing (MSI) techniques~\cite{Zezula2010} provide
+indexing structures to support the comparison of records in one set
+with those in another, typically also offering similarity search
+operations. To create an MSI data structure, it is necessary to define
+a distance measure between records, with certain properties including
+the \emph{triangle inequality}~\cite{Zezula2010}. Similarity search
+operations include \emph{range-search(\textbf{q},d)}, where all
+records $\mathbf{r}$ in a database $\mathbf{D}$ within a distance $d$
+of a query record $\mathbf{q}$ are identified;
+\emph{nearest-neighbour(\textbf{q})}, returning the record $\mathbf{r}
+\in \mathbf{D}$ with smallest distance to $\mathbf{q}$; and
+\emph{nearest-n(\textbf{q},n)}, returning the $n$ closest records in
+$\mathbf{D}$ to $\mathbf{q}$.
+%\cite{Zezula2010} gives an overview of MSI techniques.
+Here we choose one metric space indexing structure, the
+M-tree~\cite{Ciaccia97indexingmetric}, and investigate its efficacy
+for record linkage.
 
 The M-tree is a dynamically balanced tree structure. Every node contains
 a reference to a record being indexed, a pointer to its parent, the
@@ -309,9 +311,9 @@ as a link (i.e.\ referring to the same entity).
 \textbf{Brute force:}
 Two nested loops are used to compare every record in
 $\mathbf{D}_A$ with every record in $\mathbf{D}_B$. Each pair is
-classified as a link if the distance $d$ between the records is less
-than the threshold. This approach is guaranteed to identify all links,
-with complexity $ O(|\mathbf{D}_A| \times |\mathbf{D}_B|) $.
+classified as a link if the distance between the records is equal to
+or less than the threshold $d$. This approach is guaranteed to identify
+all links, with complexity $ O(|\mathbf{D}_A| \times |\mathbf{D}_B|)$.
 
 \smallskip
 \textbf{Traditional blocking:}
@@ -367,10 +369,10 @@ never be higher for incomplete techniques.
 \textbf{M-tree:} Besides the distance threshold, $d$, the M-tree
 linkage algorithm has no additional parameters. In a similar manner
 to the \emph{LSH-MinHash} approach, each record in $\mathbf{D}_A$ is inserted into an M-tree. To perform linkage, the algorithm iterates
-over each record in $\mathbf{b} \in \mathbf{D}_B$. A
-\emph{range-search(\textbf{b},d)} operation is performed, passing the
-distance threshold as the second parameter. All the returned records
-are directly classified as links.
+over each record $\mathbf{b} \in \mathbf{D}_B$. A
+\emph{range-search(\textbf{b},d)} operation is performed on the
+M-tree, passing the distance threshold $d$ as the second parameter.
+All the returned records are directly classified as links.
 
 %----------------------------------------------------------------------
 
@@ -418,31 +420,32 @@ to 112 machine learning publications. Cora is commonly used as a
 benchmark dataset in the literature for assessing linkage algorithms.
 Ground truth is provided via a unique \emph{paper\_id} identifier of
 the form ``blum1993". In this experiment linkage is performed over
-the same set of records.
+the same set of records (i.e.\ a de-duplication~\cite{Chr12}).
 
 The other two datasets are historical Scottish records of vital events
 (birth, marriages and deaths) one registered on the \emph{Isle of
 Skye}, a rural district, and the other records from
 \emph{Kilmarnock}, an industrial town. These datasets were created by
 historical demographers who extensively curated and linked both
-datasets~\cite{reid2002,reid2006}. Both datasets include the names,
+datasets~\cite{reid2006,reid2002}. Both datasets include the names,
 gender, addresses of individuals and their parents. Ground truth was
 generated by the demographers based on their extensive domain
 knowledge.
 
 In all of our experiments we use a single distance metric which is the
-sum of the Levenshtein~\cite{Levenshtein66} distances between the set
-of attributes being compared.
+sum of the Levenshtein~\cite{Levenshtein66} edit distances between the
+set of attributes being compared.
 
 \subsection{Cora Results}
 
 In this section, we perform linkage on the Cora dataset using all four
 approaches presented in this paper: brute force, traditional blocking,
 LSH and M-tree, using several selected configurations for the blocking
-and LSH approaches. The distance threshold is varied between $0 \le d \le 250$~\footnote{Relatively high Levenshtein distances are included
-since Cora includes a number of low-similarity true matches.}. For
-traditional blocking, the following Cora attributes are used
-individually as blocking keys: \emph{author}, \emph{title},
+and LSH approaches. The distance threshold is varied between $0 \le d
+\le 250$~\footnote{Relatively high Levenshtein edit distances are
+included since Cora includes a number of low-similarity true
+matches.}. For traditional blocking, the following Cora attributes are
+used individually as blocking keys: \emph{author}, \emph{title},
 \emph{venue}, \emph{location}, \emph{publisher} and \emph{year}. We
 also use a combined blocking key comprising all attributes.
 
@@ -453,7 +456,7 @@ expected. The best linkage quality, with an F-measure of around 0.7,
 is achieved by a number of linkers, including brute force, M-tree, blocking on \emph{authors} and blocking on all attributes, and two
 of the LSH configurations. All of these give similar overall results,
 apart from blocking on \emph{authors}, which gives much better quality
-at very high distance threshold values. This is due to the incomplete
+at very high distance thresholds. This is due to the incomplete
 nature of the approach, avoiding comparisons of significant numbers
 of high-similarity non-matches and thus avoiding these becoming false
 positives and keeping precision high.
@@ -467,7 +470,7 @@ this section we fix the threshold value at $d=70$.
 
 \Cref{comparison-of-results-cora} shows greater detail for selected
 linkers, showing the parameters for the experiment, the number of
-distance comparisons made, the precision, recall and the F-measure
+distance comparisons made, and the precision, recall and F-measure
 achieved by each algorithm. In the \emph{Linker} column the algorithm
 name is followed by its parameters: for LSH the number of the bands
 followed by the band size, and for traditional blocking the attributes
@@ -508,13 +511,13 @@ other linkers give very poor results.
   \centering
 \includegraphics[width=\textwidth]{figures/plotLQ-cora-trad-authors}
 \vspace{-6mm}
-\caption{Blocking on `authors' attr.}
+\caption{Blocking on `authors' attribute}
 \end{subfigure}%
 \begin{subfigure}{.5\textwidth}
   \centering
 \includegraphics[width=\textwidth]{figures/plotLQ-cora-trad-title}
 \vspace{-6mm}
-\caption{Blocking on `title' attr.}
+\caption{Blocking on `title' attribute}
 \end{subfigure} \vspace{5mm}
 
 \begin{subfigure}{.5\textwidth}
@@ -556,7 +559,7 @@ other linkers give very poor results.
 \caption{LSH using 10 bands of size 10}
 \end{subfigure}
 
-\caption{Linkage results on the Cora dataset}
+\caption{Linkage results on the Cora dataset.}
 \label{cora-quality}
 \end{figure}
 
@@ -569,11 +572,13 @@ other linkers give very poor results.
   \centering
   \begin{footnotesize}
   \begin{tabular}{lrrrr} \hline\noalign{\smallskip}
-\parbox{0.2\textwidth}{\centering Linker} &
-\parbox{0.2\textwidth}{\centering Comparisons} &
-\parbox{0.17\textwidth}{\centering Precision} &
-\parbox{0.17\textwidth}{\centering Recall} &
-\parbox{0.17\textwidth}{\centering F1 Measure} \\
+  Linker~~~~~~~~~~ & ~~~Comparisons & ~~~~~Precision & 
+  ~~~~~~~~~~~Recall & ~~~~~~F1 Measure \\
+%\parbox{0.2\textwidth}{\centering Linker} &
+%\parbox{0.2\textwidth}{\centering ~~~Comparisons} &
+%\parbox{0.17\textwidth}{\centering ~~~Precision} &
+%\parbox{0.17\textwidth}{\centering ~~~Recall} &
+%\parbox{0.17\textwidth}{\centering ~~~F1 Measure} \\
   \noalign{\smallskip} \hline \noalign{\smallskip}
 Brute Force        & 1,677,025                 & 0.84      & 0.57   & 0.68  \\
 \noalign{\smallskip} \hline \noalign{\smallskip}
@@ -627,8 +632,8 @@ with respect to linkage quality, and its important characteristic of
 being parameter-free---the linkage quality is obtained without the
 need to tune for the dataset.
 
-\Cref{comparison-of-results-demography-skye} and
-\Cref{comparison-of-results-demography-kili} show greater detail for
+Tables~\ref{comparison-of-results-demography-skye}
+and~\ref{comparison-of-results-demography-kili} show greater detail for
 selected linkers. In both cases the F-measure achieved is better for
 M-tree than any of the LSH linkers. The better linkage quality achieved
 by M-tree is largely due to recall for M-tree being much higher than for
@@ -651,11 +656,11 @@ results perform distance comparisons of the same order of magnitude as
 M-tree. This indicates that the good LSH linkers return many candidates
 beyond the distance threshold. Thus, in order to get good results, LSH
 tends towards a brute force search over the candidate results. Despite
-this, LSH is much faster due to the efficiency of the hashing process.
+this, LSH is faster due to the efficiency of the hashing process.
 
 %----------------------------------------------------------------------
 
-\begin{figure}
+\begin{figure}[t]
 \centering
 \begin{subfigure}{.5\textwidth}
   \centering
@@ -682,26 +687,28 @@ this, LSH is much faster due to the efficiency of the hashing process.
 \vspace{-6mm}
 \caption{F1 Measure on Kilmarnock dataset \\ with M-tree and all LSH configurations}
 \end{subfigure}
-\caption{Linkage results on the demographic datasets}
+\caption{Linkage results on the demographic datasets.}
 \label{demography-quality}
 \end{figure}
 
 %----------------------------------------------------------------------
 
-\begin{table}[ht]
+\begin{table}[t]
 \caption{Linkage quality on Skye dataset with distance threshold
 $d= 2$.}
 \label{comparison-of-results-demography-skye}
 \centering
 \begin{footnotesize}
 \begin{tabular}{lrrrr} \hline\noalign{\smallskip}
-\parbox{0.2\textwidth}{\centering Linker} &
-\parbox{0.2\textwidth}{\centering Comparisons} &
-\parbox{0.17\textwidth}{\centering Precision} &
-\parbox{0.17\textwidth}{\centering Recall} &
-\parbox{0.17\textwidth}{\centering F1 Measure} \\
+  Linker~~~~~~~~~~ & ~~~Comparisons & ~~~~~Precision & 
+  ~~~~~~~~~~~Recall & ~~~~~~F1 Measure \\
+%\parbox{0.2\textwidth}{\centering Linker} &
+%\parbox{0.2\textwidth}{\centering Comparisons} &
+%\parbox{0.17\textwidth}{\centering Precision} &
+%\parbox{0.17\textwidth}{\centering Recall} &
+%\parbox{0.17\textwidth}{\centering F1 Measure} \\
 \noalign{\smallskip} \hline \noalign{\smallskip}
-M-tree    & 102,318,525                 & 0.65      & 0.46   & 0.54      \\ \hline
+M-tree    & 102,318,525                 & 0.65      & 0.46   & 0.54      \\
 \noalign{\smallskip} \hline \noalign{\smallskip}
 LSH-2-2  & 3,109,250                   & 0.63      & 0.03   & 0.06       \\
 
@@ -719,18 +726,20 @@ LSH-10-5 & 129,873                    & 0.72      & 0.01   & 0.02       \\
 
 %----------------------------------------------------------------------
 
-\begin{table}[ht]
+\begin{table}[t]
 \caption{Linkage quality on Kilmarnock dataset with distance
 threshold $d= 2$.}
 \label{comparison-of-results-demography-kili}
 \centering
 \begin{footnotesize}
 \begin{tabular}{lrrrrrr} \hline\noalign{\smallskip}
-\parbox{0.2\textwidth}{\centering Linker} &
-\parbox{0.2\textwidth}{\centering Comparisons} &
-\parbox{0.17\textwidth}{\centering Precision} &
-\parbox{0.17\textwidth}{\centering Recall} &
-\parbox{0.17\textwidth}{\centering F1 Measure} \\
+  Linker~~~~~~~~~~ & ~~~Comparisons & ~~~~~Precision & 
+  ~~~~~~~~~~~Recall & ~~~~~~F1 Measure \\
+%\parbox{0.2\textwidth}{\centering Linker} &
+%\parbox{0.2\textwidth}{\centering Comparisons} &
+%\parbox{0.17\textwidth}{\centering Precision} &
+%\parbox{0.17\textwidth}{\centering Recall} &
+%\parbox{0.17\textwidth}{\centering F1 Measure} \\
 \noalign{\smallskip} \hline \noalign{\smallskip}
 M-tree     & 514,871,153                   & 0.76      & 0.45   & 0.57      \\
 \noalign{\smallskip} \hline \noalign{\smallskip}
@@ -773,7 +782,7 @@ unexpected, result is that illustrated in
 \Cref{comparison-of-results-cora}, namely that incomplete approaches
 such as LSH can in some cases yield higher precision than that achieved
 by a complete method such as M-tree. This is due to the incomplete
-linker's ability to mask the inability of a classifier based solely on
+linker masking the inability of a classifier based solely on
 record similarity to correctly classify high-similarity non-matches or
 low-similarity matches.
 
@@ -784,6 +793,8 @@ to use an incomplete technique like LSH to form indices into a data
 structure such as an M-tree. In this manner, M-tree nodes could be used
 as the starting point for range-search queries and, in so doing, prune
 the search space considerably to yield high quality results quickly.
+We plan to develop such hybrid indexing approaches with the aim to
+achieve fully automated, complete and efficient record linkage.
 
 %----------------------------------------------------------------------
 
