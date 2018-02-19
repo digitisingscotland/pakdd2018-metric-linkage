@@ -61,6 +61,9 @@ def toFloat(s):
 
 (fields, stats) = loadCSV("stats.tsv", delimiter="\t")
 
+for line in stats:
+    line["F-measure"] = line["F1 Measure"]
+
 for f in fields:
     print("Field: " + f)
 
@@ -69,7 +72,7 @@ for f in fields:
 # Plotting Linkage Quality
 ################################################################################
 
-def plotLQ(title, predicate):
+def plotLQ(title, predicate, withlegend=False):
     plt.clf()
 
     w,h = plt.figaspect(0.5)
@@ -96,26 +99,30 @@ def plotLQ(title, predicate):
     plt.plot( [ line["Distance Threshold"]  for line in data ]
             , [ line["Precision"]           for line in data ]
             , color="blue"
-            , marker="o"
+            # , marker="o"
+            , linestyle="-."
             , label="Precision"
             )
 
     plt.plot( [ line["Distance Threshold"]  for line in data ]
             , [ line["Recall"]              for line in data ]
             , color="green"
-            , marker="o"
+            # , marker="o"
+            , linestyle=":"
             , label="Recall"
             )
 
     plt.plot( [ line["Distance Threshold"]  for line in data ]
             , [ line["F1 Measure"]          for line in data ]
             , color="red"
-            , marker="o"
+            # , marker="o"
+            , linestyle="-"
             , label="F-measure"
             )
 
     # plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
-    plt.legend()
+    if withlegend:
+        plt.legend()
 
     plt.savefig("plotLQ -- %s.eps" % title, bbox_inches="tight")
     plt.close()
@@ -127,7 +134,7 @@ dataset = "Cora"
 linker = "Brute Force"
 title = " - ".join([dataset, linker])
 predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker
-plotLQ(title, predicate)
+plotLQ(title, predicate, withlegend=True)
 
 
 linker = "TradBlocking"
