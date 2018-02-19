@@ -111,7 +111,7 @@ def plotLQ(title, predicate):
             , [ line["F1 Measure"]          for line in data ]
             , color="red"
             , marker="o"
-            , label="F1 Measure"
+            , label="F-measure"
             )
 
     # plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
@@ -438,7 +438,7 @@ def plotFixedThresholdTraditional1(title, blockingMethods, predicate):
                                                         for line in data if line["Blocking Method"] == blockingMethod ]
             , color="red"
             , marker="o"
-            , label="F1 Measure"
+            , label="F-measure"
             )
 
     # plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
@@ -542,7 +542,7 @@ def plotFixedThresholdLSH(title, predicate):
             , [ line["F1 Measure"]                      for line in data ]
             , color="red"
             , marker="o"
-            , label="F1 Measure"
+            , label="F-measure"
             )
 
     plt.plot( range(len(xRange))
@@ -667,7 +667,7 @@ title = " - ".join([dataset])
 predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and toFloat(line["Distance Threshold"]) <= 30
 plotFs(title, "Precision", predicate)
 plotFs(title, "Recall", predicate)
-plotFs(title, "F1 Measure", predicate)
+plotFs(title, "F-measure", predicate)
 
 
 dataset = "Skye"
@@ -675,7 +675,7 @@ title = " - ".join([dataset])
 predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and toFloat(line["Distance Threshold"]) <= 30
 plotFs(title, "Precision", predicate)
 plotFs(title, "Recall", predicate)
-plotFs(title, "F1 Measure", predicate)
+plotFs(title, "F-measure", predicate)
 
 
 dataset = "Kilmarnock"
@@ -683,5 +683,5 @@ title = " - ".join([dataset])
 predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and toFloat(line["Distance Threshold"]) <= 30
 plotFs(title, "Precision", predicate)
 plotFs(title, "Recall", predicate)
-plotFs(title, "F1 Measure", predicate)
+plotFs(title, "F-measure", predicate)
 
