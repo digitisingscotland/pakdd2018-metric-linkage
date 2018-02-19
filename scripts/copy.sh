@@ -29,6 +29,6 @@ cp "plotLQ -- Cora - TradBlocking - 10.eps"  ../figures/plotLQ-cora-trad-publish
 cp "plotLQ -- Cora - TradBlocking - all.eps" ../figures/plotLQ-cora-trad-combined.eps
 
 
-cp "plotFs -- Cora - F-measure.eps" ../figures/plotFs-cora-f.eps
-cp "plotFs -- Skye - F-measure.eps" ../figures/plotFs-skye-f.eps
-cp "plotFs -- Kilmarnock - F-measure.eps" ../figures/plotFs-kilmarnock-f.eps
+cp "plotFs -- Cora - F-measure.eps"             ../figures/plotFs-cora-f.eps
+cp "plotFs -- Skye - F-measure.eps"             ../figures/plotFs-skye-f.eps
+cp "plotFs -- Kilmarnock - F-measure.eps"       ../figures/plotFs-kilmarnock-f.eps
