@@ -170,7 +170,7 @@ dataset = "Skye"
 linker = "MTree"
 title = " - ".join([dataset, linker])
 predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker
-plotLQ(title, predicate)
+plotLQ(title, predicate, withlegend=True)
 
 
 linker = "LSH"
@@ -191,7 +191,7 @@ dataset = "Kilmarnock"
 linker = "MTree"
 title = " - ".join([dataset, linker])
 predicate = lambda line: line["Data Set (Source)"].startswith(dataset) and line["Linker"] == linker
-plotLQ(title, predicate)
+plotLQ(title, predicate, withlegend=True)
 
 
 linker = "LSH"
