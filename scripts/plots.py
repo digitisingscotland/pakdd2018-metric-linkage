@@ -102,6 +102,7 @@ def plotLQ(title, predicate, withlegend=False):
             # , marker="o"
             , linestyle="-."
             , label="Precision"
+            , linewidth=2
             )
 
     plt.plot( [ line["Distance Threshold"]  for line in data ]
@@ -110,6 +111,7 @@ def plotLQ(title, predicate, withlegend=False):
             # , marker="o"
             , linestyle=":"
             , label="Recall"
+            , linewidth=2
             )
 
     plt.plot( [ line["Distance Threshold"]  for line in data ]
@@ -118,6 +120,7 @@ def plotLQ(title, predicate, withlegend=False):
             # , marker="o"
             , linestyle="-"
             , label="F-measure"
+            , linewidth=2
             )
 
     # plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
@@ -244,6 +247,7 @@ def plotBQ(title, predicate):
             , color="green"
             , marker="o"
             , label="Block Quality"
+            , linewidth=2
             )
 
     # plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
@@ -284,6 +288,7 @@ def plotPQC(title, predicate):
             , color="green"
             , marker="o"
             , label="Pairs Quality"
+            , linewidth=2
             )
 
     plt.plot( [         line["Distance Threshold"]          for line in data ]
@@ -291,6 +296,7 @@ def plotPQC(title, predicate):
             , color="red"
             , marker="o"
             , label="Pairs Completeness"
+            , linewidth=2
             )
 
     # plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
@@ -432,6 +438,7 @@ def plotFixedThresholdTraditional1(title, blockingMethods, predicate):
             , color="blue"
             , marker="o"
             , label="Precision"
+            , linewidth=2
             )
     plt.plot( range(len(xRange))
             , [ line["Recall"]                          for blockingMethod in blockingMethods
@@ -439,6 +446,7 @@ def plotFixedThresholdTraditional1(title, blockingMethods, predicate):
             , color="green"
             , marker="o"
             , label="Recall"
+            , linewidth=2
             )
     plt.plot( range(len(xRange))
             , [ line["F1 Measure"]                      for blockingMethod in blockingMethods
@@ -446,6 +454,7 @@ def plotFixedThresholdTraditional1(title, blockingMethods, predicate):
             , color="red"
             , marker="o"
             , label="F-measure"
+            , linewidth=2
             )
 
     # plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
@@ -489,6 +498,7 @@ def plotFixedThresholdTraditional2(title, blockingMethods, predicate):
             , color="blue"
             , marker="o"
             , label="Pairs quality"
+            , linewidth=2
             )
     plt.plot( range(len(xRange))
             , [ line["Average pairs completeness"]      for blockingMethod in blockingMethods
@@ -496,6 +506,7 @@ def plotFixedThresholdTraditional2(title, blockingMethods, predicate):
             , color="green"
             , marker="o"
             , label="Pairs completeness"
+            , linewidth=2
             )
 
     # plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
@@ -538,18 +549,21 @@ def plotFixedThresholdLSH(title, predicate):
             , color="blue"
             , marker="o"
             , label="Precision"
+            , linewidth=2
             )
     plt.plot( range(len(xRange))
             , [ line["Recall"]                          for line in data ]
             , color="green"
             , marker="o"
             , label="Recall"
+            , linewidth=2
             )
     plt.plot( range(len(xRange))
             , [ line["F1 Measure"]                      for line in data ]
             , color="red"
             , marker="o"
             , label="F-measure"
+            , linewidth=2
             )
 
     plt.plot( range(len(xRange))
@@ -557,12 +571,14 @@ def plotFixedThresholdLSH(title, predicate):
             , color="purple"
             , marker="o"
             , label="Pairs quality"
+            , linewidth=2
             )
     plt.plot( range(len(xRange))
             , [ line["Average pairs completeness"]      for line in data ]
             , color="pink"
             , marker="o"
             , label="Pairs completeness"
+            , linewidth=2
             )
 
     # plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
@@ -645,6 +661,7 @@ def plotFs(title, measure, predicate):
                         , color="blue"
                         , marker="o"
                         , label="LSH"
+                        , linewidth=2
                         )
 
     dataMTree = [ line for line in data if line["Linker"] == "MTree" ]
@@ -654,6 +671,7 @@ def plotFs(title, measure, predicate):
             , color="red"
             , marker="o"
             , label="M-tree"
+            , linewidth=2
             )
 
     # plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
