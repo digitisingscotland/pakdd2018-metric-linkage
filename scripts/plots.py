@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#   #!/usr/bin/env python3
 
 import matplotlib
 matplotlib.use("cairo")
@@ -662,6 +662,7 @@ def plotFs(title, measure, predicate):
                         , marker="o"
                         , label="LSH"
                         , linewidth=3.0
+                        , linestyle="-"
                         )
 
     dataMTree = [ line for line in data if line["Linker"] == "MTree" ]
@@ -672,6 +673,7 @@ def plotFs(title, measure, predicate):
             , marker="o"
             , label="M-tree"
             , linewidth=3.0
+            , linestyle=":"
             )
 
     # plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
